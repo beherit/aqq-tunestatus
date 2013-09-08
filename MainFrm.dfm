@@ -336,7 +336,7 @@ object MainForm: TMainForm
         Left = 17
         Top = 8
         Width = 256
-        Height = 22
+        Height = 21
         Alignment = taLeftJustify
         BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
