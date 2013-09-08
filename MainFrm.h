@@ -100,6 +100,8 @@ __published:	// IDE-managed Components
 		TAction *aAutoDownUserTune;
 		TBevel *Bevel1;
 		TCheckBox *MovieExceptionCheckBox;
+	TTimer *StateChangeTimer;
+	TAction *aSelectAll;
 		void __fastcall aWinampDownExecute(TObject *Sender);
 		void __fastcall aFoobarDownExecute(TObject *Sender);
 		void __fastcall aMPCDownExecute(TObject *Sender);
@@ -150,14 +152,16 @@ __published:	// IDE-managed Components
 		void __fastcall aExitExecute(TObject *Sender);
 		void __fastcall UserTuneExceptionButtonClick(TObject *Sender);
 		void __fastcall aAutoDownUserTuneExecute(TObject *Sender);
+	void __fastcall StateChangeTimerTimer(TObject *Sender);
+	void __fastcall aSelectAllExecute(TObject *Sender);
 
 private:	// User declarations
 public:		// User declarations
         bool JustEnabled;
         int IntervalValue;
-		UnicodeString opis_pocz;
-		UnicodeString opisTMP;
-		UnicodeString opis;
+		UnicodeString Opis_pocz;
+		UnicodeString OpisTMP;
+		UnicodeString Opis;
         bool SetOnlyInJabberCheck;
         bool BlockInvisibleCheck;
         __fastcall TMainForm(TComponent* Owner);

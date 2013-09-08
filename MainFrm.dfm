@@ -310,10 +310,7 @@ object MainForm: TMainForm
           'CC_STARTSTATUS      (opis pocz'#261'tkowy)'
           'CC_PLUGINVERSION   (wersja TuneStatus)'
           'CC_AQQVERSION        (wersja AQQ)'
-          '--------Tylko dla Winamp/AIMP2/KMPlayer--------'
-          'CC_SAMPLERATE        (samplerate)'
-          'CC_BITRATE                (birate)'
-          'CC_CHANNELS             (ilo'#347#263' kana'#322#243'w)'
+          '--------Tylko dla wybranych odtwarzaczy--------'
           'CC_SONGLENGTH       (d'#322'ugo'#347#263' utworu [mm:ss])')
       end
       object SongFromFile: TMemo
@@ -395,8 +392,6 @@ object MainForm: TMainForm
     object SettingsTabSheet: TTabSheet
       Caption = 'Opcje'
       ImageIndex = 2
-      ExplicitLeft = 6
-      ExplicitTop = 29
       DesignSize = (
         289
         274)
@@ -759,6 +754,11 @@ object MainForm: TMainForm
       Caption = 'aAutoDownUserTune'
       OnExecute = aAutoDownUserTuneExecute
     end
+    object aSelectAll: TAction
+      Caption = 'aSelectAll'
+      ShortCut = 16449
+      OnExecute = aSelectAllExecute
+    end
   end
   object Timer: TTimer
     Enabled = False
@@ -837,6 +837,12 @@ object MainForm: TMainForm
     Interval = 100
     OnTimer = GetStatusTimerTimer
     Left = 99
+    Top = 296
+  end
+  object StateChangeTimer: TTimer
+    Enabled = False
+    OnTimer = StateChangeTimerTimer
+    Left = 136
     Top = 296
   end
 end

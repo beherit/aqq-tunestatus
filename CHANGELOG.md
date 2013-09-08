@@ -1,3 +1,13 @@
+2.0.2.0
+-----
+* Zabezpieczenie przed bugiem AQQ nr. 2941.
+* Po przejściu w stan niewidoczny/rozłączony początkowy opis jest poprawnie przywracany.
+* Poprawki kosmetyczne formy ustawień.
+* Optymalizacja całego kodu wtyczki.
+* Zmiana sposobu pobierania odtwarzanego utworu w Windows Media Player.
+* Usunięcie tagu CC_SAMPLERATE, CC_BITRATE oraz CC_CHANNELS.
+* Tag CC_SONGLENGTH działa również dla Windows Media Player (tylko przy pobieraniu informacji nowym sposobem).
+
 2.0.1.0
 -----
 * Przepisanie wtyczki pod kompilator Embarcadero C++ Builder 2010.

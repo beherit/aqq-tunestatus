@@ -10,7 +10,8 @@ TUserTuneExceptionForm *UserTuneExceptionForm;
 //---------------------------------------------------------------------------
 __declspec(dllimport)UnicodeString GetPluginUserDir();
 __declspec(dllimport)void RefreshUserTuneException();
-UnicodeString ePluginDirectory2; //sciezka prywatnego folderu wtyczek
+//Sciezka prywatnego folderu wtyczek
+UnicodeString ExceptionPluginDirectory;
 //---------------------------------------------------------------------------
 __fastcall TUserTuneExceptionForm::TUserTuneExceptionForm(TComponent* Owner)
 	: TForm(Owner)
@@ -63,9 +64,9 @@ void __fastcall TUserTuneExceptionForm::aReadSettingsExecute(TObject *Sender)
 {
   JIDListBox->Clear();
 
-  ePluginDirectory2 = GetPluginUserDir();
+  ExceptionPluginDirectory = GetPluginUserDir();
 
-  TIniFile *Ini = new TIniFile(ePluginDirectory2 + "\\\\TuneStatus\\\\TuneStatus.ini");
+  TIniFile *Ini = new TIniFile(ExceptionPluginDirectory + "\\\\TuneStatus\\\\TuneStatus.ini");
   int ExceptionCount = Ini->ReadInteger("UserTune", "ExceptionCount", 0);
   if(ExceptionCount!=0)
    for(int Count=1;Count<=ExceptionCount;Count++)
@@ -76,9 +77,9 @@ void __fastcall TUserTuneExceptionForm::aReadSettingsExecute(TObject *Sender)
 
 void __fastcall TUserTuneExceptionForm::aSaveSettingsExecute(TObject *Sender)
 {
-  ePluginDirectory2 = GetPluginUserDir();
+  ExceptionPluginDirectory = GetPluginUserDir();
 
-  TIniFile *Ini = new TIniFile(ePluginDirectory2 + "\\\\TuneStatus\\\\TuneStatus.ini");
+  TIniFile *Ini = new TIniFile(ExceptionPluginDirectory + "\\\\TuneStatus\\\\TuneStatus.ini");
   Ini->WriteInteger("UserTune", "ExceptionCount", JIDListBox->Count);
   if(JIDListBox->Count!=0)
    for(int Count=0;Count<JIDListBox->Count;Count++)
