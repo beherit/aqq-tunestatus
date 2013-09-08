@@ -1,6 +1,6 @@
 object MainForm: TMainForm
-  Left = 594
-  Top = 73
+  Left = 719
+  Top = 108
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus by Beherit'
@@ -132,9 +132,7 @@ object MainForm: TMainForm
         Width = 217
         Height = 17
         Caption = 'Pobieraj dane z Winamp/AIMP2/KMPlayer'
-        Checked = True
         TabOrder = 3
-        TabStop = True
       end
       object VUPlayerDownRadio: TRadioButton
         Left = 6
@@ -174,7 +172,9 @@ object MainForm: TMainForm
         Width = 121
         Height = 17
         Caption = 'Okre'#347'l automatycznie'
+        Checked = True
         TabOrder = 8
+        TabStop = True
       end
     end
     object SettingsTabSheet: TTabSheet
@@ -201,36 +201,26 @@ object MainForm: TMainForm
         Height = 13
         Caption = 'Prefix'
       end
-      object Label1: TLabel
-        Left = 38
+      object NewLineLabel: TLabel
+        Left = 16
         Top = 78
-        Width = 202
+        Width = 247
         Height = 13
-        Caption = 'Znak | dzia'#322'a jako nowa linia (mi'#281'kki enter)'
+        Caption = 'Wstawienie %n dzia'#322'a jako nowa linia (mi'#281'kki enter)'
         Enabled = False
-      end
-      object CutSongNumberLabel: TLabel
-        Left = 133
-        Top = 108
-        Width = 129
-        Height = 13
-        Caption = '(np. z: 16. Artysta - Tytu'#322')'
-        Enabled = False
-      end
-      object CutSongNumberCheckBox: TCheckBox
-        Left = 11
-        Top = 106
-        Width = 121
-        Height = 17
-        Caption = 'Ucinaj numer utworu'
-        TabOrder = 0
+        Font.Charset = EASTEUROPE_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
       end
       object SuffixEdit: TEdit
         Left = 50
         Top = 54
         Width = 181
         Height = 21
-        TabOrder = 1
+        TabOrder = 0
       end
       object SuffixCheckBox: TCheckBox
         Left = 236
@@ -238,15 +228,15 @@ object MainForm: TMainForm
         Width = 37
         Height = 17
         Caption = 'On'
-        TabOrder = 2
+        TabOrder = 1
       end
       object SetOnlyInJabberCheckBox: TCheckBox
         Left = 11
-        Top = 128
+        Top = 106
         Width = 222
         Height = 17
         Caption = 'Ustawiaj opis tylko na kontach sieci Jabber'
-        TabOrder = 3
+        TabOrder = 2
         OnClick = SetOnlyInJabberCheckBoxClick
       end
       object Preview: TEdit
@@ -255,14 +245,14 @@ object MainForm: TMainForm
         Width = 221
         Height = 21
         ReadOnly = True
-        TabOrder = 4
+        TabOrder = 3
       end
       object PrefixEdit: TEdit
         Left = 50
         Top = 30
         Width = 181
         Height = 21
-        TabOrder = 5
+        TabOrder = 4
       end
       object PrefixCheckBox: TCheckBox
         Left = 236
@@ -270,19 +260,19 @@ object MainForm: TMainForm
         Width = 37
         Height = 17
         Caption = 'On'
-        TabOrder = 6
+        TabOrder = 5
       end
       object EnablePluginOnStartCheckBox: TCheckBox
         Left = 11
-        Top = 150
+        Top = 128
         Width = 186
         Height = 17
         Caption = 'W'#322#261'czaj wtyczk'#281' przy starcie AQQ'
-        TabOrder = 7
+        TabOrder = 6
       end
       object EnableFastOnOffCheckBox: TCheckBox
         Left = 11
-        Top = 172
+        Top = 150
         Width = 254
         Height = 17
         BiDiMode = bdLeftToRight
@@ -290,7 +280,7 @@ object MainForm: TMainForm
         Color = clBtnFace
         ParentBiDiMode = False
         ParentColor = False
-        TabOrder = 8
+        TabOrder = 7
         OnClick = EnableFastOnOffCheckBoxClick
       end
     end

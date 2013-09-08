@@ -18,7 +18,7 @@ __declspec(dllimport)void UpdateButton(bool OnOff);
 //---------------------------------------------------------------------------
 AnsiString ePluginDirectory;
 AnsiString opis;
-int FormShowed=0;
+bool FormShowed=0;
 //---------------------------------------------------------------------------
 __fastcall TMainForm::TMainForm(TComponent* Owner)
         : TForm(Owner)
@@ -66,17 +66,17 @@ void __fastcall TMainForm::aWinampDownExecute(TObject *Sender)
   }
 
   x = AnsiPos("*** ", opis);
-  if (x>0)
+  if(x>0)
   {
     opis.Delete(1, x + 3);
     opis=opis.Trim();
   }
 
   x = AnsiPos("Winamp", opis);
-  if (x>0)
+  if(x>0)
    opis = "";
 
-  if (hwndWinamp!=NULL)
+  if(hwndWinamp!=NULL)
   {
     int res = SendMessage(hwndWinamp,WM_USER,0,104);
     if(res==0)
@@ -100,7 +100,7 @@ void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
 
   int x = AnsiPos("[foobar2000", opis);
   int y = opis.Length();
-  if (x>0)
+  if(x>0)
   {
     opis.Delete(x, y + 1);
     opis=opis.Trim();
@@ -108,7 +108,7 @@ void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
 
   y = opis.Length();
   x = AnsiPos("foobar2000", opis);
-  if (x>0)
+  if(x>0)
   {
     opis.Delete(x, y + 1);
     opis=opis.Trim();
@@ -127,7 +127,7 @@ void __fastcall TMainForm::aWMP64DownExecute(TObject *Sender)
 
   int x = AnsiPos("- Windows Media Player", opis);
   int y = opis.Length();
-  if (x>0)
+  if(x>0)
   {
     opis.Delete(x, y + 1);
     opis=opis.Trim();
@@ -149,7 +149,7 @@ void __fastcall TMainForm::aMPCDownExecute(TObject *Sender)
 
   int x = AnsiPos("- Media Player Classic", opis);
   int y = opis.Length();
-  if (x>0)
+  if(x>0)
   {
     opis.Delete(x, y + 1);
     opis=opis.Trim();
@@ -165,13 +165,13 @@ void __fastcall TMainForm::aPreSufFixExecute(TObject *Sender)
     {
       opis = PrefixEdit->Text + opis;
       String opis_str = opis.c_str();
-      opis = StringReplace(opis_str, "|", "\n", TReplaceFlags() << rfReplaceAll);
+      opis = StringReplace(opis_str, "%n", "\n", TReplaceFlags() << rfReplaceAll);
     }
-    if(SuffixCheckBox->Checked==true)    
+    if(SuffixCheckBox->Checked==true)
     {
       opis = opis + SuffixEdit->Text;
       String opis_str = opis.c_str();
-      opis = StringReplace(opis_str, "|", "\n", TReplaceFlags() << rfReplaceAll);
+      opis = StringReplace(opis_str, "%n", "\n", TReplaceFlags() << rfReplaceAll);
     }
   }
 }
@@ -186,16 +186,16 @@ void __fastcall TMainForm::aLastFMDownExecute(TObject *Sender)
 
 void __fastcall TMainForm::aWMP7_11DownExecute(TObject *Sender)
 {
-  HWND hwndMPC = FindWindow("WMPlayerApp",NULL);
+  HWND hwndWMP7_11 = FindWindow("WMPlayerApp",NULL);
 
   char this_title[2048];
-  GetWindowText(hwndMPC,this_title,sizeof(this_title));
+  GetWindowText(hwndWMP7_11,this_title,sizeof(this_title));
 
   opis = this_title;
 
   int x = AnsiPos("- Windows Media Player", opis);
   int y = opis.Length();
-  if (x>0)
+  if(x>0)
   {
     opis.Delete(x, y + 1);
     opis=opis.Trim();
@@ -243,13 +243,9 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
   {
     if(opis_pocz!=opisTMP)
     {
-      opisTMP=PobierzOpis(opisTMP);
-      if(opis_pocz!=opisTMP)
-      {
-        opisTMP=opis_pocz;
-        UstawOpis(opis_pocz,!SetOnlyInJabberCheckBox->Checked);
-        Preview->Text="";
-      }
+      opisTMP=opis_pocz;
+      UstawOpis(opis_pocz,!SetOnlyInJabberCheckBox->Checked);
+      Preview->Text="";
     }
   }
 }
@@ -267,6 +263,7 @@ void __fastcall TMainForm::RunPluginCheckBoxClick(TObject *Sender)
   else if(RunPluginCheckBox->Checked==false)
   {
     Timer->Enabled=false;
+    Preview->Text="";
     if(EnableFastOnOffCheckBox->Checked==true)
      UpdateButton(false);
     opisTMP=PobierzOpis(opisTMP);
@@ -311,7 +308,7 @@ void __fastcall TMainForm::aVUPlayerDownExecute(TObject *Sender)
 
   int x = AnsiPos(" [", opis);
   int y = opis.Length();
-  if (x>0)
+  if(x>0)
   {
     opis.Delete(x, y + 1);
     opis=opis.Trim();
@@ -329,10 +326,10 @@ void __fastcall TMainForm::aXMPlayDownExecute(TObject *Sender)
   opis = this_title;
 
   int x = AnsiPos("XMPlay", opis);
-  if (x>0)
+  if(x>0)
    opis = "";
 
-  if (hwndXMPlay!=NULL)
+  if(hwndXMPlay!=NULL)
   {
     int res = SendMessage(hwndXMPlay,WM_USER,0,104);
     if(res==0)
@@ -341,12 +338,28 @@ void __fastcall TMainForm::aXMPlayDownExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+BOOL TestDigit(AnsiString Text)
+{
+   int digit[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+   int x = 0;
+   while(x < 10)
+   {
+    if(Text.Pos((String)digit[x]) > 0) return true;
+    x++;
+   }
+   return false;
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TMainForm::aCutSongNumberExecute(TObject *Sender)
 {
-  if(CutSongNumberCheckBox->Checked==true)
+  int x = AnsiPos(". ", opis);
+  if((x>0)&&(x<6))
   {
-    int x = AnsiPos(". ", opis);
-    if (x>0)
+    AnsiString opis2=opis;
+    opis2.Delete(x, opis2.Length());
+    if(TestDigit(opis2)==true)
     {
       opis.Delete(1, x);
       opis=opis.Trim();
@@ -367,7 +380,7 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
 
   TIniFile *Ini = new TIniFile(ePluginDirectory + "\\\\TuneStatus\\\\TuneStatus.ini");
 
-  AnsiString Boxy = Ini->ReadString("Settings", "Box", "Winamp");
+  AnsiString Boxy = Ini->ReadString("Settings", "Box", "Auto");
   if(Boxy=="Winamp")
    WinampDownRadio->Checked=true;
   else if(Boxy=="Foobar")
@@ -387,19 +400,19 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
   else if(Boxy=="Auto")
    AutoDownRadio->Checked=true;
 
-  AnsiString PrefixText = Ini->ReadString("Settings", "Prefix", ";");
-  PrefixText.Delete(1, 1);
-   PrefixEdit->Text=PrefixText.SetLength(PrefixText.Length()-1);
-  int PrefixOn = Ini->ReadInteger("Settings", "PrefixOn", 0);
+  AnsiString PrefixText = Ini->ReadString("Settings", "Prefix", "==");
+  char* Scr = PrefixText.c_str();
+  PrefixText = AnsiExtractQuotedStr(Scr, '=');
+  PrefixEdit->Text=PrefixText;
+  bool PrefixOn = Ini->ReadInteger("Settings", "PrefixOn", 0);
    PrefixCheckBox->Checked=PrefixOn;
 
-  AnsiString SuffixText = Ini->ReadString("Settings", "Suffix", ";");
-  SuffixText.Delete(1, 1);
-   SuffixEdit->Text=SuffixText.SetLength(SuffixText.Length()-1);
-  int SuffixOn = Ini->ReadInteger("Settings", "SuffixOn", 0);
+  AnsiString SuffixText = Ini->ReadString("Settings", "Suffix", "==");
+  Scr = SuffixText.c_str();
+  SuffixText = AnsiExtractQuotedStr(Scr, '=');
+  SuffixEdit->Text=SuffixText;
+  bool SuffixOn = Ini->ReadInteger("Settings", "SuffixOn", 0);
    SuffixCheckBox->Checked=SuffixOn;
-
-  CutSongNumberCheckBox->Checked = Ini->ReadInteger("Settings", "CutSongNumber", 0);
 
   SetOnlyInJabberCheckBox->Checked = Ini->ReadInteger("Settings", "SetOnlyInJabber", 0);
 
@@ -436,16 +449,13 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
   if(AutoDownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "Auto");
 
-  char Quote = '=';
-  AnsiString PrefixText = AnsiQuotedStr(PrefixEdit->Text, Quote);
+  AnsiString PrefixText = AnsiQuotedStr(PrefixEdit->Text, '=');
   Ini->WriteString("Settings", "Prefix", PrefixText);
   Ini->WriteInteger("Settings", "PrefixOn", PrefixCheckBox->Checked);
 
-  AnsiString SuffixText = AnsiQuotedStr(SuffixEdit->Text, Quote);
+  AnsiString SuffixText = AnsiQuotedStr(SuffixEdit->Text, '=');
   Ini->WriteString("Settings", "Suffix", SuffixText);
   Ini->WriteInteger("Settings", "SuffixOn", SuffixCheckBox->Checked);
-
-  Ini->WriteInteger("Settings", "CutSongNumber", CutSongNumberCheckBox->Checked);
 
   Ini->WriteInteger("Settings", "SetOnlyInJabber", SetOnlyInJabberCheckBox->Checked);
 
