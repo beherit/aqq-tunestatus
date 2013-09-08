@@ -23,6 +23,12 @@
 #include "LMDCheckBox.hpp"
 #include "LMDCustomCheckBox.hpp"
 #include "LMDRadioButton.hpp"
+#include "LMDBaseEdit.hpp"
+#include "LMDCustomEdit.hpp"
+#include "LMDCustomExtSpinEdit.hpp"
+#include "LMDCustomMaskEdit.hpp"
+#include "LMDExtSpinEdit.hpp"
+#include "LMDSpinEdit.hpp"
 //---------------------------------------------------------------------------
 class TMainForm : public TForm
 {
@@ -66,6 +72,10 @@ __published:	// IDE-managed Components
         TLabel *TagRequestLabel;
         TLMDTabSheet *StatusLooksLMDTabSheet;
         TMemo *PreviewStatusMemo;
+        TLabel *SongTimerIntervalLabel1;
+        TLMDSpinEdit *SongTimerSpin;
+        TTimer *SongTimer;
+        TLabel *SongTimerIntervalLabel2;
         void __fastcall aWinampDownExecute(TObject *Sender);
         void __fastcall aFoobarDownExecute(TObject *Sender);
         void __fastcall aWMP64DownExecute(TObject *Sender);
@@ -89,8 +99,11 @@ __published:	// IDE-managed Components
         void __fastcall TagsBoxDropDown(TObject *Sender);
         void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
         void __fastcall PreviewStatusMemoChange(TObject *Sender);
+        void __fastcall SongTimerTimer(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
+        bool JustEnabled;
+        int IntervalValue;
         AnsiString opis_pocz;
         AnsiString opisTMP;
         bool SetOnlyInJabberCheck;

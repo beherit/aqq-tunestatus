@@ -75,6 +75,7 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
     handle = new TMainForm(Application);
     handle->aReadSettings->Execute();
     handle->opis_pocz = PobierzOpis(handle->opis_pocz);
+    handle->JustEnabled=1;
     handle->Timer->Enabled=true;
     handle->RunPluginCheckBox->Checked=true;
     //Update buttonu
@@ -86,6 +87,7 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
     if(handle->Timer->Enabled==false)
     {
       handle->opis_pocz = PobierzOpis(handle->opis_pocz);
+      handle->JustEnabled=1;
       handle->Timer->Enabled=true;
       //Update buttonu
       TPluginActionButton.IconIndex = plugin_icon_idx_on;
@@ -157,7 +159,7 @@ extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
   }
   TPluginInfo.cbSize = sizeof(PluginInfo);
   TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,2);
+  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,4);
   TPluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -284,6 +286,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
     handle = new TMainForm(Application);
     handle->opis_pocz = PobierzOpis(handle->opis_pocz);
     handle->aReadSettings->Execute();
+    handle->JustEnabled=1;
     handle->Timer->Enabled=true;
     handle->RunPluginCheckBox->Checked=true;
   }
@@ -329,7 +332,7 @@ AnsiString GetPluginDir(AnsiString Dir)
 //OnUnload plugin
 extern "C" int __declspec(dllexport) __stdcall Unload()
 {
-  if(handle!=NULL)
+  if((handle!=NULL)&&(handle->Timer->Enabled==true))
   {
     handle->opisTMP=PobierzOpis(handle->opisTMP);
     if(handle->opis_pocz!=handle->opisTMP)
