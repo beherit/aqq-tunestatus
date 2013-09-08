@@ -46,6 +46,9 @@ int plugin_icon_idx_on;
 bool EnableFastOnOff;
 bool EnablePluginOnStart;
 
+//Do AQQ Radio
+AnsiString AQQRadioSong;
+
 //Pobieranie aktualnego opisu
 AnsiString PobierzOpis(AnsiString opis)
 {
@@ -133,6 +136,25 @@ int __stdcall TuneStatusService (WPARAM, LPARAM)
 }
 //---------------------------------------------------------------------------
 
+//Notyfikacja AQQ Radio
+int __stdcall OnCurrentSong (WPARAM wParam, LPARAM lParam)
+{
+  PluginSong *Song = (PluginSong*)lParam;
+  AQQRadioSong = (wchar_t*)(Song->Title);
+  int Length = AQQRadioSong.Length();
+  if(Length!=0)
+    return 0;
+  else
+    return 1;
+}
+//---------------------------------------------------------------------------
+
+AnsiString GetAQQRadioSong(AnsiString Song)
+{
+  Song=AQQRadioSong;
+  return Song;
+}
+
 //Notyfikacja zmiany statusu
 int __stdcall OnSetNoteClose (WPARAM wParam, LPARAM lParam)
 {
@@ -166,7 +188,7 @@ extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
   }
   TPluginInfo.cbSize = sizeof(PluginInfo);
   TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,8);
+  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,10);
   TPluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -283,7 +305,10 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
   //Przyspisanie przycisku
   PrzypiszSkrot();
 
+  //Hook dla zmiany opisu
   TPluginLink.HookEvent(AQQ_WINDOW_SETNOTE_CLOSE, OnSetNoteClose);
+  //Hook dla AQQ Radio
+  TPluginLink.HookEvent(AQQ_SYSTEM_CURRENTSONG, OnCurrentSong);
 
   //Odczyt ustawien
   TIniFile *Ini = new TIniFile(eDir + "\\\\TuneStatus\\\\\TuneStatus.ini");
@@ -354,6 +379,7 @@ extern "C" int __declspec(dllexport) __stdcall Unload()
      UstawOpis(handle->opis_pocz,!handle->SetOnlyInJabberCheck);
   }
   TPluginLink.UnhookEvent(OnSetNoteClose);
+  TPluginLink.UnhookEvent(OnCurrentSong);
   TPluginLink.DestroyServiceFunction(TuneStatusService);
   TPluginLink.CallService(AQQ_CONTROLS_DESTROYPOPUPMENUITEM,0,(LPARAM)(&TPluginAction));
   TPluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx));

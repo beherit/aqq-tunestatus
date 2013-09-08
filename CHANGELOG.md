@@ -1,3 +1,11 @@
+1.0.4.10
+-----
+* Usunięcie w zakładce "Obsługa" label'ów informujących i zastąpienie ich hint'ami.
+* Poprawka przy pobieraniu opisu z Last.fm.
+* Dodanie obsługi wtyczki AQQ Radio!
+* Dodanie obsługi ALSong.
+* Zmiana w ustawieniach zaznaczenia dla "Pokazuj przycisk szybkiego włączenia/wyłączenia" zachodzi dopiero po zapisaniu ustawień.
+
 1.0.4.8
 -----
 * Dodanie zabezpieczenia przed wpisywaniem tych samych tagów.
