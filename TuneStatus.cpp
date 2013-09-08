@@ -6,7 +6,7 @@
 #include <inifiles.hpp>
 #include <memory>
 #include "ikonka.rh"
-#include "Aqq.h"
+#include "AqqT.h"
 #include "MainFrm.h"
 #include "stdio.h"
 //---------------------------------------------------------------------------
@@ -20,19 +20,25 @@ int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved
 }
 //---------------------------------------------------------------------------
 
-wchar_t *AnsiTowchar_t(AnsiString Str) //zamiana AnsiString->wchar_t*
-{
-  wchar_t *str = new wchar_t[Str.WideCharBufSize()];
-  return Str.WideChar(str, Str.WideCharBufSize());
+//zamiana AnsiString->wchar_t*
+wchar_t* AnsiTowchar_t(AnsiString Str)
+{                                 
+  const char* Text = Str.c_str();
+  int size = MultiByteToWideChar(GetACP(), 0, Text, -1, 0,0);
+  wchar_t* wbuffer = new wchar_t[size+1];
+
+  MultiByteToWideChar(GetACP(), 0, Text, -1, wbuffer, size+1);
+
+  return wbuffer;
 }
 //---------------------------------------------------------------------------
 
 //utworzenie obiektow do struktur
-PluginAction TPluginAction;
-PluginAction TPluginActionButton;
-PluginStateChange TPluginStateChange;
-PluginLink TPluginLink;
-PluginInfo TPluginInfo;
+TPluginAction PluginAction;
+TPluginAction PluginActionButton;
+TPluginStateChange PluginStateChange;
+TPluginLink PluginLink;
+TPluginInfo PluginInfo;
 
 //tworzenie uchwytu do formy
 TMainForm *handle;
@@ -52,9 +58,9 @@ AnsiString AQQRadioSong;
 //Pobieranie aktualnego opisu
 AnsiString PobierzOpis(AnsiString opis)
 {
-  TPluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&TPluginStateChange),0);
+  PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),0);
 
-  opis = TPluginStateChange.Status;
+  opis = PluginStateChange.Status;
 
   return opis;
 }
@@ -63,13 +69,13 @@ AnsiString PobierzOpis(AnsiString opis)
 //Ustawianie opisu
 void UstawOpis(AnsiString opis, bool force)
 {
-  TPluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&TPluginStateChange),0);
+  PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),0);
 
-  TPluginStateChange.cbSize = sizeof(PluginStateChange);
-  TPluginStateChange.Status = AnsiTowchar_t(opis);
-  TPluginStateChange.Force = force;
+  PluginStateChange.cbSize = sizeof(TPluginStateChange);
+  PluginStateChange.Status = AnsiTowchar_t(opis);
+  PluginStateChange.Force = force;
 
-  TPluginLink.CallService(AQQ_SYSTEM_SETSHOWANDSTATUS,0,(LPARAM)(&TPluginStateChange));
+  PluginLink.CallService(AQQ_SYSTEM_SETSHOWANDSTATUS,0,(LPARAM)(&PluginStateChange));
 }
 //---------------------------------------------------------------------------
 
@@ -87,8 +93,8 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
     handle->Timer->Enabled=true;
     handle->RunPluginCheckBox->Checked=true;
     //Update buttonu
-    TPluginActionButton.IconIndex = plugin_icon_idx_on;
-    TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&TPluginActionButton));
+    PluginActionButton.IconIndex = plugin_icon_idx_on;
+    PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&PluginActionButton));
   }
   else
   {
@@ -99,8 +105,8 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
       handle->JustEnabled=1;
       handle->Timer->Enabled=true;
       //Update buttonu
-      TPluginActionButton.IconIndex = plugin_icon_idx_on;
-      TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&TPluginActionButton));
+      PluginActionButton.IconIndex = plugin_icon_idx_on;
+      PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&PluginActionButton));
     }
     else
     {
@@ -113,8 +119,8 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
         handle->opisTMP="";
       }
       //Update buttonu
-      TPluginActionButton.IconIndex = plugin_icon_idx_off;
-      TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&TPluginActionButton));
+      PluginActionButton.IconIndex = plugin_icon_idx_off;
+      PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&PluginActionButton));
     } 
     handle->RunPluginCheckBox->Checked=!handle->RunPluginCheckBox->Checked;
   }
@@ -142,7 +148,7 @@ int __stdcall TuneStatusService (WPARAM, LPARAM)
 //Notyfikacja AQQ Radio
 int __stdcall OnCurrentSong (WPARAM wParam, LPARAM lParam)
 {
-  PluginSong *Song = (PluginSong*)lParam;
+  TPluginSong *Song = (TPluginSong*)lParam;
   AQQRadioSong = (wchar_t*)(Song->Title);
   int Length = AQQRadioSong.Length();
   if(Length!=0)
@@ -159,12 +165,13 @@ AnsiString GetAQQRadioSong(AnsiString Song)
 }
 
 //Notyfikacja zmiany statusu
-int __stdcall OnSetNoteClose (WPARAM wParam, LPARAM lParam)
+int __stdcall OnSetNote(WPARAM wParam, LPARAM lParam)
 {
   if(handle!=NULL)
   {
-    TPluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&TPluginStateChange),0);
-    AnsiString nowy_opis = TPluginStateChange.Status;
+    TPluginStateChange *StateChange = (TPluginStateChange*)lParam;
+    AnsiString nowy_opis = (wchar_t*)(StateChange->Status);
+
     if((nowy_opis!=handle->opis_pocz)&&(nowy_opis!=handle->opisTMP))
     {
       handle->opis_pocz=nowy_opis;
@@ -177,10 +184,10 @@ int __stdcall OnSetNoteClose (WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 
 //Program
-extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQVersion)
+extern "C" __declspec(dllexport) TPluginInfo* __stdcall AQQPluginInfo(DWORD AQQVersion)
 {
   //Sprawdzanie wersji AQQ
-  if (CompareVersion(AQQVersion,PLUGIN_MAKE_VERSION(2,0,4,69))<0)
+  /*if (CompareVersion(AQQVersion,PLUGIN_MAKE_VERSION(2,0,4,69))<0)
   {
     AQQVersion=false;
     Application->MessageBox(
@@ -188,51 +195,51 @@ extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
       "Wtyczka TuneStatus nie bêdzie dzia³aæ poprawnie!",
       "Nieprawid³owa wersja AQQ",
       MB_OK | MB_ICONEXCLAMATION);
-  }
-  TPluginInfo.cbSize = sizeof(PluginInfo);
-  TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,12);
-  TPluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
-  TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
-  TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
-  TPluginInfo.Copyright = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
-  TPluginInfo.Homepage = (wchar_t *)L"http://www.beherit.za.pl/";
+  }*/
+  PluginInfo.cbSize = sizeof(TPluginInfo);
+  PluginInfo.ShortName = (wchar_t*)L"TuneStatus";
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,14);
+  PluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
+  PluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
+  PluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
+  PluginInfo.Copyright = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
+  PluginInfo.Homepage = (wchar_t *)L"http://www.beherit.za.pl";
  
-  return &TPluginInfo;
+  return &PluginInfo;
 }
 //---------------------------------------------------------------------------
 
 //Przypisywanie skrótu w popPlugins
 void PrzypiszSkrot()
 {
-  TPluginAction.cbSize = sizeof(PluginAction);
-  TPluginAction.pszName = (wchar_t*)L"TuneStatusServiceButton";
-  TPluginAction.pszCaption = (wchar_t*) L"TuneStatus";
-  TPluginAction.Position = 0;
-  TPluginAction.IconIndex = plugin_icon_idx;
-  TPluginAction.pszService = (wchar_t*) L"serwis_TuneStatusService";
-  TPluginAction.pszPopupName = (wchar_t*) L"popPlugins";
-  TPluginAction.PopupPosition = 0;
+  PluginAction.cbSize = sizeof(TPluginAction);
+  PluginAction.pszName = (wchar_t*)L"TuneStatusServiceButton";
+  PluginAction.pszCaption = (wchar_t*) L"TuneStatus";
+  PluginAction.Position = 0;
+  PluginAction.IconIndex = plugin_icon_idx;
+  PluginAction.pszService = (wchar_t*) L"serwis_TuneStatusService";
+  PluginAction.pszPopupName = (wchar_t*) L"popPlugins";
+  PluginAction.PopupPosition = 0;
 
-  TPluginLink.CallService(AQQ_CONTROLS_CREATEPOPUPMENUITEM,0,(LPARAM)(&TPluginAction));
-  TPluginLink.CreateServiceFunction(L"serwis_TuneStatusService",TuneStatusService);
+  PluginLink.CallService(AQQ_CONTROLS_CREATEPOPUPMENUITEM,0,(LPARAM)(&PluginAction));
+  PluginLink.CreateServiceFunction(L"serwis_TuneStatusService",TuneStatusService);
 }
 //---------------------------------------------------------------------------
 
 //Przypisywanie buttonu
 void PrzypiszButton()
 {
-  TPluginActionButton.cbSize = sizeof(PluginAction);
-  TPluginActionButton.pszName = (wchar_t*) L"TuneStatus_FastOnOff";
-  TPluginActionButton.Position = 999;
+  PluginActionButton.cbSize = sizeof(TPluginAction);
+  PluginActionButton.pszName = (wchar_t*) L"TuneStatus_FastOnOff";
+  PluginActionButton.Position = 999;
   if(EnablePluginOnStart==1)
-   TPluginActionButton.IconIndex = plugin_icon_idx_on;
+   PluginActionButton.IconIndex = plugin_icon_idx_on;
   else
-   TPluginActionButton.IconIndex = plugin_icon_idx_off;
-  TPluginActionButton.pszService = (wchar_t*) L"serwis_TuneStatus_FastOnOff";
+   PluginActionButton.IconIndex = plugin_icon_idx_off;
+  PluginActionButton.pszService = (wchar_t*) L"serwis_TuneStatus_FastOnOff";
 
-  TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_CREATEBUTTON,0,(LPARAM)(&TPluginActionButton));
-  TPluginLink.CreateServiceFunction(L"serwis_TuneStatus_FastOnOff",TuneStatus_FastOnOff);
+  PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_CREATEBUTTON,0,(LPARAM)(&PluginActionButton));
+  PluginLink.CreateServiceFunction(L"serwis_TuneStatus_FastOnOff",TuneStatus_FastOnOff);
 
   EnableFastOnOff=1;
 }
@@ -241,8 +248,8 @@ void PrzypiszButton()
 //Usuwanie buttonu
 void UsunButton()
 {
-  TPluginLink.DestroyServiceFunction(TuneStatus_FastOnOff);
-  TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_DESTROYBUTTON ,0,(LPARAM)(&TPluginActionButton));
+  PluginLink.DestroyServiceFunction(TuneStatus_FastOnOff);
+  PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_DESTROYBUTTON ,0,(LPARAM)(&PluginActionButton));
 
   EnableFastOnOff=0;
 }
@@ -272,12 +279,12 @@ void ExtractExe(unsigned short ID, AnsiString FileName)
 //---------------------------------------------------------------------------
 
 //OnLoad plugin
-extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
+extern "C" int __declspec(dllexport) __stdcall Load(TPluginLink *Link)
 {
-  TPluginLink = *Link;
+  PluginLink = *Link;
 
   //sciezka katalogu prywatnego uzytkownika
-  AnsiString eDir = (wchar_t*)(TPluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,(WPARAM)(hInstance),0));
+  AnsiString eDir = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,(WPARAM)(hInstance),0));
   eDir = StringReplace(eDir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
 
   if(!DirectoryExists(eDir + "\\\\TuneStatus"))
@@ -287,7 +294,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
   ExtractExe(ID_PNG1,"TuneStatus.png");
   //Przypisanie ikony
   wchar_t* plugin_icon_path = L"TuneStatus.png";
-  plugin_icon_idx=TPluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(plugin_icon_path));
+  plugin_icon_idx=PluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(plugin_icon_path));
   //Usuniecie ikony
   DeleteFile("TuneStatus.png");
 
@@ -296,27 +303,27 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
    ExtractExe(ID_PNG2,eDir + "\\\\TuneStatus\\\TuneStatusOff.png");
   //Przypisanie ikony
   plugin_icon_path = AnsiTowchar_t(eDir +"\\\\TuneStatus\\\TuneStatusOff.png");
-  plugin_icon_idx_off=TPluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(plugin_icon_path));
+  plugin_icon_idx_off=PluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(plugin_icon_path));
 
   //Wypakowanie ikon
   if(!FileExists(eDir + "\\\\TuneStatus\\\TuneStatusOn.png"))
    ExtractExe(ID_PNG3,eDir + "\\\\TuneStatus\\\TuneStatusOn.png");
   //Przypisanie ikony
   plugin_icon_path = AnsiTowchar_t(eDir +"\\\\TuneStatus\\\TuneStatusOn.png");
-  plugin_icon_idx_on=TPluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(plugin_icon_path));
+  plugin_icon_idx_on=PluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(plugin_icon_path));
 
   //Przyspisanie przycisku
   PrzypiszSkrot();
 
   //Hook dla zmiany opisu
-  TPluginLink.HookEvent(AQQ_WINDOW_SETNOTE_CLOSE, OnSetNoteClose);
+  PluginLink.HookEvent(AQQ_SYSTEM_SETNOTE,OnSetNote);
   //Hook dla AQQ Radio
-  TPluginLink.HookEvent(AQQ_SYSTEM_CURRENTSONG, OnCurrentSong);
+  PluginLink.HookEvent(AQQ_SYSTEM_CURRENTSONG,OnCurrentSong);
 
   //Odczyt ustawien
   TIniFile *Ini = new TIniFile(eDir + "\\\\TuneStatus\\\\\TuneStatus.ini");
-  EnablePluginOnStart = Ini->ReadInteger("Settings", "EnablePluginOnStart", 0);
-  EnableFastOnOff = Ini->ReadInteger("Settings", "EnableFastOnOff", 1);
+  EnablePluginOnStart = Ini->ReadBool("Settings", "EnablePluginOnStart", 0);
+  EnableFastOnOff = Ini->ReadBool("Settings", "EnableFastOnOff", 1);
   delete Ini;
 
   //Czy w³¹czone
@@ -358,7 +365,7 @@ extern "C" int __declspec(dllexport)__stdcall Settings()
 //Pobieranie sciezki katalogu prywatnego uzytkownika
 AnsiString GetPluginUserDir(AnsiString Dir)
 {
-  Dir = (wchar_t*)(TPluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,(WPARAM)(hInstance),0));
+  Dir = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,(WPARAM)(hInstance),0));
   Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
   return Dir;
 }
@@ -366,7 +373,7 @@ AnsiString GetPluginUserDir(AnsiString Dir)
 //Pobieranie sciezki do pliku wtyczki
 AnsiString GetPluginDir(AnsiString Dir)
 {
-  Dir = (wchar_t*)(TPluginLink.CallService(AQQ_FUNCTION_GETPLUGINDIR,(WPARAM)(hInstance),0));
+  Dir = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPLUGINDIR,(WPARAM)(hInstance),0));
   Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
   return Dir;
 }
@@ -381,17 +388,17 @@ extern "C" int __declspec(dllexport) __stdcall Unload()
     if(handle->opis_pocz!=handle->opisTMP)
      UstawOpis(handle->opis_pocz,!handle->SetOnlyInJabberCheck);
   }
-  TPluginLink.UnhookEvent(OnSetNoteClose);
-  TPluginLink.UnhookEvent(OnCurrentSong);
-  TPluginLink.DestroyServiceFunction(TuneStatusService);
-  TPluginLink.CallService(AQQ_CONTROLS_DESTROYPOPUPMENUITEM,0,(LPARAM)(&TPluginAction));
-  TPluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx));
-  TPluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx_off));
-  TPluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx_on));
+  PluginLink.UnhookEvent(OnSetNote);
+  PluginLink.UnhookEvent(OnCurrentSong);
+  PluginLink.DestroyServiceFunction(TuneStatusService);
+  PluginLink.CallService(AQQ_CONTROLS_DESTROYPOPUPMENUITEM,0,(LPARAM)(&PluginAction));
+  PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx));
+  PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx_off));
+  PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx_on));
   if(EnableFastOnOff==1)
   {
-    TPluginLink.DestroyServiceFunction(TuneStatus_FastOnOff);
-    TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_DESTROYBUTTON ,0,(LPARAM)(&TPluginActionButton));
+    PluginLink.DestroyServiceFunction(TuneStatus_FastOnOff);
+    PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_DESTROYBUTTON ,0,(LPARAM)(&PluginActionButton));
   }
 
   return 0;
@@ -403,16 +410,16 @@ void UpdateButton(bool OnOff)
 {
   if(OnOff==true)
   {
-    TPluginActionButton.IconIndex = plugin_icon_idx_on;
-    TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&TPluginActionButton));
+    PluginActionButton.IconIndex = plugin_icon_idx_on;
+    PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&PluginActionButton));
   }
   else
   {
-    TPluginActionButton.IconIndex = plugin_icon_idx_off;
-    TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&TPluginActionButton));
+    PluginActionButton.IconIndex = plugin_icon_idx_off;
+    PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&PluginActionButton));
   }
 }
 //---------------------------------------------------------------------------
 
 
- 
+
