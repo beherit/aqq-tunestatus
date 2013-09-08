@@ -24,7 +24,8 @@ __published:	// IDE-managed Components
 	TAction *aExit;
 	TAction *aSaveSettings;
 	TAction *aReadSettings;
-	TLabel *Label1;
+	TLabel *InfoLabel;
+	TButton *CancelButton;
 	void __fastcall aExitExecute(TObject *Sender);
 	void __fastcall SaveButtonClick(TObject *Sender);
 	void __fastcall AddButtonClick(TObject *Sender);
@@ -32,6 +33,7 @@ __published:	// IDE-managed Components
 	void __fastcall DeleteButtonClick(TObject *Sender);
 	void __fastcall aReadSettingsExecute(TObject *Sender);
 	void __fastcall aSaveSettingsExecute(TObject *Sender);
+	void __fastcall CancelButtonClick(TObject *Sender);
 
 private:	// User declarations
 public:		// User declarations

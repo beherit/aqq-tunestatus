@@ -10,8 +10,6 @@ TUserTuneExceptionForm *UserTuneExceptionForm;
 //---------------------------------------------------------------------------
 __declspec(dllimport)UnicodeString GetPluginUserDir();
 __declspec(dllimport)void RefreshUserTuneException();
-//Sciezka prywatnego folderu wtyczek
-UnicodeString ExceptionPluginDirectory;
 //---------------------------------------------------------------------------
 __fastcall TUserTuneExceptionForm::TUserTuneExceptionForm(TComponent* Owner)
 	: TForm(Owner)
@@ -36,10 +34,13 @@ void __fastcall TUserTuneExceptionForm::SaveButtonClick(TObject *Sender)
 void __fastcall TUserTuneExceptionForm::AddButtonClick(TObject *Sender)
 {
   UnicodeString JID;
-  if(InputQuery("Nowy wyj¹tek","JID kontaktu:",JID))
+  if(InputQuery("Nowy wyj¹tek","Identyfikator kontaktu:",JID))
   {
-	if(JID!="")
-	 JIDListBox->Items->Add(JID);
+	if(!JID.IsEmpty())
+	{
+	  JIDListBox->Items->Add(JID);
+	  SaveButton->Enabled = true;
+	}
   }
 }
 //---------------------------------------------------------------------------
@@ -47,16 +48,17 @@ void __fastcall TUserTuneExceptionForm::AddButtonClick(TObject *Sender)
 void __fastcall TUserTuneExceptionForm::JIDListBoxClick(TObject *Sender)
 {
   if(JIDListBox->ItemIndex!=-1)
-   DeleteButton->Enabled=true;
+   DeleteButton->Enabled = true;
   else
-   DeleteButton->Enabled=false;
+   DeleteButton->Enabled = false;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TUserTuneExceptionForm::DeleteButtonClick(TObject *Sender)
 {
   JIDListBox->DeleteSelected();
-  DeleteButton->Enabled=false;
+  DeleteButton->Enabled = false;
+  SaveButton->Enabled = true;
 }
 //---------------------------------------------------------------------------
 
@@ -64,7 +66,7 @@ void __fastcall TUserTuneExceptionForm::aReadSettingsExecute(TObject *Sender)
 {
   JIDListBox->Clear();
 
-  ExceptionPluginDirectory = GetPluginUserDir();
+  UnicodeString ExceptionPluginDirectory = GetPluginUserDir();
 
   TIniFile *Ini = new TIniFile(ExceptionPluginDirectory + "\\\\TuneStatus\\\\TuneStatus.ini");
   int ExceptionCount = Ini->ReadInteger("UserTune", "ExceptionCount", 0);
@@ -77,7 +79,7 @@ void __fastcall TUserTuneExceptionForm::aReadSettingsExecute(TObject *Sender)
 
 void __fastcall TUserTuneExceptionForm::aSaveSettingsExecute(TObject *Sender)
 {
-  ExceptionPluginDirectory = GetPluginUserDir();
+  UnicodeString ExceptionPluginDirectory = GetPluginUserDir();
 
   TIniFile *Ini = new TIniFile(ExceptionPluginDirectory + "\\\\TuneStatus\\\\TuneStatus.ini");
   Ini->WriteInteger("UserTune", "ExceptionCount", JIDListBox->Count);
@@ -85,6 +87,12 @@ void __fastcall TUserTuneExceptionForm::aSaveSettingsExecute(TObject *Sender)
    for(int Count=0;Count<JIDListBox->Count;Count++)
    Ini->WriteString("UserTuneEx" + IntToStr(Count+1),"JID",JIDListBox->Items->Strings[Count]);
   delete Ini;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TUserTuneExceptionForm::CancelButtonClick(TObject *Sender)
+{
+  Close();
 }
 //---------------------------------------------------------------------------
 

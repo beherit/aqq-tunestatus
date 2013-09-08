@@ -168,39 +168,36 @@ object MainForm: TMainForm
     Top = 324
     Width = 75
     Height = 25
-    Caption = 'Zapisz'
+    Caption = 'Zastosuj'
     Enabled = False
-    TabOrder = 2
-    TabStop = False
+    TabOrder = 0
     OnClick = SaveButtonClick
   end
   object PageControl: TPageControl
-    Left = 8
-    Top = 8
-    Width = 297
-    Height = 302
+    AlignWithMargins = True
+    Left = 6
+    Top = 6
+    Width = 300
+    Height = 305
+    Margins.Left = 6
+    Margins.Top = 6
+    Margins.Right = 6
+    Margins.Bottom = 6
     ActivePage = HandlingTabSheet
-    TabOrder = 0
+    Align = alClient
+    TabOrder = 3
     object HandlingTabSheet: TTabSheet
       Caption = 'Obs'#322'uga'
-      object AutoDownInfoLabel2: TLabel
-        Left = 44
-        Top = 38
-        Width = 201
-        Height = 13
-        Caption = '(do zmiany kolejno'#347'ci u'#380'yj Drag and Drop)'
-        Enabled = False
-        Transparent = True
-      end
       object AutoDownInfoLabel: TLabel
-        Left = 15
+        Left = 21
         Top = 6
-        Width = 259
-        Height = 26
+        Width = 249
+        Height = 39
         Alignment = taCenter
         Caption = 
-          'Wybierz kt'#243're odtwarzacze ma obs'#322'ugiwa'#263' wtyczka oraz okre'#347'l ich ' +
-          'kolejno'#347#263' co decyduje o ich priorytecie:'
+          'Wybierz odtwarzacze kt'#243're ma obs'#322'ugiwa'#263' wtyczka oraz okre'#347'l ich ' +
+          'kolejno'#347#263', przy u'#380'yciu metody przeci'#261'gania, co zdecyduje o ich p' +
+          'riorytecie:'
         Transparent = True
         WordWrap = True
       end
@@ -232,6 +229,7 @@ object MainForm: TMainForm
         Top = 57
         Width = 176
         Height = 174
+        OnClickCheck = AutoDownCheckListBoxPreviewClickCheck
         DragMode = dmAutomatic
         ItemHeight = 13
         Items.Strings = (
@@ -269,15 +267,16 @@ object MainForm: TMainForm
       Caption = 'Wygl'#261'd opisu'
       ImageIndex = 1
       DesignSize = (
-        289
-        274)
+        292
+        277)
       object Bevel1: TBevel
         Left = 9
         Top = 144
-        Width = 271
+        Width = 274
         Height = 4
         Anchors = [akLeft, akTop, akRight]
         Shape = bsTopLine
+        ExplicitWidth = 271
       end
       object SongTimerIntervalLabel1: TLabel
         Left = 23
@@ -337,7 +336,7 @@ object MainForm: TMainForm
         Visible = False
       end
       object PreviewStatusMemo: TMemo
-        Left = 17
+        Left = 18
         Top = 35
         Width = 256
         Height = 96
@@ -347,7 +346,7 @@ object MainForm: TMainForm
         ScrollBars = ssVertical
         ShowHint = True
         TabOrder = 1
-        OnChange = PreviewStatusMemoChange
+        OnChange = aAllowApplyExecute
       end
       object SetOnlyInJabberCheckBox: TCheckBox
         Left = 17
@@ -356,6 +355,7 @@ object MainForm: TMainForm
         Height = 17
         Caption = 'Ustawiaj opis tylko na kontach sieci Jabber'
         TabOrder = 5
+        OnClick = aAllowApplyExecute
       end
       object BlockInvisibleCheckBox: TCheckBox
         Left = 17
@@ -366,6 +366,7 @@ object MainForm: TMainForm
         Checked = True
         State = cbChecked
         TabOrder = 4
+        OnClick = aAllowApplyExecute
       end
       object DisableSongTimerCheckBox: TCheckBox
         Left = 48
@@ -377,6 +378,7 @@ object MainForm: TMainForm
         State = cbChecked
         TabOrder = 3
         WordWrap = True
+        OnClick = aAllowApplyExecute
       end
       object SongTimerSpin: TCSpinEdit
         Left = 107
@@ -387,29 +389,32 @@ object MainForm: TMainForm
         MinValue = 4
         TabOrder = 2
         Value = 5
+        OnChange = aAllowApplyExecute
       end
     end
-    object SettingsTabSheet: TTabSheet
-      Caption = 'Opcje'
+    object OtherTabSheet: TTabSheet
+      Caption = 'Inne'
       ImageIndex = 2
       DesignSize = (
-        289
-        274)
+        292
+        277)
       object Bevel2: TBevel
         Left = 9
         Top = 64
-        Width = 271
+        Width = 274
         Height = 4
         Anchors = [akLeft, akTop, akRight]
         Shape = bsTopLine
+        ExplicitWidth = 271
       end
       object Bevel3: TBevel
         Left = 9
         Top = 175
-        Width = 271
+        Width = 274
         Height = 4
         Anchors = [akLeft, akTop, akRight]
         Shape = bsTopLine
+        ExplicitWidth = 271
       end
       object EnablePluginOnStartCheckBox: TCheckBox
         Left = 6
@@ -418,6 +423,7 @@ object MainForm: TMainForm
         Height = 17
         Caption = 'Aktywuj dzia'#322'anie wtyczki wraz z uruchomieniem AQQ'
         TabOrder = 0
+        OnClick = aAllowApplyExecute
       end
       object EnableFastOnOffCheckBox: TCheckBox
         Left = 6
@@ -431,6 +437,7 @@ object MainForm: TMainForm
         State = cbChecked
         TabOrder = 1
         WordWrap = True
+        OnClick = aAllowApplyExecute
       end
       object CutRadiostationNameCheckBox: TCheckBox
         Left = 6
@@ -444,6 +451,7 @@ object MainForm: TMainForm
         State = cbChecked
         TabOrder = 2
         WordWrap = True
+        OnClick = aAllowApplyExecute
       end
       object CutWWWCheckBox: TCheckBox
         Left = 6
@@ -453,6 +461,7 @@ object MainForm: TMainForm
         Caption = 'Wycinaj adresy stron WWW z pobranego utworu'
         TabOrder = 3
         WordWrap = True
+        OnClick = aAllowApplyExecute
       end
       object TimeTurnOffCheckBox: TCheckBox
         Left = 6
@@ -473,6 +482,7 @@ object MainForm: TMainForm
         MinValue = 5
         TabOrder = 5
         Value = 5
+        OnChange = aAllowApplyExecute
       end
       object MovieExceptionCheckBox: TCheckBox
         Left = 6
@@ -486,14 +496,15 @@ object MainForm: TMainForm
         State = cbChecked
         TabOrder = 6
         WordWrap = True
+        OnClick = aAllowApplyExecute
       end
     end
     object UserTuneTabSheet: TTabSheet
       Caption = 'User Tune'
       ImageIndex = 3
       DesignSize = (
-        289
-        274)
+        292
+        277)
       object UserTuneTimeNLabel: TLabel
         Left = 45
         Top = 43
@@ -532,18 +543,20 @@ object MainForm: TMainForm
       object Bevel5: TBevel
         Left = 9
         Top = 217
-        Width = 271
+        Width = 274
         Height = 4
         Anchors = [akLeft, akTop, akRight]
         Shape = bsTopLine
+        ExplicitWidth = 271
       end
       object Bevel4: TBevel
         Left = 9
         Top = 68
-        Width = 271
+        Width = 274
         Height = 4
         Anchors = [akLeft, akTop, akRight]
         Shape = bsTopLine
+        ExplicitWidth = 271
       end
       object UserTuneTimeSLabel2: TLabel
         Left = 165
@@ -582,6 +595,7 @@ object MainForm: TMainForm
         MinValue = 1
         TabOrder = 2
         Value = 4
+        OnChange = aAllowApplyExecute
       end
       object EnableUserTuneSCheckBox: TCheckBox
         Left = 6
@@ -604,9 +618,10 @@ object MainForm: TMainForm
         MinValue = 4
         TabOrder = 4
         Value = 5
+        OnChange = aAllowApplyExecute
       end
       object EnableAQQUserTuneSCheckBox: TCheckBox
-        Left = 27
+        Left = 25
         Top = 170
         Width = 235
         Height = 41
@@ -615,6 +630,7 @@ object MainForm: TMainForm
           'QQ oraz z wtyczk'#261' AQQ Radio'
         TabOrder = 5
         WordWrap = True
+        OnClick = aAllowApplyExecute
       end
       object UserTuneExceptionButton: TButton
         Left = 206
@@ -633,12 +649,21 @@ object MainForm: TMainForm
     Width = 106
     Height = 17
     Caption = 'Wtyczka aktywna'
-    TabOrder = 1
+    TabOrder = 2
     OnClick = RunPluginCheckBoxClick
+  end
+  object OKButton: TButton
+    Left = 149
+    Top = 324
+    Width = 75
+    Height = 25
+    Caption = 'OK'
+    TabOrder = 1
+    OnClick = OKButtonClick
   end
   object ActionList: TActionList
     Left = 99
-    Top = 328
+    Top = 320
     object aWinampDown: TAction
       Category = 'Players'
       Caption = 'aWinampDown'
@@ -759,26 +784,31 @@ object MainForm: TMainForm
       ShortCut = 16449
       OnExecute = aSelectAllExecute
     end
+    object aAllowApply: TAction
+      Category = 'Settings'
+      Caption = 'aAllowApply'
+      OnExecute = aAllowApplyExecute
+    end
   end
   object Timer: TTimer
     Enabled = False
     OnTimer = TimerTimer
     Left = 67
-    Top = 328
+    Top = 320
   end
   object SongTimer: TTimer
     Enabled = False
     Interval = 5000
     OnTimer = SongTimerTimer
     Left = 35
-    Top = 328
+    Top = 320
   end
   object TurnOffTimer: TTimer
     Enabled = False
     Interval = 900000
     OnTimer = TurnOffTimerTimer
     Left = 3
-    Top = 328
+    Top = 320
   end
   object FoobarPopupMenu: TPopupMenu
     Left = 272
@@ -816,33 +846,33 @@ object MainForm: TMainForm
     Enabled = False
     OnTimer = UserTuneTimerTimer
     Left = 67
-    Top = 296
+    Top = 288
   end
   object UserTuneSongTimer: TTimer
     Enabled = False
     Interval = 5000
     OnTimer = UserTuneSongTimerTimer
     Left = 35
-    Top = 296
+    Top = 288
   end
   object AllowUserTuneNTimer: TTimer
     Enabled = False
     Interval = 20000
     OnTimer = AllowUserTuneNTimerTimer
     Left = 3
-    Top = 296
+    Top = 288
   end
   object GetStatusTimer: TTimer
     Enabled = False
     Interval = 100
     OnTimer = GetStatusTimerTimer
     Left = 99
-    Top = 296
+    Top = 288
   end
   object StateChangeTimer: TTimer
     Enabled = False
     OnTimer = StateChangeTimerTimer
     Left = 136
-    Top = 296
+    Top = 288
   end
 end
