@@ -1,3 +1,10 @@
+2.2.1.0
+-----
+* Obsługa natywnego stylu Windows (wyłączone skórkowanie okien wtyczki).
+* Poprawne ustawianie domyślnej listy obsługiwanych odtwarzaczy.
+* Aktualizacja komponentów AlphaControls do najnowszej dostępnej wersji (7.61).
+* Inne mniej ważne poprawki optymalizacyjne.
+
 2.2.0.0
 -----
 * Pełne skórkowanie okna ustawień wtyczki.

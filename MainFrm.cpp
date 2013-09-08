@@ -32,6 +32,7 @@ TMainForm *MainForm;
 //---------------------------------------------------------------------------
 __declspec(dllimport)UnicodeString GetThemeSkinDir();
 __declspec(dllimport)bool ChkSkinEnabled();
+__declspec(dllimport)bool ChkNativeEnabled();
 __declspec(dllimport)void SetStatus(UnicodeString SetStatusStatus, bool SetStatusForce);
 __declspec(dllimport)UnicodeString GetPluginUserDir();
 __declspec(dllimport)UnicodeString GetPluginDir();
@@ -628,7 +629,7 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
   if(!ChkSkinEnabled())
   {
 	UnicodeString ThemeSkinDir = GetThemeSkinDir();
-	if(FileExists(ThemeSkinDir + "\\\\Skin.asz"))
+	if((FileExists(ThemeSkinDir + "\\\\Skin.asz"))&&(!ChkNativeEnabled()))
 	{
 	  ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
 	  sSkinManager->SkinDirectory = ThemeSkinDir;
@@ -775,8 +776,17 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
   }
   //Sprawdzanie ilosci obslugiwanych odtwarzaczy
   if(AutoModeCheckListBox->Count!=13)
-   //Resetowanie ustawien
-   aResetSettings->Execute();
+  {
+	//Resetowanie ustawien
+	aResetSettings->Execute();
+	//Wczytanie ustawien trybu automatycznego/manualnego
+	AutoModeCheckListBox->Clear();
+	for(int Count=0;Count<13;Count++)
+	{
+	  AutoModeCheckListBox->Items->Add(AutoModeCheckListBoxPreview->Items->Strings[Count]);
+	  AutoModeCheckListBox->Checked[Count] = AutoModeCheckListBoxPreview->Checked[Count];
+	}
+  }
   //Status
   UnicodeString Status = UTF8ToUnicodeString((IniStrToStr(Ini->ReadString("Settings", "Status", ""))).t_str());
   if(Status.IsEmpty()) Status = "Obecnie s³ucham: CC_TUNESTATUS";
@@ -1932,7 +1942,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender)
   if(ChkSkinEnabled())
   {
 	UnicodeString ThemeSkinDir = GetThemeSkinDir();
-	if(FileExists(ThemeSkinDir + "\\\\Skin.asz"))
+	if((FileExists(ThemeSkinDir + "\\\\Skin.asz"))&&(!ChkNativeEnabled()))
 	{
 	  ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
 	  sSkinManager->SkinDirectory = ThemeSkinDir;

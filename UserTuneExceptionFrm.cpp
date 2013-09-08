@@ -17,6 +17,7 @@ TUserTuneExceptionForm *UserTuneExceptionForm;
 //---------------------------------------------------------------------------
 __declspec(dllimport)UnicodeString GetThemeSkinDir();
 __declspec(dllimport)bool ChkSkinEnabled();
+__declspec(dllimport)bool ChkNativeEnabled();
 __declspec(dllimport)UnicodeString GetPluginUserDir();
 __declspec(dllimport)void RefreshUserTuneException();
 //---------------------------------------------------------------------------
@@ -115,9 +116,8 @@ void __fastcall TUserTuneExceptionForm::FormCreate(TObject *Sender)
   if(ChkSkinEnabled())
   {
 	UnicodeString ThemeSkinDir = GetThemeSkinDir();
-	if(FileExists(ThemeSkinDir + "\\\\Skin.asz"))
+	if((FileExists(ThemeSkinDir + "\\\\Skin.asz"))&&(!ChkNativeEnabled()))
 	{
-	  ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
 	  sSkinProvider->DrawNonClientArea = true;
 	}
   }
@@ -129,7 +129,7 @@ void __fastcall TUserTuneExceptionForm::FormShow(TObject *Sender)
   if(!ChkSkinEnabled())
   {
 	UnicodeString ThemeSkinDir = GetThemeSkinDir();
-	if(FileExists(ThemeSkinDir + "\\\\Skin.asz"))
+	if((FileExists(ThemeSkinDir + "\\\\Skin.asz"))&&(!ChkNativeEnabled()))
 	{
 	  sSkinProvider->DrawNonClientArea = false;
 	}
