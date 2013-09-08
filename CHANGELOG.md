@@ -1,3 +1,7 @@
+1.0.4.5
+-----
+* Mała poprawka przy pobieraniu opisu z Foobar2000 gdy używa się wtyczki fooAvA.
+
 1.0.4.4
 -----
 * Poprawki w przywracaniu opisu podczas wyładowywania wtyczki.

@@ -309,6 +309,7 @@ void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
   if(!hwndFoobar) hwndFoobar = FindWindow("{DA7CD0DE-1602-45e6-89A1-C2CA151E008E}",NULL);
   if(!hwndFoobar) hwndFoobar = FindWindow("{97E27FAA-C0B3-4b8e-A693-ED7881E99FC1}",NULL);
   if(!hwndFoobar) hwndFoobar = FindWindow("{E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8}",NULL);
+  if(!hwndFoobar) hwndFoobar = FindWindow("PanelsUI",NULL);
 
   //Informacje o Playerze
   if((hwndFoobar!=NULL)&&(IsPlayerName==1))
@@ -347,6 +348,12 @@ void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
       opis.Delete(x, y + 1);
       opis=opis.Trim();
     }
+
+    //Usuwanie "fooAvA"
+    y = opis.Length();
+    x = AnsiPos("fooAvA", opis);
+    if(x>0)
+     opis = "";
   }
   else
    opis = "";
