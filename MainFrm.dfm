@@ -171,7 +171,7 @@ object MainForm: TMainForm
     Height = 25
     Caption = 'Zastosuj'
     Enabled = False
-    TabOrder = 0
+    TabOrder = 1
     OnClick = SaveButtonClick
     SkinData.SkinSection = 'BUTTON'
   end
@@ -187,7 +187,7 @@ object MainForm: TMainForm
     Margins.Bottom = 6
     ActivePage = HandlingTabSheet
     Align = alClient
-    TabOrder = 3
+    TabOrder = 0
     SkinData.SkinSection = 'PAGECONTROL'
     object HandlingTabSheet: TsTabSheet
       Caption = 'Obs'#322'uga'
@@ -769,7 +769,7 @@ object MainForm: TMainForm
     Width = 105
     Height = 20
     Caption = 'Wtyczka aktywna'
-    TabOrder = 2
+    TabOrder = 3
     OnClick = RunPluginCheckBoxClick
     SkinData.SkinSection = 'CHECKBOX'
     ImgChecked = 0
@@ -781,7 +781,7 @@ object MainForm: TMainForm
     Width = 75
     Height = 25
     Caption = 'OK'
-    TabOrder = 1
+    TabOrder = 2
     OnClick = OKButtonClick
     SkinData.SkinSection = 'BUTTON'
   end
@@ -881,6 +881,7 @@ object MainForm: TMainForm
     ThirdParty.ThirdScrollControl = ' '
     ThirdParty.ThirdUpDown = ' '
     ThirdParty.ThirdScrollBar = ' '
+    ThirdParty.ThirdStaticText = ' '
     Left = 280
     Top = 320
   end

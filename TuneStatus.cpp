@@ -1,3 +1,24 @@
+//---------------------------------------------------------------------------
+// Copyright (C) 2009-2013 Krzysztof Grochocki
+//
+// This file is part of TuneStatus
+//
+// TuneStatus is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3, or (at your option)
+// any later version.
+//
+// TuneStatus is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with GNU Radio; see the file COPYING. If not, write to
+// the Free Software Foundation, Inc., 51 Franklin Street,
+// Boston, MA 02110-1301, USA.
+//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #include <windows.h>
 #pragma hdrstop
@@ -21,13 +42,6 @@ TMainForm *hMainForm;
 //Struktury-glowne-----------------------------------------------------------
 TPluginLink PluginLink;
 TPluginInfo PluginInfo;
-TPluginAction BuildTuneStatusFastSettingsItem;
-TPluginAction BuildTuneStatusFastOperationItem;
-PPluginStateChange StateChange;
-PPluginXMLChunk XMLChunk;
-PPluginSong Song;
-PPluginContact ContactsUpdateContact;
-PPluginContact ReplyListContact;
 //IKONY-W-INTERFEJSIE--------------------------------------------------------
 int FASTACCESS;
 int FASTACCESS_ON;
@@ -73,7 +87,7 @@ bool AutoModeEnabled = false; //Dzialnie wtyczki wylaczone/wlaczone
 bool UserTuneEnabled = false; //User Tune wylaczone/wlaczone
 int GetStatusTimerInterval = 0; //Interwal timera pobieranie aktualnego opisu
 UnicodeString iTunesPath; //Sciezka do procesu iTunes
-TCustomIniFile* ContactsNickList = new TMemIniFile(ChangeFileExt(Application->ExeName, ".INI")); //Lista JID wraz z nickami
+TMemIniFile* ContactsNickList = new TMemIniFile(ChangeFileExt(Application->ExeName, ".INI")); //Lista JID wraz z nickami
 DWORD ReplyListID = 0; //ID wywolania enumeracji listy kontaktow
 //TIMERY---------------------------------------------------------------------
 #define TIMER_ALLOWUSERTUNE 10
@@ -176,6 +190,18 @@ bool ChkThemeGlowing()
   UnicodeString GlowingEnabled = Settings->ReadString("Theme","ThemeGlowing","1");
   delete Settings;
   return StrToBool(GlowingEnabled);
+}
+//---------------------------------------------------------------------------
+
+//Pobieranie ustawien koloru AlphaControls
+int GetHUE()
+{
+  return (int)PluginLink.CallService(AQQ_SYSTEM_COLORGETHUE,0,0);
+}
+//---------------------------------------------------------------------------
+int GetSaturation()
+{
+  return (int)PluginLink.CallService(AQQ_SYSTEM_COLORGETSATURATION,0,0);
 }
 //---------------------------------------------------------------------------
 
@@ -507,8 +533,8 @@ UnicodeString GetPathOfProces(HWND hWnd)
 bool CALLBACK FindVCL(HWND hWnd, LPARAM lParam)
 {
   //Pobranie klasy okna
-  wchar_t WindowCaptionName[128];
-  GetClassNameW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
+  wchar_t* WindowCaptionName = new wchar_t[512];
+  GetClassNameW(hWnd, WindowCaptionName, 512);
   //Sprawdenie klasy okna
   if((UnicodeString)WindowCaptionName=="QWidget")
   {
@@ -518,7 +544,7 @@ bool CALLBACK FindVCL(HWND hWnd, LPARAM lParam)
 	if(ExtractFileName(PlayerPath)=="vlc.exe")
 	{
 	  //Pobranie tekstu okna
-	  GetWindowTextW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
+	  GetWindowTextW(hWnd, WindowCaptionName, 512);
 	  //Sprawdzenie tekstu okna
 	  if(((UnicodeString)WindowCaptionName!="vcl")
 	  &&((UnicodeString)WindowCaptionName!="O programie")
@@ -538,8 +564,8 @@ bool CALLBACK FindVCL(HWND hWnd, LPARAM lParam)
 bool CALLBACK FindLastfm(HWND hWnd, LPARAM lParam)
 {
   //Pobranie klasy okna
-  wchar_t WindowCaptionName[128];
-  GetClassNameW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
+  wchar_t* WindowCaptionName = new wchar_t[512];
+  GetClassNameW(hWnd, WindowCaptionName, 512);
   //Sprawdenie klasy okna
   if((UnicodeString)WindowCaptionName=="QWidget")
   {
@@ -549,7 +575,7 @@ bool CALLBACK FindLastfm(HWND hWnd, LPARAM lParam)
 	if(ExtractFileName(PlayerPath)=="LastFM.exe")
 	{
 	  //Pobranie tekstu okna
-	  GetWindowTextW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
+	  GetWindowTextW(hWnd, WindowCaptionName, 512);
 	  //Sprawdzenie tekstu okna
 	  if(((UnicodeString)WindowCaptionName!="LastFM")
 	  &&((UnicodeString)WindowCaptionName!="Diagnostyka")
@@ -591,8 +617,8 @@ bool CALLBACK FindLastfm(HWND hWnd, LPARAM lParam)
 bool CALLBACK FindSongbird(HWND hWnd, LPARAM lParam)
 {
   //Pobranie klasy okna
-  wchar_t WindowCaptionName[128];
-  GetClassNameW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
+  wchar_t* WindowCaptionName = new wchar_t[512];
+  GetClassNameW(hWnd, WindowCaptionName, 512);
   //Sprawdenie klasy okna
   if((UnicodeString)WindowCaptionName=="MozillaUIWindowClass")
   {
@@ -602,7 +628,7 @@ bool CALLBACK FindSongbird(HWND hWnd, LPARAM lParam)
 	if(ExtractFileName(PlayerPath)=="songbird.exe")
 	{
 	  //Pobranie tekstu okna
-	  GetWindowTextW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
+	  GetWindowTextW(hWnd, WindowCaptionName, 512);
 	  //Sprawdzenie tekstu okna
 	  if(((UnicodeString)WindowCaptionName!="Birdtitle notifer")
 	  &&(!((UnicodeString)WindowCaptionName).IsEmpty()))
@@ -621,8 +647,8 @@ bool CALLBACK FindSongbird(HWND hWnd, LPARAM lParam)
 bool CALLBACK FindScreamerRadio(HWND hWnd, LPARAM lParam)
 {
   //Pobranie klasy okna
-  wchar_t WindowCaptionName[128];
-  GetClassNameW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
+  wchar_t* WindowCaptionName = new wchar_t[512];
+  GetClassNameW(hWnd, WindowCaptionName, 512);
   //Sprawdenie klasy okna
   if(AnsiPos("32770", (UnicodeString)WindowCaptionName))
   {
@@ -632,7 +658,7 @@ bool CALLBACK FindScreamerRadio(HWND hWnd, LPARAM lParam)
 	if(ExtractFileName(PlayerPath)=="screamer.exe")
 	{
 	  //Pobranie tekstu okna
-	  GetWindowTextW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
+	  GetWindowTextW(hWnd, WindowCaptionName, 512);
 	  //Sprawdzenie tekstu okna
 	  if(((UnicodeString)WindowCaptionName!="Screamer Log")
 	  &&(!((UnicodeString)WindowCaptionName).IsEmpty()))
@@ -683,8 +709,8 @@ UnicodeString GetDataFromWinamp()
 	if(SendMessage(PlayerHwnd,WM_USER,0,104))
 	{
 	  //Pobranie tekstu okna
-	  wchar_t PlayerTitle[255];
-	  GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
+	  wchar_t* PlayerTitle = new wchar_t[512];
+	  GetWindowTextW(PlayerHwnd,PlayerTitle,512);
 	  UnicodeString PlayerCaption = PlayerTitle;
 	  //Pomijanie "Winamp"
 	  if(PlayerCaption.Pos("Winamp")==1) return "";
@@ -741,8 +767,8 @@ UnicodeString GetDataFromFoobar()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t PlayerTitle[255];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
+	wchar_t* PlayerTitle = new wchar_t[512];
+	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
 	UnicodeString PlayerCaption = PlayerTitle;
 	//Usuwanie "[foobar2000"
 	if(PlayerCaption.Pos("[foobar2000"))
@@ -799,8 +825,8 @@ UnicodeString GetDataFromWMP()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t PlayerTitle[255];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
+	wchar_t* PlayerTitle = new wchar_t[512];
+	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
 	PlayerCaption = PlayerTitle;
 	//Usuwanie "- Windows Media Player"
 	if(PlayerCaption.Pos("- Windows Media Player"))
@@ -826,8 +852,8 @@ UnicodeString GetDataFromVUPlayer()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t PlayerTitle[255];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
+	wchar_t* PlayerTitle = new wchar_t[512];
+	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
 	UnicodeString PlayerCaption = PlayerTitle;
 	//Usuwanie " ["
 	if(PlayerCaption.Pos(" ["))
@@ -851,8 +877,8 @@ UnicodeString GetDataFromXMPlay()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t PlayerTitle[255];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
+	wchar_t* PlayerTitle = new wchar_t[512];
+	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
 	UnicodeString PlayerCaption = PlayerTitle;
 	//Pomijanie "XMPlay"
 	if(PlayerCaption.Pos("XMPlay")) return "";
@@ -874,8 +900,8 @@ UnicodeString GetDataFromMPC()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t PlayerTitle[255];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
+	wchar_t* PlayerTitle = new wchar_t[512];
+	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
 	UnicodeString PlayerCaption = PlayerTitle;
 	//Usuwanie "- Media Player Classic"
 	if(PlayerCaption.Pos("- Media Player Classic"))
@@ -941,8 +967,8 @@ UnicodeString GetDataFromALSong()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t PlayerTitle[255];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
+	wchar_t* PlayerTitle = new wchar_t[512];
+	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
 	UnicodeString PlayerCaption = PlayerTitle;
 	//Pomijanie "ALSong"
 	if(PlayerCaption.Pos("ALSong")) return "";
@@ -994,8 +1020,8 @@ UnicodeString GetDataFromScreamerRadio()
 	if(IsWindow(ScreamerRadioWindowHwnd))
 	{
 	  //Pobranie tekstu okna
-	  wchar_t PlayerTitle[255];
-	  GetWindowTextW(ScreamerRadioWindowHwnd,PlayerTitle,sizeof(PlayerTitle));
+	  wchar_t* PlayerTitle = new wchar_t[512];
+	  GetWindowTextW(ScreamerRadioWindowHwnd,PlayerTitle,512);
 	  UnicodeString PlayerCaption = PlayerTitle;
 	  //Pomijanie "Screamer Radio"
 	  if(PlayerCaption.Pos("Screamer Radio")) return "";
@@ -1020,9 +1046,9 @@ UnicodeString GetDataFromaTunes()
 	//Okno jest oknem :D
 	if(IsWindow(aTunesWindowHwnd))
 	{
-      //Pobranie tekstu okna
-	  wchar_t PlayerTitle[255];
-	  GetWindowTextW(aTunesWindowHwnd,PlayerTitle,sizeof(PlayerTitle));
+	  //Pobranie tekstu okna
+	  wchar_t* PlayerTitle = new wchar_t[512];
+	  GetWindowTextW(aTunesWindowHwnd,PlayerTitle,512);
 	  UnicodeString PlayerCaption = PlayerTitle;
 	  //Usuwanie "- aTunes [wersja]""
 	  if(PlayerCaption.Pos("- aTunes"))
@@ -1054,8 +1080,8 @@ UnicodeString GetDataFromSongbird()
 	if(IsWindow(SongbirdWindowHwnd))
 	{
 	  //Pobranie tekstu okna
-	  wchar_t PlayerTitle[255];
-	  GetWindowTextW(SongbirdWindowHwnd,PlayerTitle,sizeof(PlayerTitle));
+	  wchar_t* PlayerTitle = new wchar_t[512];
+	  GetWindowTextW(SongbirdWindowHwnd,PlayerTitle,512);
 	  UnicodeString PlayerCaption = PlayerTitle;
 	  //Pomijanie "[Stopped]" & "Songbird"
 	  if(PlayerCaption.Pos("[Stopped]")) return "";
@@ -1082,8 +1108,8 @@ UnicodeString GetDataFromLastFM()
 	if(IsWindow(LastfmWindowHwnd))
 	{
 	  //Pobranie tekstu okna
-	  wchar_t PlayerTitle[255];
-	  GetWindowTextW(LastfmWindowHwnd,PlayerTitle,sizeof(PlayerTitle));
+	  wchar_t* PlayerTitle = new wchar_t[512];
+	  GetWindowTextW(LastfmWindowHwnd,PlayerTitle,512);
 	  UnicodeString PlayerCaption = PlayerTitle;
 	  //Pomijanie "Last.fm"
 	  if(PlayerCaption.Pos("Last.fm")) return "";
@@ -1109,8 +1135,8 @@ UnicodeString GetDataFromVCL()
 	if(IsWindow(VCLWindowHwnd))
 	{
 	  //Pobranie tekstu okna
-	  wchar_t PlayerTitle[255];
-	  GetWindowTextW(VCLWindowHwnd,PlayerTitle,sizeof(PlayerTitle));
+	  wchar_t* PlayerTitle = new wchar_t[512];
+	  GetWindowTextW(VCLWindowHwnd,PlayerTitle,512);
 	  UnicodeString PlayerCaption = PlayerTitle;
 	  //Pomijanie "VLC media player"
 	  if(PlayerCaption=="VLC media player") return "";
@@ -1139,8 +1165,8 @@ UnicodeString GetDataFromSpotify()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t PlayerTitle[255];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
+	wchar_t* PlayerTitle = new wchar_t[512];
+	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
 	UnicodeString PlayerCaption = PlayerTitle;
 	//Pomijanie "Spotify"
 	if(PlayerCaption=="Spotify") return "";
@@ -1439,6 +1465,8 @@ void UpdateTuneStatusFastOperation(bool Enabled)
 {
   if(Enabled)
   {
+	TPluginAction BuildTuneStatusFastOperationItem;
+	ZeroMemory(&BuildTuneStatusFastOperationItem, sizeof(TPluginAction));
 	BuildTuneStatusFastOperationItem.cbSize = sizeof(TPluginAction);
 	BuildTuneStatusFastOperationItem.pszName = L"TuneStatusFastOperationItemButton";
 	BuildTuneStatusFastOperationItem.IconIndex = FASTACCESS_ON;
@@ -1446,6 +1474,8 @@ void UpdateTuneStatusFastOperation(bool Enabled)
   }
   else
   {
+	TPluginAction BuildTuneStatusFastOperationItem;
+	ZeroMemory(&BuildTuneStatusFastOperationItem, sizeof(TPluginAction));
 	BuildTuneStatusFastOperationItem.cbSize = sizeof(TPluginAction);
 	BuildTuneStatusFastOperationItem.pszName = L"TuneStatusFastOperationItemButton";
 	BuildTuneStatusFastOperationItem.IconIndex = FASTACCESS_OFF;
@@ -1457,6 +1487,8 @@ void UpdateTuneStatusFastOperation(bool Enabled)
 //Usuwanie elementu szybkiego wlaczania/wylaczania dzialania wtyczki
 void DestroyTuneStatusFastOperation()
 {
+  TPluginAction BuildTuneStatusFastOperationItem;
+  ZeroMemory(&BuildTuneStatusFastOperationItem, sizeof(TPluginAction));
   BuildTuneStatusFastOperationItem.cbSize = sizeof(TPluginAction);
   BuildTuneStatusFastOperationItem.pszName = L"TuneStatusFastOperationItemButton";
   PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_DESTROYBUTTON ,0,(LPARAM)&BuildTuneStatusFastOperationItem);
@@ -1466,6 +1498,8 @@ void DestroyTuneStatusFastOperation()
 //Tworzenie interfejsu szybkiego wlaczania/wylaczania dzialania wtyczki
 void BuildTuneStatusFastOperation()
 {
+  TPluginAction BuildTuneStatusFastOperationItem;
+  ZeroMemory(&BuildTuneStatusFastOperationItem, sizeof(TPluginAction));
   BuildTuneStatusFastOperationItem.cbSize = sizeof(TPluginAction);
   BuildTuneStatusFastOperationItem.pszName = L"TuneStatusFastOperationItemButton";
   BuildTuneStatusFastOperationItem.Position = 999;
@@ -1499,6 +1533,8 @@ int __stdcall ServiceTuneStatusFastSettingsItem(WPARAM wParam, LPARAM lParam)
 //Usuwanie elementu szybkiego dostepu do ustawien wtyczki
 void DestroyTuneStatusFastSettings()
 {
+  TPluginAction BuildTuneStatusFastSettingsItem;
+  ZeroMemory(&BuildTuneStatusFastSettingsItem, sizeof(TPluginAction));
   BuildTuneStatusFastSettingsItem.cbSize = sizeof(TPluginAction);
   BuildTuneStatusFastSettingsItem.pszName = L"TuneStatusFastSettingsItemButton";
   PluginLink.CallService(AQQ_CONTROLS_DESTROYPOPUPMENUITEM,0,(LPARAM)&BuildTuneStatusFastSettingsItem);
@@ -1508,6 +1544,8 @@ void DestroyTuneStatusFastSettings()
 //Tworzenie elementu szybkiego dostepu do ustawien wtyczki
 void BuildTuneStatusFastSettings()
 {
+  TPluginAction BuildTuneStatusFastSettingsItem;
+  ZeroMemory(&BuildTuneStatusFastSettingsItem, sizeof(TPluginAction));
   BuildTuneStatusFastSettingsItem.cbSize = sizeof(TPluginAction);
   BuildTuneStatusFastSettingsItem.pszName = L"TuneStatusFastSettingsItemButton";
   BuildTuneStatusFastSettingsItem.pszCaption = L"TuneStatus";
@@ -1719,14 +1757,14 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 int __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam)
 {
   //Pobieranie danych kontatku
-  ContactsUpdateContact = (PPluginContact)wParam;
+  TPluginContact ContactsUpdateContact = *(PPluginContact)wParam;
   //Kontakt nie jest czatem
-  if(!ContactsUpdateContact->IsChat)
+  if(!ContactsUpdateContact.IsChat)
   {
-    //Pobieranie identyfikatora kontaktu
-	UnicodeString JID = (wchar_t*)ContactsUpdateContact->JID;
+	//Pobieranie identyfikatora kontaktu
+	UnicodeString JID = (wchar_t*)ContactsUpdateContact.JID;
 	//Pobieranie i zapisywanie nicku kontatku
-	ContactsNickList->WriteString("Nick",JID,(wchar_t*)ContactsUpdateContact->Nick);
+	ContactsNickList->WriteString("Nick",JID,(wchar_t*)ContactsUpdateContact.Nick);
   }
 
   return 0;
@@ -1737,9 +1775,9 @@ int __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam)
 int __stdcall OnCurrentSong(WPARAM wParam, LPARAM lParam)
 {
   //Pobranie danych nt utworu
-  Song = (PPluginSong)lParam;
+  TPluginSong Song = *(PPluginSong)lParam;
   //Pobranie tytulu utworu
-  PluginSong = (wchar_t*)Song->Title;
+  PluginSong = (wchar_t*)Song.Title;
 
   return 0;
 }
@@ -1799,14 +1837,14 @@ int __stdcall OnReplyList(WPARAM wParam, LPARAM lParam)
   if(wParam==ReplyListID)
   {
 	//Pobieranie danych kontatku
-	ReplyListContact = (PPluginContact)wParam;
+	TPluginContact ReplyListContact = *(PPluginContact)wParam;
 	//Kontakt nie jest czatem
-	if(!ReplyListContact->IsChat)
+	if(!ReplyListContact.IsChat)
 	{
 	  //Pobieranie identyfikatora kontaktu
-	  UnicodeString JID = (wchar_t*)ReplyListContact->JID;
+	  UnicodeString JID = (wchar_t*)ReplyListContact.JID;
 	  //Pobieranie i zapisywanie nicku kontatku
-	  ContactsNickList->WriteString("Nick",JID,(wchar_t*)ReplyListContact->Nick);
+	  ContactsNickList->WriteString("Nick",JID,(wchar_t*)ReplyListContact.Nick);
 	}
   }
 
@@ -1821,9 +1859,9 @@ int __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
   if((AutoModeEnabled)&&(!Status.IsEmpty()))
   {
 	//Pobieranie danych
-	StateChange = (PPluginStateChange)lParam;
+	TPluginStateChange StateChange = *(PPluginStateChange)lParam;
 	//Pobranie nowego stanu konta
-	int NewState = StateChange->NewState;
+	int NewState = StateChange.NewState;
 	//Jezeli blokowac przy niewidocznym
 	if((BlockInvisibleChk)&&(NewState==6))
 	 SetTimer(hTimerFrm,TIMER_STATECHANGED,500,(TIMERPROC)TimerFrmProc);
@@ -1842,16 +1880,23 @@ int __stdcall OnThemeChanged(WPARAM wParam, LPARAM lParam)
 	//Wlaczona zaawansowana stylizacja okien
 	if(ChkSkinEnabled())
 	{
+	  //Pobieranie sciezki nowej aktywnej kompozycji
 	  UnicodeString ThemeSkinDir = StringReplace((wchar_t*)lParam, "\\", "\\\\", TReplaceFlags() << rfReplaceAll) + "\\\\Skin";
 	  //Plik zaawansowanej stylizacji okien istnieje
 	  if(FileExists(ThemeSkinDir + "\\\\Skin.asz"))
 	  {
+		//Dane pliku zaawansowanej stylizacji okien
 		ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
 		hMainForm->sSkinManager->SkinDirectory = ThemeSkinDir;
 		hMainForm->sSkinManager->SkinName = "Skin.asz";
+		//Ustawianie animacji AlphaControls
 		if(ChkThemeAnimateWindows()) hMainForm->sSkinManager->AnimEffects->FormShow->Time = 200;
 		else hMainForm->sSkinManager->AnimEffects->FormShow->Time = 0;
 		hMainForm->sSkinManager->Effects->AllowGlowing = ChkThemeGlowing();
+		//Zmiana kolorystyki AlphaControls
+		hMainForm->sSkinManager->HueOffset = GetHUE();
+		hMainForm->sSkinManager->Saturation = GetSaturation();
+		//Aktywacja skorkowania AlphaControls
 		hMainForm->sSkinManager->Active = true;
 	  }
 	  //Brak pliku zaawansowanej stylizacji okien
@@ -1878,12 +1923,12 @@ int __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam)
 	&&(!XML.Pos("type='error'"))
 	&&(XML.Pos("<title>")))
 	{
-      //Pobieranie danych nt. pakietu XML
-	  XMLChunk = (PPluginXMLChunk)lParam;
+	  //Pobieranie danych nt. pakietu XML
+	  TPluginXMLChunk XMLChunk = *(PPluginXMLChunk)lParam;
 	  //Nadawca pakietu
-	  UnicodeString XMLFrom = (wchar_t*)XMLChunk->From;
+	  UnicodeString XMLFrom = (wchar_t*)XMLChunk.From;
 	  //Odbiorca pakietu
-	  UnicodeString XMLTo = ReciveAccountJID(XMLChunk->UserIdx);
+	  UnicodeString XMLTo = ReciveAccountJID(XMLChunk.UserIdx);
 	  //Odbiorca rozny od nadawcy
 	  if(XMLFrom!=XMLTo)
 	  {
@@ -2286,12 +2331,14 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
 {
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,4,0,0);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,4,1,0);
   PluginInfo.Description = L"Wtyczka s³u¿y do informowania naszych znajomych o tym co aktualnie s³uchamy w odtwarzaczu plików audio. Informowanie odbywa siê poprzez zmianê naszego opisu oraz opcjonalnie poprzez wysy³anie notyfikacji User Tune (XEP-0118) w sieci Jabber.";
   PluginInfo.Author = L"Krzysztof Grochocki (Beherit)";
   PluginInfo.AuthorMail = L"kontakt@beherit.pl";
   PluginInfo.Copyright = L"Krzysztof Grochocki (Beherit)";
   PluginInfo.Homepage = L"http://beherit.pl";
+  PluginInfo.Flag = 0;
+  PluginInfo.ReplaceDefaultModule = 0;
 
   return &PluginInfo;
 }
