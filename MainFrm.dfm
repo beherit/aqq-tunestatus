@@ -188,6 +188,10 @@ object MainForm: TMainForm
     TabOrder = 3
     object HandlingTabSheet: TTabSheet
       Caption = 'Obs'#322'uga'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object AutoDownInfoLabel: TLabel
         Left = 21
         Top = 6
@@ -266,6 +270,10 @@ object MainForm: TMainForm
     object StatusTabSheet: TTabSheet
       Caption = 'Wygl'#261'd opisu'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         292
         277)
@@ -395,6 +403,10 @@ object MainForm: TMainForm
     object OtherTabSheet: TTabSheet
       Caption = 'Inne'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         292
         277)
@@ -502,6 +514,10 @@ object MainForm: TMainForm
     object UserTuneTabSheet: TTabSheet
       Caption = 'User Tune'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         292
         277)

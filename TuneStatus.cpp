@@ -721,7 +721,7 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
 {
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,1,0,0);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,1,0,2);
   PluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   PluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   PluginInfo.AuthorMail = (wchar_t *)L"email@beherit.pl";
