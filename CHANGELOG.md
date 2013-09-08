@@ -1,3 +1,8 @@
+1.0.5.2
+-----
+* Dodano możliwość ustawienia czy wtyczka ma czy też nie ustawiać opis przy stanie niewidoczny.
+* Checkbox opcji wyłączania działania wtyczki gdy utwór nie zmienia się od X minut działa już normalnie.
+
 1.0.5.0
 -----
 * Dodanie obsługi aTunes.

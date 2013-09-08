@@ -40,12 +40,13 @@ __declspec(dllimport)AnsiString GetAQQRadioSong(AnsiString Song);
 __declspec(dllimport)void PrzypiszButton();
 __declspec(dllimport)void UsunButton();
 __declspec(dllimport)void UpdateButton(bool OnOff);
-__declspec(dllimport)bool AllowChangeStatus();
+__declspec(dllimport)bool AllowChangeStatus(bool WithInvisible);
 //---------------------------------------------------------------------------
 AnsiString ePluginDirectory=""; //Zmiena sciezki
 AnsiString opis=""; //Zmienna opisu
 AnsiString opis_TMP=""; //Zmienna opisu (tymczasowa)
 AnsiString opis2=""; //j.w.
+bool BlockInvisibleCheck=1;
 
 int res=0; //Do pobierania nizej wymienionych danych
 AnsiString Samplerate=""; //Samplerate piosenki
@@ -718,6 +719,9 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
   SetOnlyInJabberCheckBox->Checked = Ini->ReadBool("Settings", "SetOnlyInJabber", 0);
   SetOnlyInJabberCheck = Ini->ReadBool("Settings", "SetOnlyInJabber", 0);
 
+  BlockInvisibleCheckBox->Checked = Ini->ReadBool("Settings", "BlockInvisible", 1);
+  BlockInvisibleCheck = Ini->ReadBool("Settings", "BlockInvisible", 1);
+
   EnablePluginOnStartCheckBox->Checked = Ini->ReadBool("Settings", "EnablePluginOnStart", 0);
   
   EnableFastOnOffCheckBox->Checked = Ini->ReadBool("Settings", "EnableFastOnOff", 1);
@@ -738,7 +742,6 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
 
   TimeTurnOffCheckBox->Checked = Ini->ReadBool("Settings", "TimeTurnOff", 0);
   TimeTurnOffCheck = Ini->ReadBool("Settings", "TimeTurnOff", 0);
-  TimeTurnOffLabel->Enabled=TimeTurnOffCheck;
   TimeTurnOffSpin->Enabled=TimeTurnOffCheck;
 
   TurnOffTimer->Interval = 60000*(Ini->ReadInteger("Settings", "TimeTurnOffInterval", 15));
@@ -803,6 +806,9 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
       }
     }
   }
+
+  Ini->WriteBool("Settings", "BlockInvisible", BlockInvisibleCheckBox->Checked);
+  BlockInvisibleCheck = BlockInvisibleCheckBox->Checked;
 
   Ini->WriteBool("Settings", "EnablePluginOnStart", EnablePluginOnStartCheckBox->Checked);
 
@@ -1033,7 +1039,7 @@ void __fastcall TMainForm::SongTimerTimer(TObject *Sender)
   if(opis==opisTMP)
   {
     TurnOffTimer->Enabled=false;
-    if(AllowChangeStatus()==true)
+    if(AllowChangeStatus(BlockInvisibleCheck)==true)
     {
       UstawOpis(opis,!SetOnlyInJabberCheck);
       if(TimeTurnOffCheck==true)
@@ -1531,7 +1537,6 @@ void __fastcall TMainForm::TurnOffTimerTimer(TObject *Sender)
 
 void __fastcall TMainForm::TimeTurnOffCheckBoxChange(TObject *Sender)
 {
-  TimeTurnOffLabel->Enabled=TimeTurnOffCheckBox->Checked;
   TimeTurnOffSpin->Enabled=TimeTurnOffCheckBox->Checked;
 }
 //---------------------------------------------------------------------------
