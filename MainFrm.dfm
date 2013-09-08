@@ -195,14 +195,14 @@ object MainForm: TMainForm
       SkinData.CustomFont = False
       object AutoModeInfoLabel: TsLabel
         Left = 21
-        Top = 6
-        Width = 249
+        Top = 8
+        Width = 252
         Height = 39
         Alignment = taCenter
         Caption = 
-          'Wybierz odtwarzacze kt'#243're ma obs'#322'ugiwa'#263' wtyczka oraz okre'#347'l ich ' +
-          'kolejno'#347#263', przy u'#380'yciu metody przeci'#261'gania, co zdecyduje o ich p' +
-          'riorytecie:'
+          'Wybierz odtwarzacze, kt'#243're ma obs'#322'ugiwa'#263' wtyczka, oraz okre'#347'l ic' +
+          'h kolejno'#347#263' przy u'#380'yciu metody przeci'#261'gania, co zdecyduje o ich ' +
+          'priorytecie:'
         ParentFont = False
         WordWrap = True
         Font.Charset = EASTEUROPE_CHARSET
@@ -210,46 +210,6 @@ object MainForm: TMainForm
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-      end
-      object AutoModeCheckListBox: TsCheckListBox
-        Left = 57
-        Top = 57
-        Width = 176
-        Height = 174
-        BorderStyle = bsSingle
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWhite
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ItemHeight = 13
-        Items.Strings = (
-          'Winamp/AIMP2/KMPlayer'
-          'Foobar2000'
-          'Windows Media Player'
-          'VUPlayer'
-          'XMPlay'
-          'Media Player Classic'
-          'iTunes'
-          'ALSong'
-          'Wtyczki (np. AQQ Radio)'
-          'Screamer Radio'
-          'aTunes'
-          'Songbird'
-          'Last.fm Player')
-        ParentFont = False
-        TabOrder = 2
-        Visible = False
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
-        SkinData.SkinSection = 'EDIT'
       end
       object AutoModeCheckListBoxPreview: TsCheckListBox
         Left = 57
@@ -260,7 +220,7 @@ object MainForm: TMainForm
         DragMode = dmAutomatic
         ItemHeight = 13
         Items.Strings = (
-          'Winamp/AIMP2/KMPlayer'
+          'Winamp/AIMP/KMPlayer'
           'Foobar2000'
           'Windows Media Player'
           'VUPlayer'
@@ -290,7 +250,7 @@ object MainForm: TMainForm
         BoundLabel.MaxWidth = 0
         BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'EDIT'
-        OnClickCheck = AutoModeCheckListBoxPreviewClickCheck
+        OnClickCheck = aAllowApplyExecute
       end
       object ResetButton: TsButton
         Left = 57
@@ -307,6 +267,10 @@ object MainForm: TMainForm
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         292
         268)
@@ -384,35 +348,6 @@ object MainForm: TMainForm
         TabOrder = 6
         Visible = False
         WordWrap = False
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
-        SkinData.SkinSection = 'EDIT'
-      end
-      object StatusMemo: TsMemo
-        Left = 18
-        Top = 35
-        Width = 256
-        Height = 64
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        Lines.Strings = (
-          'Obecnie s'#322'ucham: CC_TUNESTATUS')
-        MaxLength = 512
-        ParentFont = False
-        ScrollBars = ssVertical
-        TabOrder = 7
-        Visible = False
-        Text = 'Obecnie s'#322'ucham: CC_TUNESTATUS'#13#10
         BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -534,6 +469,10 @@ object MainForm: TMainForm
       OnShow = OtherTabSheetShow
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         292
         268)
@@ -684,34 +623,16 @@ object MainForm: TMainForm
       DesignSize = (
         292
         268)
-      object UserTuneSLabel: TsLabel
-        Left = 57
-        Top = 110
-        Width = 175
-        Height = 26
-        Alignment = taCenter
-        Caption = 
-          'Funkcja nie dzia'#322'a z odtwarzaczami domy'#347'lnie obs'#322'ugiwanymi przez' +
-          ' AQQ'
-        Enabled = False
-        ParentFont = False
-        WordWrap = True
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-      end
       object UserTuneLabel: TsLabel
         Left = 23
-        Top = 222
-        Width = 242
+        Top = 204
+        Width = 245
         Height = 39
         Alignment = taCenter
         Caption = 
-          'Obs'#322'uga User Tune (XEP-0118) jest przeznaczona wy'#322#261'cznie dla sie' +
-          'ci Jabber! Funkcja jest niezale'#380'na od aktywacji wtyczki (ustawia' +
-          'nie opisu)!'
+          'Obs'#322'uga User Tune (XEP-0118) jest przeznaczona tylko i wy'#322#261'cznie' +
+          ' dla sieci Jabber. Funkcja jest niezale'#380'na od aktywacji wtyczki ' +
+          '(ustawianie opisu)!'
         Enabled = False
         ParentFont = False
         WordWrap = True
@@ -723,7 +644,7 @@ object MainForm: TMainForm
       end
       object Bevel5: TsBevel
         Left = 9
-        Top = 215
+        Top = 194
         Width = 274
         Height = 4
         Anchors = [akLeft, akTop, akRight]
@@ -731,16 +652,15 @@ object MainForm: TMainForm
       end
       object Bevel4: TsBevel
         Left = 9
-        Top = 68
+        Top = 112
         Width = 274
         Height = 4
         Anchors = [akLeft, akTop, akRight]
         Shape = bsTopLine
-        ExplicitWidth = 271
       end
       object UserTuneSendLabel: TsLabel
-        Left = 165
-        Top = 145
+        Left = 166
+        Top = 81
         Width = 116
         Height = 13
         Caption = 's od rozpocz'#281'cia utworu'
@@ -753,14 +673,12 @@ object MainForm: TMainForm
       end
       object UserTuneNotificationCheckBox: TsCheckBox
         Left = 6
-        Top = 6
-        Width = 194
+        Top = 122
+        Width = 189
         Height = 28
-        Caption = 
-          'Powiadamiaj o aktualnie s'#322'uchanych przez moich znajomych utworac' +
-          'h'
+        Caption = 'Powiadamiaj o aktualnie s'#322'uchanych przez znajomych utworach'
         AutoSize = False
-        TabOrder = 0
+        TabOrder = 3
         OnClick = UserTuneNotificationCheckBoxClick
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -768,8 +686,8 @@ object MainForm: TMainForm
         WordWrap = True
       end
       object UserTuneNotificationSpin: TsSpinEdit
-        Left = 206
-        Top = 40
+        Left = 204
+        Top = 160
         Width = 38
         Height = 21
         Font.Charset = EASTEUROPE_CHARSET
@@ -778,8 +696,8 @@ object MainForm: TMainForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 2
-        Text = '4'
+        TabOrder = 5
+        Text = '6'
         OnChange = aAllowApplyExecute
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Active = True
@@ -795,18 +713,16 @@ object MainForm: TMainForm
         BoundLabel.UseSkinColor = True
         MaxValue = 30
         MinValue = 1
-        Value = 4
+        Value = 6
       end
       object UserTuneSendCheckBox: TsCheckBox
         Left = 6
-        Top = 78
-        Width = 259
+        Top = 6
+        Width = 227
         Height = 28
-        Caption = 
-          'Informuj moich znajomych o aktualnie s'#322'uchanym przeze mnie utwor' +
-          'ze muzycznym'
+        Caption = 'Informuj znajomych o aktualnie s'#322'uchanym utworze muzycznym'
         AutoSize = False
-        TabOrder = 3
+        TabOrder = 0
         OnClick = UserTuneSendCheckBoxClick
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -814,8 +730,8 @@ object MainForm: TMainForm
         WordWrap = True
       end
       object UserTuneSendSpin: TsSpinEdit
-        Left = 121
-        Top = 142
+        Left = 122
+        Top = 78
         Width = 38
         Height = 21
         Font.Charset = EASTEUROPE_CHARSET
@@ -824,13 +740,13 @@ object MainForm: TMainForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 4
+        TabOrder = 2
         Text = '5'
         OnChange = aAllowApplyExecute
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Active = True
         BoundLabel.Caption = 'Wysy'#322'aj informacj'#281' po'
-        BoundLabel.Indent = 2
+        BoundLabel.Indent = 0
         BoundLabel.Font.Charset = EASTEUROPE_CHARSET
         BoundLabel.Font.Color = clWindowText
         BoundLabel.Font.Height = -11
@@ -844,15 +760,15 @@ object MainForm: TMainForm
         Value = 5
       end
       object IgnoreCoreUserTuneCheckBox: TsCheckBox
-        Left = 25
-        Top = 168
-        Width = 235
-        Height = 41
+        Left = 16
+        Top = 40
+        Width = 267
+        Height = 28
         Caption = 
-          'Wymuszaj dzia'#322'anie wtyczki z odtwarzaczami obs'#322'ugiwanymi przez A' +
-          'QQ oraz z wtyczk'#261' AQQ Radio'
+          'Wymuszaj dzia'#322'anie z odtwarzaczami obs'#322'ugiwanymi przez AQQ oraz ' +
+          'z wtyczk'#261' AQQ Radio'
         AutoSize = False
-        TabOrder = 5
+        TabOrder = 1
         OnClick = aAllowApplyExecute
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -861,11 +777,11 @@ object MainForm: TMainForm
       end
       object UserTuneExceptionButton: TsButton
         Left = 206
-        Top = 10
+        Top = 126
         Width = 68
         Height = 20
         Caption = 'Wyj'#261'tki...'
-        TabOrder = 1
+        TabOrder = 4
         OnClick = UserTuneExceptionButtonClick
         SkinData.SkinSection = 'BUTTON'
       end
@@ -894,110 +810,17 @@ object MainForm: TMainForm
     SkinData.SkinSection = 'BUTTON'
   end
   object ActionList: TActionList
-    Left = 99
+    Left = 219
     Top = 320
-    object aWinampDown: TAction
-      Category = 'Players'
-      Caption = 'aWinampDown'
-      OnExecute = aWinampDownExecute
-    end
-    object aFoobarDown: TAction
-      Category = 'Players'
-      Caption = 'aFoobarDown'
-      OnExecute = aFoobarDownExecute
-    end
-    object aCutSongNumber: TAction
-      Category = 'Status'
-      Caption = 'aCutSongNumber'
-      OnExecute = aCutSongNumberExecute
-    end
-    object aWMPDown: TAction
-      Category = 'Players'
-      Caption = 'aWMPDown'
-      OnExecute = aWMPDownExecute
-    end
-    object aVUPlayerDown: TAction
-      Category = 'Players'
-      Caption = 'aVUPlayerDown'
-      OnExecute = aVUPlayerDownExecute
-    end
-    object aXMPlayDown: TAction
-      Category = 'Players'
-      Caption = 'aXMPlayDown'
-      OnExecute = aXMPlayDownExecute
-    end
-    object aMPCDown: TAction
-      Category = 'Players'
-      Caption = 'aMPCDown'
-      OnExecute = aMPCDownExecute
-    end
-    object aiTunesDown: TAction
-      Category = 'Players'
-      Caption = 'aiTunesDown'
-      OnExecute = aiTunesDownExecute
-    end
-    object aALSongDown: TAction
-      Category = 'Players'
-      Caption = 'aALSongDown'
-      OnExecute = aALSongDownExecute
-    end
-    object aPluginAQQRadioDown: TAction
-      Category = 'Players'
-      Caption = 'aPluginAQQRadioDown'
-      OnExecute = aPluginAQQRadioDownExecute
-    end
-    object aScreamerRadioDown: TAction
-      Category = 'Players'
-      Caption = 'aScreamerRadioDown'
-      OnExecute = aScreamerRadioDownExecute
-    end
-    object aCutWWW: TAction
-      Category = 'Status'
-      Caption = 'aCutWWW'
-      OnExecute = aCutWWWExecute
-    end
-    object aCutWWWUserTune: TAction
-      Category = 'Status'
-      Caption = 'aCutWWWUserTune'
-      OnExecute = aCutWWWUserTuneExecute
-    end
-    object aaTunesDown: TAction
-      Category = 'Players'
-      Caption = 'aaTunesDown'
-      OnExecute = aaTunesDownExecute
-    end
-    object aSongbirdDown: TAction
-      Category = 'Players'
-      Caption = 'aSongbirdDown'
-      OnExecute = aSongbirdDownExecute
-    end
-    object aLastFMDown: TAction
-      Category = 'Players'
-      Caption = 'aLastFMDown'
-      OnExecute = aLastFMDownExecute
-    end
-    object aAutoMode: TAction
-      Category = 'Players'
-      Caption = 'aAutoMode'
-      OnExecute = aAutoModeExecute
-    end
-    object aSetStatusLooks: TAction
-      Category = 'Status'
-      Caption = 'aSetStatusLooks'
-      OnExecute = aSetStatusLooksExecute
-    end
     object aLoadSettings: TAction
-      Category = 'Settings'
       Caption = 'aLoadSettings'
       OnExecute = aLoadSettingsExecute
     end
     object aSaveSettings: TAction
-      Category = 'Settings'
       Caption = 'aSaveSettings'
       OnExecute = aSaveSettingsExecute
     end
     object aResetSettings: TAction
-      Category = 'Settings'
       Caption = 'Resetuj'
       OnExecute = aResetSettingsExecute
     end
@@ -1006,112 +829,47 @@ object MainForm: TMainForm
       ShortCut = 27
       OnExecute = aExitExecute
     end
-    object aUserTuneAutoMode: TAction
-      Category = 'Players'
-      Caption = 'aUserTuneAutoMode'
-      OnExecute = aUserTuneAutoModeExecute
-    end
     object aSelectAll: TAction
       Caption = 'aSelectAll'
       ShortCut = 16449
       OnExecute = aSelectAllExecute
     end
     object aAllowApply: TAction
-      Category = 'Settings'
       Caption = 'aAllowApply'
       OnExecute = aAllowApplyExecute
     end
-    object aPageControlSheetChange: TAction
-      Category = 'Settings'
-      Caption = 'aPageControlSheetChange'
-      ShortCut = 16393
-      OnExecute = aPageControlSheetChangeExecute
-    end
-  end
-  object AutoModeTimer: TTimer
-    Enabled = False
-    OnTimer = AutoModeTimerTimer
-    Left = 3
-    Top = 288
-  end
-  object SetStatusTimer: TTimer
-    Enabled = False
-    Interval = 5000
-    OnTimer = SetStatusTimerTimer
-    Left = 35
-    Top = 288
-  end
-  object AutoTurnOffTimer: TTimer
-    Enabled = False
-    Interval = 900000
-    OnTimer = AutoTurnOffTimerTimer
-    Left = 67
-    Top = 288
   end
   object FoobarPopupMenu: TPopupMenu
-    Left = 272
-    Top = 120
+    Left = 280
+    Top = 256
     object FoobarDownload: TMenuItem
       Caption = 'Pobierz wtyczk'#281
       OnClick = FoobarDownloadClick
     end
   end
   object WMPPopupMenu: TPopupMenu
-    Left = 272
-    Top = 152
+    Left = 280
+    Top = 192
     object WMPDownload: TMenuItem
       Caption = 'Pobierz plugin'
       OnClick = WMPDownloadClick
     end
   end
   object iTunesPopupMenu: TPopupMenu
-    Left = 272
-    Top = 184
+    Left = 280
+    Top = 224
     object iTunesDownload: TMenuItem
       Caption = 'Pobierz plugin'
       OnClick = iTunesDownloadClick
     end
   end
   object SongbirdPopupMenu: TPopupMenu
-    Left = 272
-    Top = 216
+    Left = 280
+    Top = 288
     object SongbirdDownload: TMenuItem
       Caption = 'Pobierz rozszerzenie'
       OnClick = SongbirdDownloadClick
     end
-  end
-  object UserTuneTimer: TTimer
-    Enabled = False
-    OnTimer = UserTuneTimerTimer
-    Left = 3
-    Top = 256
-  end
-  object SetUserTuneTimer: TTimer
-    Enabled = False
-    Interval = 5000
-    OnTimer = SetUserTuneTimerTimer
-    Left = 35
-    Top = 256
-  end
-  object AllowUserTuneTimer: TTimer
-    Enabled = False
-    Interval = 20000
-    OnTimer = AllowUserTuneTimerTimer
-    Left = 67
-    Top = 256
-  end
-  object GetStatusTimer: TTimer
-    Enabled = False
-    Interval = 100
-    OnTimer = GetStatusTimerTimer
-    Left = 3
-    Top = 224
-  end
-  object StateChangeTimer: TTimer
-    Enabled = False
-    OnTimer = StateChangeTimerTimer
-    Left = 32
-    Top = 224
   end
   object sSkinManager: TsSkinManager
     ExtendedBorders = True
@@ -1146,6 +904,7 @@ object MainForm: TMainForm
     ThirdParty.ThirdSpeedButton = ' '
     ThirdParty.ThirdScrollControl = ' '
     ThirdParty.ThirdUpDown = ' '
+    ThirdParty.ThirdScrollBar = ' '
     Left = 280
     Top = 320
   end

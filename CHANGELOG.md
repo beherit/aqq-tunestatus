@@ -1,3 +1,12 @@
+2.3.0.0
+-----
+* Wtyczka posiada własną ikonę pokazywaną w ustawieniach komunikatora na liście wtyczek.
+* Przepisanie wtyczki pod kompilator Embarcadero C++ Builder XE3.
+* Poprawnie obsługi odtwarzacza iTunes, Screamer Radio, aTunes, Songbird oraz Last.fm Player.
+* Spora optymalizacja kodu (m.in. dynamiczne tworzenie timerów, zredukowanie zmiennych globalnych, przeniesienie całego mechanizmu z formy do rdzenia wtyczki).
+* Aktualizacja komponentów AlphaControls do najnowszej dostępnej wersji (7.70).
+* Drobne poprawki kosmetyczne na formie ustawień.
+
 2.2.1.0
 -----
 * Obsługa natywnego stylu Windows (wyłączone skórkowanie okien wtyczki).
