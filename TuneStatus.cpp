@@ -43,6 +43,7 @@ int plugin_icon_idx_on;
 int EnableFastOnOff;
 int EnablePluginOnStart;
 
+//Pobieranie aktualnego opisu
 AnsiString PobierzOpis(AnsiString opis)
 {
   TPluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&TPluginStateChange),0);
@@ -52,6 +53,7 @@ AnsiString PobierzOpis(AnsiString opis)
   return opis;
 }
 
+//Serwis szybkiego wlaczenia/wylaczenia wtyczki
 int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
 {
   if (handle==NULL)
@@ -137,7 +139,7 @@ extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
 {
   TPluginInfo.cbSize = sizeof(PluginInfo);
   TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,3,2);
+  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,3,4);
   TPluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -163,6 +165,7 @@ void PrzypiszSkrot()
   TPluginLink.CreateServiceFunction(L"serwis_TuneStatusService",TuneStatusService);
 }
 
+//Przypisywanie buttonu
 void PrzypiszButton()
 {
   TPluginActionButton.cbSize = sizeof(PluginAction);
@@ -180,6 +183,7 @@ void PrzypiszButton()
   EnableFastOnOff=1;
 }
 
+//Usuwanie buttonu
 void UsunButton()
 {
   TPluginLink.DestroyServiceFunction(TuneStatus_FastOnOff);
@@ -188,6 +192,7 @@ void UsunButton()
   EnableFastOnOff=0;
 }
 
+//Do wypakowywania RES
 void ExtractExe(unsigned short ID, AnsiString FileName)
 {
   HRSRC rsrc = FindResource(HInstance, MAKEINTRESOURCE(ID), RT_RCDATA);
@@ -209,12 +214,25 @@ void ExtractExe(unsigned short ID, AnsiString FileName)
   Ms->Free();
 }
 
+//OnLoad plugin
 extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
 {
   TPluginLink = *Link;
 
+  //sciezka katalogu prywatnego uzytkownika
   AnsiString eDir = (wchar_t*)(TPluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,(WPARAM)(hInstance),0));
   eDir = StringReplace(eDir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+
+  if(!DirectoryExists(eDir + "\\\\TuneStatus"))
+  {
+    CreateDir(eDir + "\\\\TuneStatus");
+    if(FileExists(eDir + "\\\\TuneStatusOn.png"))
+     DeleteFile(eDir + "\\\\TuneStatusOn.png");
+    if(FileExists(eDir + "\\\\TuneStatusOff.png"))
+     DeleteFile(eDir + "\\\\TuneStatusOff.png");
+    if(FileExists(eDir + "\\\\TuneStatus.dat"))
+     MoveFile((eDir + "\\\\TuneStatus.dat").c_str(), (eDir + "\\\\TuneStatus\\\\TuneStatus.ini").c_str());
+  }
 
   //Wypakowanie ikon
   ExtractExe(ID_PNG1,"TuneStatus.png");
@@ -225,22 +243,18 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
   DeleteFile("TuneStatus.png");
 
   //Wypakowanie ikon
-  if(!FileExists(eDir + "\\TuneStatusOff.png"))
-   ExtractExe(ID_PNG2,eDir + "\\TuneStatusOff.png");
+  if(!FileExists(eDir + "\\\\TuneStatus\\\\TuneStatusOff.png"))
+   ExtractExe(ID_PNG2,eDir + "\\\\TuneStatus\\\TuneStatusOff.png");
   //Przypisanie ikony
-  plugin_icon_path = AnsiTowchar_t(eDir +"\\TuneStatusOff.png");
+  plugin_icon_path = AnsiTowchar_t(eDir +"\\\\TuneStatus\\\TuneStatusOff.png");
   plugin_icon_idx_off=TPluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(plugin_icon_path));
-  //Usuniecie ikony
-  //DeleteFile("TuneStatusOff.png");
 
   //Wypakowanie ikon
-  if(!FileExists(eDir + "\\TuneStatusOn.png"))
-   ExtractExe(ID_PNG3,eDir + "\\TuneStatusOn.png");
+  if(!FileExists(eDir + "\\\\TuneStatus\\\TuneStatusOn.png"))
+   ExtractExe(ID_PNG3,eDir + "\\\\TuneStatus\\\TuneStatusOn.png");
   //Przypisanie ikony
-  plugin_icon_path = AnsiTowchar_t(eDir +"\\TuneStatusOn.png");
+  plugin_icon_path = AnsiTowchar_t(eDir +"\\\\TuneStatus\\\TuneStatusOn.png");
   plugin_icon_idx_on=TPluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(plugin_icon_path));
-  //Usuniecie ikony
-  //DeleteFile("TuneStatusOn.png");
 
   //Przyspisanie przycisku
   PrzypiszSkrot();
@@ -248,7 +262,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
   TPluginLink.HookEvent(AQQ_WINDOW_SETNOTE_CLOSE, OnSetNoteClose);
 
   //Odczyt ustawien
-  TIniFile *Ini = new TIniFile(eDir + "\\\\TuneStatus.dat");
+  TIniFile *Ini = new TIniFile(eDir + "\\\\TuneStatus\\\\\TuneStatus.ini");
   EnablePluginOnStart = Ini->ReadInteger("Settings", "EnablePluginOnStart", 0);
   EnableFastOnOff = Ini->ReadInteger("Settings", "EnableFastOnOff", 0);
   delete Ini;
@@ -271,6 +285,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
   return 0;
 }
 
+//Otwieranie formy przez ustawienia
 extern "C" int __declspec(dllexport)__stdcall Settings()
 {
   if (handle==NULL)
@@ -285,13 +300,15 @@ extern "C" int __declspec(dllexport)__stdcall Settings()
   return 0;
 }
 
+//Pobieranie sciezki katalogu prywatnego uzytkownika
 AnsiString GetPluginPath(AnsiString Dir)
 {
   Dir = (wchar_t*)(TPluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,(WPARAM)(hInstance),0));
   Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
   return Dir;
 }
- 
+
+//Ustawianie opisu
 void UstawOpis(AnsiString opis, bool force)
 {
   TPluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&TPluginStateChange),0);
@@ -303,6 +320,7 @@ void UstawOpis(AnsiString opis, bool force)
   TPluginLink.CallService(AQQ_SYSTEM_SETSHOWANDSTATUS,0,(LPARAM)(&TPluginStateChange));
 }
 
+//OnUnload plugin
 extern "C" int __declspec(dllexport) __stdcall Unload()
 {
   if (handle!=NULL)
@@ -325,6 +343,7 @@ extern "C" int __declspec(dllexport) __stdcall Unload()
   return 0;
 }
 
+//Do aktualizowania grafiki buttonu
 void UpdateButton(bool OnOff)
 {
   if(OnOff==true)
