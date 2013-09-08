@@ -223,6 +223,8 @@ object MainForm: TMainForm
           'Winamp/AIMP/KMPlayer'
           'Foobar2000'
           'Windows Media Player'
+          'VLC media player'
+          'Spotify'
           'VUPlayer'
           'XMPlay'
           'Media Player Classic'
@@ -267,10 +269,6 @@ object MainForm: TMainForm
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         292
         268)
@@ -469,10 +467,6 @@ object MainForm: TMainForm
       OnShow = OtherTabSheetShow
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         292
         268)
@@ -664,12 +658,6 @@ object MainForm: TMainForm
         Width = 116
         Height = 13
         Caption = 's od rozpocz'#281'cia utworu'
-        ParentFont = False
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
       end
       object UserTuneNotificationCheckBox: TsCheckBox
         Left = 6
@@ -690,12 +678,6 @@ object MainForm: TMainForm
         Top = 160
         Width = 38
         Height = 21
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
         TabOrder = 5
         Text = '6'
         OnChange = aAllowApplyExecute
@@ -734,12 +716,6 @@ object MainForm: TMainForm
         Top = 78
         Width = 38
         Height = 21
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
         TabOrder = 2
         Text = '5'
         OnChange = aAllowApplyExecute

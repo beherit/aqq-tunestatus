@@ -1,4 +1,4 @@
-PLUGIN_RES RCDATA "Data\\TuneStatus.dll.png"
-FASTACCESS RCDATA "Data\\TuneStatus.png"
-FASTACCESS_OFF RCDATA "Data\\TuneStatusOff.png"
-FASTACCESS_ON RCDATA "Data\\TuneStatusOn.png"
+SHARED DATA "Data\\TuneStatus.dll.png"
+FASTACCESS DATA "Data\\TuneStatus.png"
+FASTACCESS_OFF DATA "Data\\TuneStatusOff.png"
+FASTACCESS_ON DATA "Data\\TuneStatusOn.png"

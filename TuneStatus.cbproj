@@ -1,12 +1,12 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{FC272496-2E7D-4F11-8306-2925D7CF50C5}</ProjectGuid>
-        <ProjectVersion>14.3</ProjectVersion>
+        <ProjectGuid>{DD2C3D55-2446-4482-888A-8F055543B64A}</ProjectGuid>
+        <ProjectVersion>14.4</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
-        <TargetedPlatforms>1</TargetedPlatforms>
+        <TargetedPlatforms>3</TargetedPlatforms>
         <AppType>Library</AppType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -17,6 +17,11 @@
         <CfgParent>Base</CfgParent>
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
+        <Base_Win64>true</Base_Win64>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
         <Cfg_1>true</Cfg_1>
         <CfgParent>Base</CfgParent>
@@ -24,6 +29,12 @@
     </PropertyGroup>
     <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_1)'=='true') or '$(Cfg_1_Win32)'!=''">
         <Cfg_1_Win32>true</Cfg_1_Win32>
+        <CfgParent>Cfg_1</CfgParent>
+        <Cfg_1>true</Cfg_1>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Cfg_1)'=='true') or '$(Cfg_1_Win64)'!=''">
+        <Cfg_1_Win64>true</Cfg_1_Win64>
         <CfgParent>Cfg_1</CfgParent>
         <Cfg_1>true</Cfg_1>
         <Base>true</Base>
@@ -39,31 +50,48 @@
         <Cfg_2>true</Cfg_2>
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win64)'!=''">
+        <Cfg_2_Win64>true</Cfg_2_Win64>
+        <CfgParent>Cfg_2</CfgParent>
+        <Cfg_2>true</Cfg_2>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <VerInfo_Locale>1045</VerInfo_Locale>
-        <ProjectType>VCppStyleDll</ProjectType>
-        <VerInfo_Keys>FileVersion=1.0.0.0;InternalName=;LegalTrademarks=;OriginalFilename=;ProductName=TuneStatus;ProductVersion=2.0.0.0;Comments=;LegalCopyright=Krzysztof Grochocki (Beherit)</VerInfo_Keys>
         <_TCHARMapping>wchar_t</_TCHARMapping>
-        <ILINK_GenerateImportLibrary>true</ILINK_GenerateImportLibrary>
-        <Multithreaded>true</Multithreaded>
-        <Manifest_File>None</Manifest_File>
+        <AllPackageLibs>rtl.lib;vcl.lib;IndyProtocols.lib;IndyCore.lib;IndySystem.lib;acntXE3_R.lib;vclimg.lib;vclx.lib</AllPackageLibs>
+        <ProjectType>VCppStyleDll</ProjectType>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <AllPackageLibs>rtl.lib;vcl.lib;acntBuilderXE3_R.lib;vclimg.lib;vclx.lib;IndyProtocols.lib;IndyCore.lib;IndySystem.lib</AllPackageLibs>
+        <Multithreaded>true</Multithreaded>
+        <VerInfo_Keys>FileVersion=2.3.0.0;InternalName=;LegalTrademarks=;OriginalFilename=;ProductName=TuneStatus;ProductVersion=2.0.0.0;Comments=;LegalCopyright=Krzysztof Grochocki (Beherit)</VerInfo_Keys>
+        <VerInfo_Locale>1045</VerInfo_Locale>
+        <Manifest_File>None</Manifest_File>
+        <ILINK_GenerateImportLibrary>true</ILINK_GenerateImportLibrary>
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
         <IntermediateOutputDir>.\$(Platform)\$(Config)</IntermediateOutputDir>
         <FinalOutputDir>.\$(Platform)\$(Config)</FinalOutputDir>
         <BCC_wpar>false</BCC_wpar>
         <BCC_OptimizeForSpeed>true</BCC_OptimizeForSpeed>
         <BCC_ExtendedErrorInfo>true</BCC_ExtendedErrorInfo>
+        <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\release\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <IncludePath>$(BDSINCLUDE)\windows\vcl;$(IncludePath)</IncludePath>
-        <VerInfo_MinorVer>3</VerInfo_MinorVer>
-        <VerInfo_MajorVer>2</VerInfo_MajorVer>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_MinorVer>4</VerInfo_MinorVer>
+        <VerInfo_Keys>FileVersion=2.4.0.0;InternalName=;LegalTrademarks=;OriginalFilename=;ProductName=TuneStatus;ProductVersion=2.0.0.0;Comments=;LegalCopyright=Krzysztof Grochocki (Beherit)</VerInfo_Keys>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
-        <PackageImports>acntBuilderXE3;bindcompfmx;vcldbx;fmx;rtl;IndySystem;acntBuilderXE3_R;dbrtl;TeeDB;bindcomp;inetdb;inetdbbde;vclib;DBXInterBaseDriver;Tee;DataSnapCommon;xmlrtl;ibxpress;DbxCommonDriver;vclimg;IndyProtocols;dbxcds;MetropolisUILiveTile;vclactnband;bindengine;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;FMXTee;TeeUI;vclie;vcltouch;bcbsmp;websnap;CustomIPTransport;vclribbon;dsnap;IndyIPServer;fmxase;vcl;IndyCore;IndyIPCommon;dsnapcon;FmxTeeUI;inet;fmxobj;vclx;inetdbxpress;webdsnap;fmxdae;bdertl;adortl;dbexpress;bcbie;IndyIPClient;$(PackageImports)</PackageImports>
-        <VerInfo_Keys>FileVersion=2.3.0.0;InternalName=;LegalTrademarks=;OriginalFilename=;ProductName=TuneStatus;ProductVersion=2.0.0.0;Comments=;LegalCopyright=Krzysztof Grochocki (Beherit)</VerInfo_Keys>
+        <VerInfo_MajorVer>2</VerInfo_MajorVer>
+        <PackageImports>bindcompfmx;vcldbx;acntXE3_R;fmx;rtl;IndySystem;dbrtl;TeeDB;bindcomp;inetdb;inetdbbde;vclib;DBXInterBaseDriver;Tee;DataSnapCommon;dclZipForged17;xmlrtl;ibxpress;DbxCommonDriver;vclimg;IndyProtocols;dbxcds;MetropolisUILiveTile;vclactnband;bindengine;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;FMXTee;TeeUI;vclie;vcltouch;bcbsmp;websnap;CustomIPTransport;vclribbon;VclSmp;vclZipForged17;IndyIPServer;dsnap;fmxase;vcl;IndyCore;IndyIPCommon;dsnapcon;FmxTeeUI;inet;fmxobj;vclx;inetdbxpress;webdsnap;fmxdae;bdertl;dbexpress;bcbie;adortl;IndyIPClient;$(PackageImports)</PackageImports>
+        <IncludePath>$(BDSINCLUDE)\windows\vcl;$(IncludePath)</IncludePath>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win64)'!=''">
+        <VerInfo_MinorVer>4</VerInfo_MinorVer>
+        <VerInfo_Keys>FileVersion=2.4.0.0;InternalName=;LegalTrademarks=;OriginalFilename=;ProductName=TuneStatus;ProductVersion=2.0.0.0;Comments=;LegalCopyright=Krzysztof Grochocki (Beherit)</VerInfo_Keys>
+        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
+        <VerInfo_MajorVer>2</VerInfo_MajorVer>
+        <BCC_PCHName_Clang>TuneStatusPCH.h</BCC_PCHName_Clang>
+        <PackageImports>bindcompfmx;acntXE3_R;fmx;rtl;IndySystem;dbrtl;bindcomp;inetdb;DBXInterBaseDriver;DataSnapCommon;xmlrtl;DbxCommonDriver;vclimg;IndyProtocols;dbxcds;vclactnband;bindengine;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;vclie;vcltouch;websnap;CustomIPTransport;VclSmp;IndyIPServer;dsnap;fmxase;vcl;IndyCore;IndyIPCommon;dsnapcon;inet;fmxobj;vclx;inetdbxpress;webdsnap;fmxdae;dbexpress;IndyIPClient;$(PackageImports)</PackageImports>
+        <IncludePath>$(BDSINCLUDE)\windows\vcl;$(IncludePath)</IncludePath>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <BCC_OptimizeForSpeed>false</BCC_OptimizeForSpeed>
@@ -85,40 +113,55 @@
         <BCC_DisableSpellChecking>true</BCC_DisableSpellChecking>
         <CLANG_UnwindTables>true</CLANG_UnwindTables>
         <ILINK_LibraryPath>$(BDSLIB)\$(PLATFORM)\debug;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\debug\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_MinorVer>3</VerInfo_MinorVer>
-        <VerInfo_MajorVer>2</VerInfo_MajorVer>
-        <LinkPackageImports>rtl.bpi;vcl.bpi</LinkPackageImports>
-        <VerInfo_Keys>FileVersion=2.3.0.0;InternalName=;LegalTrademarks=;OriginalFilename=;ProductName=TuneStatus;ProductVersion=2.0.0.0;Comments=;LegalCopyright=Krzysztof Grochocki (Beherit)</VerInfo_Keys>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_MajorVer>2</VerInfo_MajorVer>
+        <LinkPackageImports>rtl.bpi;vcl.bpi;IndyProtocols.bpi;IndyCore.bpi;IndySystem.bpi</LinkPackageImports>
+        <VerInfo_Keys>FileVersion=2.4.0.0;InternalName=;LegalTrademarks=;OriginalFilename=;ProductName=TuneStatus;ProductVersion=2.0.0.0;Comments=;LegalCopyright=Krzysztof Grochocki (Beherit)</VerInfo_Keys>
+        <VerInfo_MinorVer>4</VerInfo_MinorVer>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_MajorVer>2</VerInfo_MajorVer>
+        <VerInfo_MinorVer>4</VerInfo_MinorVer>
+        <VerInfo_Keys>FileVersion=2.4.0.0;InternalName=;LegalTrademarks=;OriginalFilename=;ProductName=TuneStatus;ProductVersion=2.0.0.0;Comments=;LegalCopyright=Krzysztof Grochocki (Beherit)</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <Defines>NDEBUG;$(Defines)</Defines>
         <TASM_Debugging>None</TASM_Debugging>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <VerInfo_MinorVer>3</VerInfo_MinorVer>
+        <VerInfo_Keys>FileVersion=2.4.0.0;InternalName=;LegalTrademarks=;OriginalFilename=;ProductName=TuneStatus;ProductVersion=2.0.0.0;Comments=;LegalCopyright=Krzysztof Grochocki (Beherit)</VerInfo_Keys>
+        <LinkPackageStatics>rtl.lib;vcl.lib;IndyProtocols.lib;IndyCore.lib;IndySystem.lib;acntXE3_R.lib;vclimg.lib;vclx.lib</LinkPackageStatics>
+        <VerInfo_MinorVer>4</VerInfo_MinorVer>
         <VerInfo_MajorVer>2</VerInfo_MajorVer>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <LinkPackageStatics>rtl.lib;vcl.lib;acntBuilderXE3_R.lib;vclimg.lib;vclx.lib;IndyProtocols.lib;IndyCore.lib;IndySystem.lib</LinkPackageStatics>
-        <VerInfo_Keys>FileVersion=2.3.0.0;InternalName=;LegalTrademarks=;OriginalFilename=;ProductName=TuneStatus;ProductVersion=2.0.0.0;Comments=;LegalCopyright=Krzysztof Grochocki (Beherit)</VerInfo_Keys>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_MinorVer>4</VerInfo_MinorVer>
+        <VerInfo_MajorVer>2</VerInfo_MajorVer>
+        <VerInfo_Keys>FileVersion=2.4.0.0;InternalName=;LegalTrademarks=;OriginalFilename=;ProductName=TuneStatus;ProductVersion=2.0.0.0;Comments=;LegalCopyright=Krzysztof Grochocki (Beherit)</VerInfo_Keys>
+        <BCC_PCHName_Clang>TuneStatusPCH.h</BCC_PCHName_Clang>
+        <LinkPackageStatics>rtl.lib;vcl.lib;IndyProtocols.lib;IndyCore.lib;IndySystem.lib;acntXE3_R.lib;vclimg.lib;vclx.lib</LinkPackageStatics>
     </PropertyGroup>
     <ItemGroup>
         <RcItem Include="Data\TuneStatus.dll.png">
-            <ResourceType>RCDATA</ResourceType>
-            <ResourceId>PLUGIN_RES</ResourceId>
+            <ResourceType>DATA</ResourceType>
+            <ResourceId>SHARED</ResourceId>
         </RcItem>
         <RcItem Include="Data\TuneStatus.png">
-            <ResourceType>RCDATA</ResourceType>
+            <ResourceType>DATA</ResourceType>
             <ResourceId>FASTACCESS</ResourceId>
         </RcItem>
         <RcItem Include="Data\TuneStatusOff.png">
-            <ResourceType>RCDATA</ResourceType>
+            <ResourceType>DATA</ResourceType>
             <ResourceId>FASTACCESS_OFF</ResourceId>
         </RcItem>
         <RcItem Include="Data\TuneStatusOn.png">
-            <ResourceType>RCDATA</ResourceType>
+            <ResourceType>DATA</ResourceType>
             <ResourceId>FASTACCESS_ON</ResourceId>
         </RcItem>
         <CppCompile Include="MainFrm.cpp">
@@ -129,7 +172,7 @@
         <CppCompile Include="TuneStatus.cpp">
             <BuildOrder>1</BuildOrder>
         </CppCompile>
-        <PCHCompile Include="TuneStatus.h">
+        <PCHCompile Include="TuneStatusPCH.h">
             <BuildOrder>0</BuildOrder>
         </PCHCompile>
         <CppCompile Include="UserTuneExceptionFrm.cpp">
@@ -191,30 +234,22 @@
                     <VersionInfoKeys Name="CFBundleAllowMixedLocalizations"/>
                     <VersionInfoKeys Name="CFBundleExecutable"/>
                 </VersionInfoKeys>
-                <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclbindcompfmx170.bpl">Embarcadero LiveBindings Components FireMonkey</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclbindcompvcl170.bpl">Embarcadero LiveBindings Components VCL</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclbde170.bpl">Embarcadero BDE DB Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclib170.bpl">Embarcadero InterBase Express Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclado170.bpl">Embarcadero ADO DB Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclwebsnap170.bpl">Embarcadero WebSnap Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclsoap170.bpl">Embarcadero SOAP Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclbindcompdbx170.bpl">LiveBindings Expression Components DbExpress</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcldbxcds170.bpl">Embarcadero SimpleDataset Component (DBX)</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclFMXtee9170.bpl">TeeChart Lite FMX Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcltee9170.bpl">TeeChart Standard VCL Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k170.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\bcbofficexp170.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
-                </Excluded_Packages>
                 <ProjectProperties>
                     <ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
                     <ProjectProperties Name="ManagePaths">True</ProjectProperties>
                     <ProjectProperties Name="VerifyPackages">True</ProjectProperties>
                 </ProjectProperties>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k170.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcbofficexp170.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k170.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp170.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                </Excluded_Packages>
             </CPlusPlusBuilder.Personality>
             <Deployment/>
             <Platforms>
                 <Platform value="Win32">True</Platform>
+                <Platform value="Win64">True</Platform>
             </Platforms>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
