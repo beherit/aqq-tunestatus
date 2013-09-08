@@ -54,6 +54,7 @@ bool EnablePluginOnStart;
 
 //Do AQQ Radio
 AnsiString AQQRadioSong;
+PPluginSong Song;
 
 //Pobieranie aktualnego opisu
 AnsiString PobierzOpis(AnsiString opis)
@@ -148,10 +149,9 @@ int __stdcall TuneStatusService (WPARAM, LPARAM)
 //Notyfikacja AQQ Radio
 int __stdcall OnCurrentSong (WPARAM wParam, LPARAM lParam)
 {
-  TPluginSong *Song = (TPluginSong*)lParam;
+  Song = (PPluginSong)lParam;
   AQQRadioSong = (wchar_t*)(Song->Title);
-  int Length = AQQRadioSong.Length();
-  if(Length!=0)
+  if(AQQRadioSong.Length()!=0)
     return 0;
   else
     return 1;
@@ -170,7 +170,7 @@ int __stdcall OnSetNote(WPARAM wParam, LPARAM lParam)
 {
   if(handle!=NULL)
   {
-    TPluginStateChange *StateChange = (TPluginStateChange*)lParam;
+    PPluginStateChange StateChange = (PPluginStateChange)lParam;
     AnsiString nowy_opis = (wchar_t*)(StateChange->Status);
 
     if((nowy_opis!=handle->opis_pocz)&&(nowy_opis!=handle->opisTMP))
@@ -185,7 +185,7 @@ int __stdcall OnSetNote(WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 
 //Program
-extern "C" __declspec(dllexport) TPluginInfo* __stdcall AQQPluginInfo(DWORD AQQVersion)
+extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVersion)
 {
   //Sprawdzanie wersji AQQ
   /*if (CompareVersion(AQQVersion,PLUGIN_MAKE_VERSION(2,0,4,69))<0)
@@ -199,7 +199,7 @@ extern "C" __declspec(dllexport) TPluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
   }*/
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,16);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,18);
   PluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   PluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   PluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -280,7 +280,7 @@ void ExtractExe(unsigned short ID, AnsiString FileName)
 //---------------------------------------------------------------------------
 
 //OnLoad plugin
-extern "C" int __declspec(dllexport) __stdcall Load(TPluginLink *Link)
+extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
 {
   PluginLink = *Link;
 
