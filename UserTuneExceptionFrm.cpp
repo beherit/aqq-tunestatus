@@ -9,7 +9,6 @@
 #pragma link "sButton"
 #pragma link "sLabel"
 #pragma link "sListBox"
-#pragma link "sSkinManager"
 #pragma link "sSkinProvider"
 #pragma link "sTabControl"
 #pragma resource "*.dfm"
@@ -27,6 +26,47 @@ __fastcall TUserTuneExceptionForm::TUserTuneExceptionForm(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TUserTuneExceptionForm::FormCreate(TObject *Sender)
+{
+  if(ChkSkinEnabled())
+  {
+	UnicodeString ThemeSkinDir = GetThemeSkinDir();
+	if((FileExists(ThemeSkinDir + "\\\\Skin.asz"))&&(!ChkNativeEnabled()))
+	{
+	  //ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
+	  //sSkinManager->SkinDirectory = ThemeSkinDir;
+	  //sSkinManager->SkinName = "Skin.asz";
+	  sSkinProvider->DrawNonClientArea = true;
+	  //sSkinManager->Active = true;
+	}
+	//else
+	// sSkinManager->Active = false;
+  }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TUserTuneExceptionForm::FormShow(TObject *Sender)
+{
+  //Skorkowanie okna
+  if(!ChkSkinEnabled())
+  {
+	UnicodeString ThemeSkinDir = GetThemeSkinDir();
+	if((FileExists(ThemeSkinDir + "\\\\Skin.asz"))&&(!ChkNativeEnabled()))
+	{
+	  //ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
+	  //sSkinManager->SkinDirectory = ThemeSkinDir;
+	  //sSkinManager->SkinName = "Skin.asz";
+	  sSkinProvider->DrawNonClientArea = false;
+	  //sSkinManager->Active = true;
+	}
+	//else
+	// sSkinManager->Active = false;
+  }
+  //Odczyt ustawien
+  aLoadSettings->Execute();
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TUserTuneExceptionForm::aExitExecute(TObject *Sender)
 {
   Close();
@@ -35,8 +75,11 @@ void __fastcall TUserTuneExceptionForm::aExitExecute(TObject *Sender)
 
 void __fastcall TUserTuneExceptionForm::SaveButtonClick(TObject *Sender)
 {
+  //Zapis ustawien
   aSaveSettings->Execute();
+  //Odswiezenie wyjatkow w rdzeniu wtyczki
   RefreshUserTuneException();
+  //Zamkniecie formy
   Close();
 }
 //---------------------------------------------------------------------------
@@ -66,13 +109,16 @@ void __fastcall TUserTuneExceptionForm::JIDListBoxClick(TObject *Sender)
 
 void __fastcall TUserTuneExceptionForm::DeleteButtonClick(TObject *Sender)
 {
+  //Usuniecie zaznaczonego elementu
   JIDListBox->DeleteSelected();
+  //Wylaczenie przycisku
   DeleteButton->Enabled = false;
+  //Wlaczenie mozlisci zapisu ustawien
   SaveButton->Enabled = true;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TUserTuneExceptionForm::aReadSettingsExecute(TObject *Sender)
+void __fastcall TUserTuneExceptionForm::aLoadSettingsExecute(TObject *Sender)
 {
   JIDListBox->Clear();
   TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
@@ -94,46 +140,11 @@ void __fastcall TUserTuneExceptionForm::aReadSettingsExecute(TObject *Sender)
 
 void __fastcall TUserTuneExceptionForm::aSaveSettingsExecute(TObject *Sender)
 {
-  UnicodeString ExceptionPluginDirectory = GetPluginUserDir();
-
-  TIniFile *Ini = new TIniFile(ExceptionPluginDirectory + "\\\\TuneStatus\\\\TuneStatus.ini");
+  TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
   Ini->EraseSection("UserTuneEx");
   if(JIDListBox->Count!=0)
    for(int Count=0;Count<JIDListBox->Count;Count++)
 	Ini->WriteString("UserTuneEx",("JID"+IntToStr(Count+1)),JIDListBox->Items->Strings[Count]);
   delete Ini;
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TUserTuneExceptionForm::CancelButtonClick(TObject *Sender)
-{
-  Close();
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TUserTuneExceptionForm::FormCreate(TObject *Sender)
-{
-  if(ChkSkinEnabled())
-  {
-	UnicodeString ThemeSkinDir = GetThemeSkinDir();
-	if((FileExists(ThemeSkinDir + "\\\\Skin.asz"))&&(!ChkNativeEnabled()))
-	{
-	  sSkinProvider->DrawNonClientArea = true;
-	}
-  }
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TUserTuneExceptionForm::FormShow(TObject *Sender)
-{
-  if(!ChkSkinEnabled())
-  {
-	UnicodeString ThemeSkinDir = GetThemeSkinDir();
-	if((FileExists(ThemeSkinDir + "\\\\Skin.asz"))&&(!ChkNativeEnabled()))
-	{
-	  sSkinProvider->DrawNonClientArea = false;
-	}
-  }
-  aReadSettings->Execute();
 }
 //---------------------------------------------------------------------------

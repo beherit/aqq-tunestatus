@@ -107,7 +107,7 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
     Height = 25
     Caption = 'Anuluj'
     TabOrder = 2
-    OnClick = CancelButtonClick
+    OnClick = aExitExecute
     SkinData.SkinSection = 'BUTTON'
   end
   object ActionList: TActionList
@@ -122,9 +122,9 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
       Caption = 'aSaveSettings'
       OnExecute = aSaveSettingsExecute
     end
-    object aReadSettings: TAction
-      Caption = 'aReadSettings'
-      OnExecute = aReadSettingsExecute
+    object aLoadSettings: TAction
+      Caption = 'aLoadSettings'
+      OnExecute = aLoadSettingsExecute
     end
   end
   object sSkinProvider: TsSkinProvider
