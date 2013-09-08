@@ -25,7 +25,8 @@ TMainForm *MainForm;
 __declspec(dllimport)UnicodeString GetPluginUserDir();
 __declspec(dllimport)UnicodeString GetThemeSkinDir();
 __declspec(dllimport)bool ChkSkinEnabled();
-__declspec(dllimport)bool ChkNativeEnabled();
+__declspec(dllimport)bool ChkThemeAnimateWindows();
+__declspec(dllimport)bool ChkThemeGlowing();
 __declspec(dllimport)UnicodeString IniStrToStr(UnicodeString Str);
 __declspec(dllimport)UnicodeString StrToIniStr(UnicodeString Str);
 __declspec(dllimport)void BuildTuneStatusFastOperation();
@@ -46,44 +47,73 @@ __fastcall TMainForm::TMainForm(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TMainForm::WMTransparency(TMessage &Message)
+{
+  Application->ProcessMessages();
+  sSkinProvider->BorderForm->UpdateExBordersPos(true,(int)Message.LParam);
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TMainForm::FormCreate(TObject *Sender)
 {
+  //Wlaczona zaawansowana stylizacja okien
   if(ChkSkinEnabled())
   {
 	UnicodeString ThemeSkinDir = GetThemeSkinDir();
-	if((FileExists(ThemeSkinDir + "\\\\Skin.asz"))&&(!ChkNativeEnabled()))
+	//Plik zaawansowanej stylizacji okien istnieje
+	if(FileExists(ThemeSkinDir + "\\\\Skin.asz"))
 	{
 	  ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
 	  sSkinManager->SkinDirectory = ThemeSkinDir;
 	  sSkinManager->SkinName = "Skin.asz";
-	  sSkinProvider->DrawNonClientArea = true;
+	  if(ChkThemeAnimateWindows()) sSkinManager->AnimEffects->FormShow->Time = 200;
+	  else sSkinManager->AnimEffects->FormShow->Time = 0;
+	  sSkinManager->Effects->AllowGlowing = ChkThemeGlowing();
 	  sSkinManager->Active = true;
 	}
-	else
-	 sSkinManager->Active = false;
+	//Brak pliku zaawansowanej stylizacji okien
+	else sSkinManager->Active = false;
   }
+  //Zaawansowana stylizacja okien wylaczona
+  else sSkinManager->Active = false;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::FormShow(TObject *Sender)
 {
-  //Skorkowanie okna
-  if(!ChkSkinEnabled())
-  {
-	UnicodeString ThemeSkinDir = GetThemeSkinDir();
-	if((FileExists(ThemeSkinDir + "\\\\Skin.asz"))&&(!ChkNativeEnabled()))
-	{
-	  ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
-	  sSkinManager->SkinDirectory = ThemeSkinDir;
-	  sSkinManager->SkinName = "Skin.asz";
-	  sSkinProvider->DrawNonClientArea = false;
-	  sSkinManager->Active = true;
-	}
-	else
-	 sSkinManager->Active = false;
-  }
   //Odczyt ustawien
   aLoadSettings->Execute();
+  //Dodawanie brakujacych odtwarzaczy do listy
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("Winamp/AIMP/KMPlayer")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("Winamp/AIMP/KMPlayer");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("Foobar2000")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("Foobar2000");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("Windows Media Player")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("Windows Media Player");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("VLC media player")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("VLC media player");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("Spotify")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("Spotify");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("VUPlayer")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("VUPlayer");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("XMPlay")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("XMPlay");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("Media Player Classic")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("Media Player Classic");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("iTunes")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("iTunes");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("ALSong")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("ALSong");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("Wtyczki (np. AQQ Radio)")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("Wtyczki (np. AQQ Radio)");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("Screamer Radio")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("Screamer Radio");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("aTunes")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("aTunes");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("Songbird")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("Songbird");
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("Last.fm Player")==-1)
+   AutoModeCheckListBoxPreview->Items->Add("Last.fm Player");
   //Dodanie tekstu do TagsBox i ustawienie go jako element pokazywany
   TagsBox->Items->Add("Wybierz tag do wstawienia");
   TagsBox->ItemIndex = 6;
@@ -374,7 +404,7 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
   TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
   //Obslugiwane odtwarzacze
   AutoModeCheckListBoxPreview->Clear();
-  for(int Count=0;Count<13;Count++)
+  for(int Count=0;Count<15;Count++)
   {
 	//Pobieranie elementow
 	UnicodeString PlayerID = Ini->ReadString("AutoMode",("Player"+IntToStr(Count+1)),"");
@@ -398,6 +428,8 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
 	  else if(StrToInt(PlayerID)==11) PlayerID = "aTunes";
 	  else if(StrToInt(PlayerID)==12) PlayerID = "Songbird";
 	  else if(StrToInt(PlayerID)==13) PlayerID = "Last.fm Player";
+	  else if(StrToInt(PlayerID)==14) PlayerID = "VLC media player";
+	  else if(StrToInt(PlayerID)==15) PlayerID = "Spotify";
 	  //Dodawnie odtwarzacza do listy
 	  AutoModeCheckListBoxPreview->Items->Add(PlayerID);
 	  AutoModeCheckListBoxPreview->Checked[Count] = StrToBool(Enabled);
@@ -458,7 +490,7 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 
   TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
   //Zapis ustawien trybu automatycznego
-  for(int Count=0;Count<13;Count++)
+  for(int Count=0;Count<15;Count++)
   {
 	UnicodeString Player = AutoModeCheckListBoxPreview->Items->Strings[Count];
 	if(Player=="Winamp/AIMP/KMPlayer") Player = 1;
@@ -474,6 +506,8 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 	else if(Player=="aTunes") Player = 11;
 	else if(Player=="Songbird") Player = 12;
 	else if(Player=="Last.fm Player") Player = 13;
+	else if(Player=="VLC media player") Player = 14;
+	else if(Player=="Spotify") Player = 15;
 	int Enabled = AutoModeCheckListBoxPreview->Checked[Count];
 	Ini->WriteString("AutoMode", ("Player"+IntToStr(Count+1)), (Player+";"+IntToStr(Enabled)));
   }
@@ -482,38 +516,6 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
   Ini->WriteString("Settings", "Status", StrToIniStr(StatusShort.operator AnsiString()));
   //SetOnlyInJabber
   Ini->WriteBool("Settings", "SetOnlyInJabber", SetOnlyInJabberCheckBox->Checked);
-  //DODAC POTEM - DUPA
-  /*if(SetOnlyInJabberChk!=SetOnlyInJabberCheckBox->Checked)
-  {
-	SetOnlyInJabberChk = SetOnlyInJabberCheckBox->Checked;
-	if(RunPluginCheckBox->Checked)
-	{
-	  if(SetOnlyInJabberChk)
-	  {
-		if(GetStartStatus()!=GetTempStatus())
-		{
-		  SetTempStatus(GetStartStatus());
-		  while(GetStatus()!=GetStartStatus())
-		   SetStatus(GetStartStatus(),SetOnlyInJabberChk);
-        }
-		if(!pGetStatus().IsEmpty())
-		{
-		  if(pGetStatus()!=GetTempStatus())
-		  {
-			SetTempStatus(pGetStatus());
-			while(GetStatus()!=pGetStatus())
-			 SetStatus(pGetStatus(),!SetOnlyInJabberChk);
-          }
-        }
-      }
-	  else
-	  {
-		SetTempStatus(pGetStatus());
-		while(GetStatus()!=pGetStatus())
-		 SetStatus(pGetStatus(),!SetOnlyInJabberChk);
-      }
-    }
-  }*/
   //BlockInvisible
   Ini->WriteBool("Settings", "BlockInvisible", BlockInvisibleCheckBox->Checked);
   //EnableOnStart
@@ -559,6 +561,8 @@ void __fastcall TMainForm::aResetSettingsExecute(TObject *Sender)
   AutoModeCheckListBoxPreview->Items->Add("Winamp/AIMP/KMPlayer");
   AutoModeCheckListBoxPreview->Items->Add("Foobar2000");
   AutoModeCheckListBoxPreview->Items->Add("Windows Media Player");
+  AutoModeCheckListBoxPreview->Items->Add("VLC media player");
+  AutoModeCheckListBoxPreview->Items->Add("Spotify");
   AutoModeCheckListBoxPreview->Items->Add("VUPlayer");
   AutoModeCheckListBoxPreview->Items->Add("XMPlay");
   AutoModeCheckListBoxPreview->Items->Add("Media Player Classic");
@@ -570,9 +574,9 @@ void __fastcall TMainForm::aResetSettingsExecute(TObject *Sender)
   AutoModeCheckListBoxPreview->Items->Add("Songbird");
   AutoModeCheckListBoxPreview->Items->Add("Last.fm Player");
   //Zaznaczanie/odznaczanie odpowiednich checkbox'ow
-  for(int Count=0;Count<9;Count++)
+  for(int Count=0;Count<11;Count++)
    AutoModeCheckListBoxPreview->Checked[Count] = true;
-  for(int Count=9;Count<13;Count++)
+  for(int Count=11;Count<15;Count++)
    AutoModeCheckListBoxPreview->Checked[Count] = false;
   //Wlaczenie przycisku zastosuj
   SaveButton->Enabled = true;

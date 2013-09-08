@@ -1,3 +1,15 @@
+2.4.0.0
+-----
+* Dodanie 64-bitowej wersji wtyczki.
+* Dodanie obsługi VLC media player oraz Spotify.
+* Wsparcie dla wtyczki AlphaWindows (ustawianie przeźroczystości obramowania).
+* Poprawne przywracanie początkowego opisu przy użyciu skrótu do szybkiego włączenia/wyłączenia działania wtyczki.
+* Drobne zmiany w skórkowaniu formy ustawień.
+* Zmiana sposobu wypakowywania plików z zasobów wtyczki.
+* Poprawki w pobieraniu pseudonimu kontaktu.
+* Zmniejszenie rozmiaru wtyczki 32-bitowej poprzez użycie kompresji LZMA.
+* Aktualizacja komponentów AlphaControls do nowszej wersji (8.20).
+
 2.3.0.0
 -----
 * Wtyczka posiada własną ikonę pokazywaną w ustawieniach komunikatora na liście wtyczek.

@@ -14,9 +14,6 @@
 #pragma resource "*.dfm"
 TUserTuneExceptionForm *UserTuneExceptionForm;
 //---------------------------------------------------------------------------
-__declspec(dllimport)UnicodeString GetThemeSkinDir();
-__declspec(dllimport)bool ChkSkinEnabled();
-__declspec(dllimport)bool ChkNativeEnabled();
 __declspec(dllimport)UnicodeString GetPluginUserDir();
 __declspec(dllimport)void RefreshUserTuneException();
 //---------------------------------------------------------------------------
@@ -26,42 +23,15 @@ __fastcall TUserTuneExceptionForm::TUserTuneExceptionForm(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TUserTuneExceptionForm::FormCreate(TObject *Sender)
+void __fastcall TUserTuneExceptionForm::WMTransparency(TMessage &Message)
 {
-  if(ChkSkinEnabled())
-  {
-	UnicodeString ThemeSkinDir = GetThemeSkinDir();
-	if((FileExists(ThemeSkinDir + "\\\\Skin.asz"))&&(!ChkNativeEnabled()))
-	{
-	  //ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
-	  //sSkinManager->SkinDirectory = ThemeSkinDir;
-	  //sSkinManager->SkinName = "Skin.asz";
-	  sSkinProvider->DrawNonClientArea = true;
-	  //sSkinManager->Active = true;
-	}
-	//else
-	// sSkinManager->Active = false;
-  }
+  Application->ProcessMessages();
+  sSkinProvider->BorderForm->UpdateExBordersPos(true,(int)Message.LParam);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TUserTuneExceptionForm::FormShow(TObject *Sender)
 {
-  //Skorkowanie okna
-  if(!ChkSkinEnabled())
-  {
-	UnicodeString ThemeSkinDir = GetThemeSkinDir();
-	if((FileExists(ThemeSkinDir + "\\\\Skin.asz"))&&(!ChkNativeEnabled()))
-	{
-	  //ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
-	  //sSkinManager->SkinDirectory = ThemeSkinDir;
-	  //sSkinManager->SkinName = "Skin.asz";
-	  sSkinProvider->DrawNonClientArea = false;
-	  //sSkinManager->Active = true;
-	}
-	//else
-	// sSkinManager->Active = false;
-  }
   //Odczyt ustawien
   aLoadSettings->Execute();
 }
