@@ -55,6 +55,7 @@ bool JustEnabled=0; //Do pierwszego uruchomienia SongTimer
 AnsiString iTunesStatusPath; //Do sciezki iTunes (TuneStatus.txt)
 AnsiString iTunesPlayerPath; //Do sciezka iTunes
 bool EnableFastOnOffCheck; //Do pokazywania/ukrywania szybkiego przycisku
+bool CutRadiostationNameCheck; //Do ucinania nazwy radiostacji z AQQ Radio
 //---------------------------------------------------------------------------
 
 __fastcall TMainForm::TMainForm(TComponent* Owner)
@@ -767,6 +768,9 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
   IntervalValue = SongTimer->Interval;
   SongTimerSpin->Value = Ini->ReadInteger("Settings", "SongTimerInterval", 5);
 
+  CutRadiostationNameCheckBox->Checked = Ini->ReadInteger("Settings", "CutRadiostationName", 1);
+  CutRadiostationNameCheck = Ini->ReadInteger("Settings", "CutRadiostationName", 1);
+
   delete Ini;
 
   PreviewStatusMemo->Text=StatusMemo->Text;
@@ -855,6 +859,9 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
   }
 
   Ini->WriteInteger("Settings", "SongTimerInterval", SongTimerSpin->Value);
+
+  Ini->WriteInteger("Settings", "CutRadiostationName", CutRadiostationNameCheckBox->Checked);
+  CutRadiostationNameCheck = CutRadiostationNameCheckBox->Checked;
 
   delete Ini;
 }
@@ -1131,8 +1138,15 @@ void __fastcall TMainForm::aPluginAQQRadioDownExecute(TObject *Sender)
   int x = AnsiPos("Wtyczka AQQ Radio:", opis);
   if (x>0)
   {
+    PlayerName = "Wtyczka AQQ Radio";
     opis.Delete(1, 18);
     opis=opis.Trim();
+    if(CutRadiostationNameCheck==1)
+    {
+      x = AnsiPos(" - ", opis);
+      opis.Delete(1, x+1);
+      opis=opis.Trim();
+    }
   }
   else
    opis = "";

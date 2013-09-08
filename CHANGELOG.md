@@ -1,3 +1,7 @@
+1.0.4.11
+-----
+* Dodanie opcji ucinania nazwy radiostacji z pobieranego utworu z wtyczki AQQ Radio (domyślnie włączone).
+
 1.0.4.10
 -----
 * Usunięcie w zakładce "Obsługa" label'ów informujących i zastąpienie ich hint'ami.

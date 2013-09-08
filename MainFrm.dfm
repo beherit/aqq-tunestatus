@@ -1,6 +1,6 @@
 object MainForm: TMainForm
-  Left = 618
-  Top = 62
+  Left = 446
+  Top = 116
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus by Beherit'
@@ -447,6 +447,22 @@ object MainForm: TMainForm
         MaxValue = 30
         Value = 5
         Value = 5
+      end
+      object CutRadiostationNameCheckBox: TLMDCheckBox
+        Left = 6
+        Top = 118
+        Width = 263
+        Height = 31
+        Caption = 
+          'Ucinaj nazw'#281' radiostacji przy pobieraniu utworu z wtyczki AQQ Ra' +
+          'dio'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        TabOrder = 4
+        Transparent = True
+        Checked = True
+        State = cbChecked
       end
     end
   end

@@ -85,6 +85,7 @@ __published:	// IDE-managed Components
         TBevel *Bevel;
         TLMDRadioButton *PluginAQQRadioDownRadio;
         TAction *aPluginAQQRadioDown;
+        TLMDCheckBox *CutRadiostationNameCheckBox;
         void __fastcall aWinampDownExecute(TObject *Sender);
         void __fastcall aFoobarDownExecute(TObject *Sender);
         void __fastcall aWMP64DownExecute(TObject *Sender);
