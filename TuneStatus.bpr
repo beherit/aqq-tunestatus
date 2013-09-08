@@ -9,10 +9,10 @@
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES) MainFrm.dfm"/>
     <LIBFILES value=""/>
-    <LIBRARIES value="lmdcore8rt_60.lib lmdrtlx8rt_60.lib vclx.lib lmdrtl8rt_60.lib dclusr.lib 
-      rtl.lib vcl.lib"/>
-    <SPARELIBS value="vcl.lib rtl.lib dclusr.lib lmdrtl8rt_60.lib vclx.lib lmdrtlx8rt_60.lib 
-      lmdcore8rt_60.lib"/>
+    <LIBRARIES value="dclusr.lib lmdcore8rt_60.lib lmdrtlx8rt_60.lib vclx.lib lmdrtl8rt_60.lib 
+      vcl.lib rtl.lib"/>
+    <SPARELIBS value="rtl.lib vcl.lib lmdrtl8rt_60.lib vclx.lib lmdrtlx8rt_60.lib 
+      lmdcore8rt_60.lib dclusr.lib"/>
     <PACKAGES value="vcl.bpi rtl.bpi vclx.bpi bcbsmp.bpi dclocx.bpi Indy60.bpi"/>
     <PATHCPP value=".;"/>
     <PATHPAS value=".;"/>
@@ -60,8 +60,8 @@ IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=1
 MinorVer=0
-Release=5
-Build=4
+Release=6
+Build=0
 Debug=0
 PreRelease=0
 Special=0
@@ -73,13 +73,13 @@ CodePage=1250
 [Version Info Keys]
 CompanyName=Krzysztof Grochocki (Beherit)
 FileDescription=
-FileVersion=1.0.5.4
+FileVersion=1.0.6.0
 InternalName=TuneStatus
 LegalCopyright=Krzysztof Grochocki (Beherit)
 LegalTrademarks=Krzysztof Grochocki (Beherit)
 OriginalFilename=TuneStatus.dll
 ProductName=TuneStatus
-ProductVersion=1.0.5.4
+ProductVersion=1.0.6.0
 Comments=Wstawianie do opisu aktualnie słuchanego utworu z wielu odtwarzaczy
 
 [HistoryLists\hlIncludePath]

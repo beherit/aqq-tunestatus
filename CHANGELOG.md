@@ -1,4 +1,13 @@
-1.0.5.4
+1.0.6.0
+-----
+* Poprawienie linków do wymaganych dodatków.
+* Dropna poprawka w kodzie ustawiania opisu.
+* Poprawka obsługi aTunes.
+* Dodanie obsługi XEP-0118 (User Tune):
+ -Notyfikacja o słuchanych utworach przez naszych znajomych.
+ -Wysyłanie tego co słuchamy.
+ 
+ 1.0.5.4
 -----
 * Przy aktywnej opcji nie ustawiania opisu przy stanie niewidoczny po wejściu w ten stan opis początkowy jest automatycznie przywracany.
 * Poprawiono błąd z zawieszaniem AQQ przy wycinaniu linków z pobranego utworu.

@@ -8,7 +8,7 @@
 #include "ikonka.rh"
 #include "Aqq.h"
 #include "MainFrm.h"
-#include "stdio.h"
+//#include "stdio.h"
 //---------------------------------------------------------------------------
 
 HINSTANCE hInstance; //uchwyt do wtyczki
@@ -37,6 +37,8 @@ wchar_t* AnsiTowchar_t(AnsiString Str)
 TPluginAction PluginAction;
 TPluginAction PluginActionButton;
 TPluginStateChange PluginStateChange;
+TPluginShowInfo PluginShowInfo;
+TPluginContactSimpleInfo PluginContactSimpleInfo;
 TPluginLink PluginLink;
 TPluginInfo PluginInfo;
 
@@ -55,6 +57,20 @@ bool EnablePluginOnStart;
 //Do AQQ Radio
 AnsiString AQQRadioSong;
 PPluginSong Song;
+
+//Do User Tune
+AnsiString UserTuneSong;
+UTF8String UserTuneSongUTF8;
+AnsiString UserTuneSongTMP;
+AnsiString UserTuneFrom;
+AnsiString UserTuneFromTMP;
+AnsiString UserTuneTo;
+int IsThereUserTune;
+AnsiString UserTuneIconPath;
+bool AllowUserTuneN=false;
+int UserTuneTimeOut;
+bool UserTuneEnableN;
+bool UserTuneEnableS;
 
 //Pobieranie aktualnego opisu
 AnsiString GetStatus(AnsiString opis)
@@ -102,6 +118,18 @@ bool AllowChangeStatus(bool WithInvisible) //Sprawdzanie stanu czy rozny od rozl
     else
      return false;
   }
+}
+//---------------------------------------------------------------------------
+
+bool AllowChangeStatusUserTune(int Account) //Sprawdzanie stanu czy rozny od rozlaczony/niewidoczny
+{
+  PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),Account);
+
+  PluginStateChange.cbSize = sizeof(TPluginStateChange);
+  if((PluginStateChange.OldState!=0)&&(PluginStateChange.OldState!=6))
+   return true;
+  else
+   return false;
 }
 //---------------------------------------------------------------------------
 
@@ -183,6 +211,181 @@ int __stdcall OnCurrentSong (WPARAM wParam, LPARAM lParam)
 }
 //---------------------------------------------------------------------------
 
+//Sprawdzanie czy w danym tekscie s¹ tylko liczby
+BOOL TestDigit(AnsiString Text)
+{
+   int digit[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+   int x = 0;
+   while(x < 10)
+   {
+    if(Text.Pos((String)digit[x]) > 0) return true;
+    x++;
+   }
+   return false;
+}
+//---------------------------------------------------------------------------
+
+//Notyfikacja otrzymywanych/wychodzacych pakietow XML
+int __stdcall OnXMLDebug (WPARAM wParam, LPARAM lParam)
+{
+  if((AllowUserTuneN==true)&&(UserTuneEnableN==true))
+  {
+    UserTuneSong = (wchar_t*)(wParam);
+
+    int IsThereUserTune = AnsiPos("<tune xmlns='http://jabber.org/protocol/tune'>", UserTuneSong);
+    if(IsThereUserTune>0)
+    {
+      IsThereUserTune = AnsiPos("<title>", UserTuneSong);
+      if(IsThereUserTune>0)
+      {
+        IsThereUserTune = AnsiPos("type='error'", UserTuneSong);
+        if(IsThereUserTune==0)
+        {
+          IsThereUserTune = AnsiPos("<message from", UserTuneSong);
+          if(IsThereUserTune>0)
+          {
+            UserTuneFrom=UserTuneSong;
+            UserTuneTo=UserTuneSong;
+
+            IsThereUserTune = AnsiPos("from='", UserTuneFrom);
+            UserTuneFrom.Delete(1,IsThereUserTune+5);
+            IsThereUserTune = AnsiPos("'", UserTuneFrom);
+            UserTuneFrom.Delete(IsThereUserTune,UserTuneFrom.Length());
+            UserTuneFrom=UserTuneFrom.Trim();
+
+            IsThereUserTune = AnsiPos("to='", UserTuneTo);
+            UserTuneTo.Delete(1,IsThereUserTune+3);
+            IsThereUserTune = AnsiPos("'", UserTuneTo);
+            UserTuneTo.Delete(IsThereUserTune,UserTuneTo.Length());
+            IsThereUserTune = AnsiPos("/", UserTuneTo);
+            if(IsThereUserTune>0)
+             UserTuneTo.Delete(IsThereUserTune,UserTuneTo.Length());
+            UserTuneTo=UserTuneTo.Trim();
+
+            if(UserTuneFrom!=UserTuneTo)
+            {
+              IsThereUserTune = AnsiPos("<artist>", UserTuneSong);
+              if(IsThereUserTune>0) //poprawne kodowanie
+              {
+                UserTuneSongTMP=UserTuneSong;
+                IsThereUserTune = AnsiPos("<artist>", UserTuneSongTMP);
+                UserTuneSongTMP.Delete(1,IsThereUserTune+7);
+                IsThereUserTune = AnsiPos("</artist>", UserTuneSongTMP);
+                UserTuneSongTMP.Delete(IsThereUserTune, UserTuneSongTMP.Length());
+                UserTuneSongTMP=UserTuneSongTMP.Trim();
+
+                IsThereUserTune = AnsiPos("<title>", UserTuneSong);
+                UserTuneSong.Delete(1,IsThereUserTune+6);
+                IsThereUserTune = AnsiPos("</title>", UserTuneSong);
+                UserTuneSong.Delete(IsThereUserTune, UserTuneSong.Length());
+                UserTuneSong=UserTuneSong.Trim();
+
+                UserTuneSong = UserTuneSongTMP + " - " + UserTuneSong;
+              }
+              else //kodowanie w AQQ
+              {
+                IsThereUserTune = AnsiPos("<title>", UserTuneSong);
+                UserTuneSong.Delete(1,IsThereUserTune+6);
+                IsThereUserTune = AnsiPos("</title>", UserTuneSong);
+                UserTuneSong.Delete(IsThereUserTune, UserTuneSong.Length());
+                UserTuneSong=UserTuneSong.Trim();
+              }
+
+              //poprawa kodowania
+              UserTuneSongUTF8 = UserTuneSong;
+              UserTuneSong=Utf8ToAnsi(UserTuneSongUTF8);
+              UserTuneSong = StringReplace(UserTuneSong, "&apos;", "'", TReplaceFlags() << rfReplaceAll);
+              UserTuneSong = StringReplace(UserTuneSong, "&amp;", "&", TReplaceFlags() << rfReplaceAll);
+
+              //Usuwanie "*** "
+              if(AnsiPos("*** ", UserTuneSong)>0)
+              {
+                UserTuneSong.Delete(1, AnsiPos("*** ", UserTuneSong) + 3);
+                UserTuneSong=UserTuneSong.Trim();
+              }
+
+              //Usuwanie numeru piosenki
+              if((AnsiPos(". ", UserTuneSong)>0)&&(AnsiPos(". ", UserTuneSong)<6))
+              {
+                UserTuneSongTMP=UserTuneSong;
+                UserTuneSongTMP.Delete(AnsiPos(". ", UserTuneSong), UserTuneSongTMP.Length());
+                if(TestDigit(UserTuneSongTMP)==true)
+                {
+                  UserTuneSong.Delete(1, AnsiPos(". ", UserTuneSong));
+                  UserTuneSong=UserTuneSong.Trim();
+                }
+              }
+
+              //Usuwanie "Wtyczka AQQ Radio: "
+              if(AnsiPos("Wtyczka AQQ Radio: ", UserTuneSong)>0)
+               UserTuneSong.Delete(1,AnsiPos("Wtyczka AQQ Radio: ", UserTuneSong)+18);
+
+              //Pobieranie nick'a z JID
+              UserTuneFromTMP = UserTuneFrom;
+              PluginContactSimpleInfo.cbSize = sizeof(TPluginContactSimpleInfo);
+              PluginContactSimpleInfo.JID = AnsiTowchar_t(UserTuneFrom);
+              PluginLink.CallService(AQQ_CONTACTS_FILLSIMPLEINFO,0,(LPARAM)(&PluginContactSimpleInfo));
+              UserTuneFrom = (wchar_t*)(PluginContactSimpleInfo.Nick);
+              if(UserTuneFrom=="")
+               UserTuneFrom = UserTuneFromTMP;
+
+              UserTuneIconPath = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPNG_FILEPATH,76,0));
+
+              //Chmurka "kto slucha"
+              PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
+              PluginShowInfo.Event = tmeInfo;
+              PluginShowInfo.Text = AnsiTowchar_t(UserTuneFrom + " s³ucha:");
+              PluginShowInfo.ImagePath = AnsiTowchar_t(UserTuneIconPath);
+              PluginShowInfo.TimeOut = 1000 * UserTuneTimeOut;
+              PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)(&PluginShowInfo));
+              //Chmurka "co slucha"
+              PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
+              PluginShowInfo.Event = tmeInfo;
+              PluginShowInfo.Text = AnsiTowchar_t(UserTuneSong);
+              PluginShowInfo.ImagePath = L"";
+              PluginShowInfo.TimeOut = 1000 * UserTuneTimeOut;
+              PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)(&PluginShowInfo));
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return 0;
+}
+//---------------------------------------------------------------------------
+
+//Zmiana ustawien User Tune
+void ChangeUserTune(bool Enabled, int Value)
+{
+  UserTuneEnableN = Enabled;
+  UserTuneTimeOut = Value;
+}
+//---------------------------------------------------------------------------
+
+int __stdcall OnModulesLoaded(WPARAM, LPARAM)
+{
+  if(handle==NULL)
+  {
+    //Tworzenie uchwytu do formy
+    Application->Handle = MainForm;
+    handle = new TMainForm(Application);
+  }
+  handle->aReadSettings->Execute();
+  handle->AllowUserTuneNTimer->Enabled=true;
+
+  return 0;
+}
+//---------------------------------------------------------------------------
+
+void SetAllowUserTuneNTrue()
+{
+  AllowUserTuneN=true;
+}
+//---------------------------------------------------------------------------
+
 AnsiString GetAQQRadioSong(AnsiString Song)
 {
   Song=AQQRadioSong;
@@ -250,7 +453,7 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
   }*/
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,5,4);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,6,0);
   PluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   PluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   PluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -373,18 +576,42 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
   PluginLink.HookEvent(AQQ_SYSTEM_CURRENTSONG,OnCurrentSong);
   //Hook dla zmiany stanu
   PluginLink.HookEvent(AQQ_SYSTEM_STATECHANGE,OnStateChange);
+  //User tune
+  PluginLink.HookEvent(AQQ_SYSTEM_XMLDEBUG,OnXMLDebug);
+  //Po zaladowaniu wtyczek
+  PluginLink.HookEvent(AQQ_SYSTEM_MODULESLOADED, OnModulesLoaded);
+  AllowUserTuneN=PluginLink.CallService(AQQ_SYSTEM_MODULESLOADED,0,0);
 
   //Odczyt ustawien
   TIniFile *Ini = new TIniFile(eDir + "\\\\TuneStatus\\\\\TuneStatus.ini");
   EnablePluginOnStart = Ini->ReadBool("Settings", "EnablePluginOnStart", 0);
   EnableFastOnOff = Ini->ReadBool("Settings", "EnableFastOnOff", 1);
-  delete Ini;
+  UserTuneEnableN = Ini->ReadBool("UserTune", "EnableN", 0);
+  UserTuneEnableS = Ini->ReadBool("UserTune", "EnableS", 0);
+  UserTuneTimeOut = Ini->ReadInteger("UserTune", "TimeOutN", 4);
+  delete Ini;      
 
-  //Czy w³¹czone
+  if(UserTuneEnableS==1)
+  {
+    if(handle==NULL)
+    {
+      //Tworzenie uchwytu do formy
+      Application->Handle = MainForm;
+      handle = new TMainForm(Application);
+    }
+    handle->aReadSettings->Execute();
+    handle->UserTuneTimer->Enabled=true;
+  }
+
+  //Czy w³¹czonac na starcie?
   if(EnablePluginOnStart==1)
   {
-    Application->Handle = MainForm;
-    handle = new TMainForm(Application);
+    if(handle==NULL)
+    {
+      //Tworzenie uchwytu do formy
+      Application->Handle = MainForm;
+      handle = new TMainForm(Application);
+    }
     handle->opis_pocz = GetStatus(handle->opis_pocz);
     handle->aReadSettings->Execute();
     handle->JustEnabled=1;
@@ -423,6 +650,7 @@ AnsiString GetPluginUserDir(AnsiString Dir)
   Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
   return Dir;
 }
+//---------------------------------------------------------------------------
 
 //Pobieranie sciezki do pliku wtyczki
 AnsiString GetPluginDir(AnsiString Dir)
@@ -430,6 +658,47 @@ AnsiString GetPluginDir(AnsiString Dir)
   Dir = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPLUGINDIR,(WPARAM)(hInstance),0));
   Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
   return Dir;
+}
+//---------------------------------------------------------------------------
+
+//Ustawianie UserTune
+void SetUserTune(AnsiString Tune, AnsiString XML, int Count, int Account, AnsiString AccountName)
+{
+  Tune = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_CONVERTTOXML,0,(WPARAM)(AnsiTowchar_t(Tune))));
+
+  Count = PluginLink.CallService(AQQ_FUNCTION_GETUSEREXCOUNT,0,0);
+  for(Account=0;Account<Count;Account++)
+  {
+    if(AllowChangeStatusUserTune(Account)==true)
+    {
+      if(Tune!="")
+       XML = "<iq type=\"set\" from=\"CC_JID\" id=\"CC_SESSION\"><pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"http://jabber.org/protocol/tune\"><item><tune xmlns=\"http://jabber.org/protocol/tune\"><artist/><length/><rating/><source/><title>CC_TUNESTATUS</title><track/><uri/></tune></item></publish></pubsub></iq>";
+      else
+       XML = "<iq type=\"set\" from=\"CC_JID\" id=\"CC_SESSION\"><pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"http://jabber.org/protocol/tune\"><item><tune xmlns=\"http://jabber.org/protocol/tune\"/></item></publish></pubsub></iq>";
+
+      XML = StringReplace(XML, "CC_SESSION", ((wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETSTRID,0,0))), TReplaceFlags());
+      XML = StringReplace(XML, "CC_TUNESTATUS", Tune, TReplaceFlags());
+
+      PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),Account);
+      AccountName = (AnsiString)((wchar_t*)(PluginStateChange.JID)) + "/" + (AnsiString)((wchar_t*)(PluginStateChange.Resource));
+
+      XML = StringReplace(XML, "CC_JID", AccountName, TReplaceFlags() << rfReplaceAll);
+
+      PluginLink.CallService(AQQ_SYSTEM_SENDXML,(WPARAM)(AnsiTowchar_t(XML)),Account);
+    }
+    else
+    {
+      XML = "<iq type=\"set\" from=\"CC_JID\" id=\"CC_SESSION\"><pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"http://jabber.org/protocol/tune\"><item><tune xmlns=\"http://jabber.org/protocol/tune\"/></item></publish></pubsub></iq>";
+
+      XML = StringReplace(XML, "CC_SESSION", ((wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETSTRID,0,0))), TReplaceFlags());
+
+      PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),Account);
+      AccountName = (AnsiString)((wchar_t*)(PluginStateChange.JID)) + "/" + (AnsiString)((wchar_t*)(PluginStateChange.Resource));
+      XML = StringReplace(XML, "CC_JID", AccountName, TReplaceFlags() << rfReplaceAll);
+
+      PluginLink.CallService(AQQ_SYSTEM_SENDXML,(WPARAM)(AnsiTowchar_t(XML)),Account);
+    }
+  }
 }
 //---------------------------------------------------------------------------
 
@@ -442,9 +711,13 @@ extern "C" int __declspec(dllexport) __stdcall Unload()
     if(handle->opis_pocz!=handle->opisTMP)
      SetStatus(handle->opis_pocz,!handle->SetOnlyInJabberCheck);
   }
+  if((handle!=NULL)&&(handle->UserTuneTimer->Enabled==true))
+   SetUserTune("", NULL, NULL, NULL, NULL);
   PluginLink.UnhookEvent(OnSetNote);
   PluginLink.UnhookEvent(OnCurrentSong);
   PluginLink.UnhookEvent(OnStateChange);
+  PluginLink.UnhookEvent(OnXMLDebug);
+  PluginLink.UnhookEvent(OnModulesLoaded);
   PluginLink.DestroyServiceFunction(TuneStatusService);
   PluginLink.CallService(AQQ_CONTROLS_DESTROYPOPUPMENUITEM,0,(LPARAM)(&PluginAction));
   PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx));
