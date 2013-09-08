@@ -1,3 +1,11 @@
+1.0.4.16
+-----
+* Bardzo znacząca optymalizacja kodu.
+* Usunięto tag CC_PLAYERNAME - sprawiał problemy.
+* Dodanie obsługi Songbird.
+* Dodanie menu pod PPM dla odtwarzaczy wymagających do obsługi dodatkowych rozszerzeń w programie dzięki, którym można je szybko ściągnąc.
+* Dodanie możliwości zdefiniowania trybu automatycznego - można tam ustawić hierarchie sprawdzania jak i wykluczyć dane odtwarzacze ze sprawdzania.
+
 1.0.4.14
 -----
 * Poprawka przy pobieraniu danych z wtyczki AQQ Radio i funkcji ucinania nazwy radiostacji.
