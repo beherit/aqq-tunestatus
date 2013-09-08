@@ -76,6 +76,11 @@ __published:	// IDE-managed Components
         TLMDSpinEdit *SongTimerSpin;
         TTimer *SongTimer;
         TLabel *SongTimerIntervalLabel2;
+        TLMDRadioButton *iTunesDownRadio;
+        TLabel *iTunesLabel;
+        TLabel *TagInfoLabel;
+        TAction *aiTunesDown;
+        TMemo *SongFromFile;
         void __fastcall aWinampDownExecute(TObject *Sender);
         void __fastcall aFoobarDownExecute(TObject *Sender);
         void __fastcall aWMP64DownExecute(TObject *Sender);
@@ -100,6 +105,7 @@ __published:	// IDE-managed Components
         void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
         void __fastcall PreviewStatusMemoChange(TObject *Sender);
         void __fastcall SongTimerTimer(TObject *Sender);
+        void __fastcall aiTunesDownExecute(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         bool JustEnabled;

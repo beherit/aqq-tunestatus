@@ -18,12 +18,14 @@ int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved
   hInstance = hinst;
   return 1;
 }
+//---------------------------------------------------------------------------
 
 wchar_t *AnsiTowchar_t(AnsiString Str) //zamiana AnsiString->wchar_t*
 {
   wchar_t *str = new wchar_t[Str.WideCharBufSize()];
   return Str.WideChar(str, Str.WideCharBufSize());
 }
+//---------------------------------------------------------------------------
 
 //utworzenie obiektow do struktur
 PluginAction TPluginAction;
@@ -53,6 +55,7 @@ AnsiString PobierzOpis(AnsiString opis)
 
   return opis;
 }
+//---------------------------------------------------------------------------
 
 //Ustawianie opisu
 void UstawOpis(AnsiString opis, bool force)
@@ -65,6 +68,7 @@ void UstawOpis(AnsiString opis, bool force)
 
   TPluginLink.CallService(AQQ_SYSTEM_SETSHOWANDSTATUS,0,(LPARAM)(&TPluginStateChange));
 }
+//---------------------------------------------------------------------------
 
 //Serwis szybkiego wlaczenia/wylaczenia wtyczki
 int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
@@ -111,6 +115,7 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
 
   return 0;
 }
+//---------------------------------------------------------------------------
 
 //Serwis otwarcia formy
 int __stdcall TuneStatusService (WPARAM, LPARAM)
@@ -126,6 +131,7 @@ int __stdcall TuneStatusService (WPARAM, LPARAM)
 
   return 0;
 }
+//---------------------------------------------------------------------------
 
 //Notyfikacja zmiany statusu
 int __stdcall OnSetNoteClose (WPARAM wParam, LPARAM lParam)
@@ -143,6 +149,7 @@ int __stdcall OnSetNoteClose (WPARAM wParam, LPARAM lParam)
 
   return 0;
 }
+//---------------------------------------------------------------------------
 
 //Program
 extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQVersion)
@@ -159,7 +166,7 @@ extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
   }
   TPluginInfo.cbSize = sizeof(PluginInfo);
   TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,6);
+  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,8);
   TPluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -168,6 +175,7 @@ extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
  
   return &TPluginInfo;
 }
+//---------------------------------------------------------------------------
 
 //Przypisywanie skrótu w popPlugins
 void PrzypiszSkrot()
@@ -184,6 +192,7 @@ void PrzypiszSkrot()
   TPluginLink.CallService(AQQ_CONTROLS_CREATEPOPUPMENUITEM,0,(LPARAM)(&TPluginAction));
   TPluginLink.CreateServiceFunction(L"serwis_TuneStatusService",TuneStatusService);
 }
+//---------------------------------------------------------------------------
 
 //Przypisywanie buttonu
 void PrzypiszButton()
@@ -202,6 +211,7 @@ void PrzypiszButton()
 
   EnableFastOnOff=1;
 }
+//---------------------------------------------------------------------------
 
 //Usuwanie buttonu
 void UsunButton()
@@ -211,6 +221,7 @@ void UsunButton()
 
   EnableFastOnOff=0;
 }
+//---------------------------------------------------------------------------
 
 //Do wypakowywania RES
 void ExtractExe(unsigned short ID, AnsiString FileName)
@@ -233,6 +244,7 @@ void ExtractExe(unsigned short ID, AnsiString FileName)
   Ms->SaveToFile(FileName);
   Ms->Free();
 }
+//---------------------------------------------------------------------------
 
 //OnLoad plugin
 extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
@@ -297,6 +309,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
 
   return 0;
 }
+//---------------------------------------------------------------------------
 
 //Otwieranie formy przez ustawienia
 extern "C" int __declspec(dllexport)__stdcall Settings()
@@ -312,6 +325,7 @@ extern "C" int __declspec(dllexport)__stdcall Settings()
 
   return 0;
 }
+//---------------------------------------------------------------------------
 
 //Pobieranie sciezki katalogu prywatnego uzytkownika
 AnsiString GetPluginUserDir(AnsiString Dir)
@@ -328,6 +342,7 @@ AnsiString GetPluginDir(AnsiString Dir)
   Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
   return Dir;
 }
+//---------------------------------------------------------------------------
 
 //OnUnload plugin
 extern "C" int __declspec(dllexport) __stdcall Unload()
@@ -352,6 +367,7 @@ extern "C" int __declspec(dllexport) __stdcall Unload()
 
   return 0;
 }
+//---------------------------------------------------------------------------
 
 //Do aktualizowania grafiki buttonu
 void UpdateButton(bool OnOff)
@@ -367,6 +383,7 @@ void UpdateButton(bool OnOff)
     TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&TPluginActionButton));
   }
 }
+//---------------------------------------------------------------------------
 
 
  
