@@ -1,3 +1,7 @@
+2.1.0.2
+-----
+* Poprawiono obsługę Scrobbler Last.fm.
+
 2.1.0.0
 -----
 * Rozszerzenie obsługi XEP-0118 o długość słuchanego utworu (działa tylko z WMP oraz Winamp/AIMP).
