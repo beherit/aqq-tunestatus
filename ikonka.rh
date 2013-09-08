@@ -1,7 +1,0 @@
-#ifndef IKONKA_RH
-#define IKONKA_RH
-
-#define ID_PNG1 1000
-#define ID_PNG2 2000
-#define ID_PNG3 3000
-#endif
