@@ -1,3 +1,14 @@
+1.0.5.0
+-----
+* Dodanie obsługi aTunes.
+* Dodanie obsługi Screamer Radio.
+* Zmiana wyglądu karty "Obsługa".
+* Dodanie Drag&Drop dla listy odtwarzaczy.
+* Usunięcie SpeedButton'ów do zmiany kolejności odtawarzaczy.
+* Dodono opcję wycinania z pobranego utworu adresów stron WWW (domyślnie wyłączone).
+* Wtyczka nie ustawia opisu gdy stan głównego konta jabbera jest niewidoczny bądź rozłączony.
+* Dodano opcję wyłączania działania wtyczki gdy utwór nie zmienia się od X minut (domyślnie wyłączone).
+
 1.0.4.18
 -----
 * Optymalizacja działania dla Last.fm Player i Songbird.

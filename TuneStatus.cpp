@@ -80,6 +80,18 @@ void UstawOpis(AnsiString opis, bool force)
 }
 //---------------------------------------------------------------------------
 
+bool AllowChangeStatus() //Sprawdzanie stanu czy rozny od rozlaczony/niewidoczny
+{
+  PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),0);
+
+  PluginStateChange.cbSize = sizeof(TPluginStateChange);
+  if((PluginStateChange.OldState!=0)&&(PluginStateChange.OldState!=6))
+   return true;
+  else
+   return false;
+}
+//---------------------------------------------------------------------------
+
 //Serwis szybkiego wlaczenia/wylaczenia wtyczki
 int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
 {
@@ -199,12 +211,12 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
   }*/
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,18);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,5,0);
   PluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   PluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   PluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
   PluginInfo.Copyright = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
-  PluginInfo.Homepage = (wchar_t *)L"http://www.beherit.za.pl";
+  PluginInfo.Homepage = (wchar_t *)L"www.beherit.za.pl";
  
   return &PluginInfo;
 }
