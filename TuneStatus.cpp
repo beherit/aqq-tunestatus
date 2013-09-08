@@ -94,7 +94,6 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
     else
     {
       handle->Timer->Enabled=false;
-      handle->Preview->Text="";
       handle->opisTMP=PobierzOpis(handle->opisTMP);
       if(handle->opis_pocz!=handle->opisTMP)
       {
@@ -158,12 +157,12 @@ extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
   }
   TPluginInfo.cbSize = sizeof(PluginInfo);
   TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,3,6);
+  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,0);
   TPluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
   TPluginInfo.Copyright = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
-  TPluginInfo.Homepage = (wchar_t *)L"";
+  TPluginInfo.Homepage = (wchar_t *)L"http://www.beherit.za.pl/";
  
   return &TPluginInfo;
 }
@@ -275,7 +274,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
   //Odczyt ustawien
   TIniFile *Ini = new TIniFile(eDir + "\\\\TuneStatus\\\\\TuneStatus.ini");
   EnablePluginOnStart = Ini->ReadInteger("Settings", "EnablePluginOnStart", 0);
-  EnableFastOnOff = Ini->ReadInteger("Settings", "EnableFastOnOff", 0);
+  EnableFastOnOff = Ini->ReadInteger("Settings", "EnableFastOnOff", 1);
   delete Ini;
 
   //Czy w³¹czone
@@ -312,9 +311,17 @@ extern "C" int __declspec(dllexport)__stdcall Settings()
 }
 
 //Pobieranie sciezki katalogu prywatnego uzytkownika
-AnsiString GetPluginPath(AnsiString Dir)
+AnsiString GetPluginUserDir(AnsiString Dir)
 {
   Dir = (wchar_t*)(TPluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,(WPARAM)(hInstance),0));
+  Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+  return Dir;
+}
+
+//Pobieranie sciezki do pliku wtyczki
+AnsiString GetPluginDir(AnsiString Dir)
+{
+  Dir = (wchar_t*)(TPluginLink.CallService(AQQ_FUNCTION_GETPLUGINDIR,(WPARAM)(hInstance),0));
   Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
   return Dir;
 }

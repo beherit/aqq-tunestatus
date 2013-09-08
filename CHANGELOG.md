@@ -1,3 +1,12 @@
+1.0.4.0
+-----
+* Poprawiono sposób pobierania tytułu z LastFM - od teraz nie ma szans, żeby jakieś inne okno się wdrało do opisu ;)
+* Poprawki optymalizujące w pobieraniu utworów.
+* Ustawienia nie są zapisywane już po zamknięciu formy przez X.
+* Ikonka szybkiego włączenia/wyłączenia działania wtyczki jest teraz domyślnie włączona.
+* Poprawiono wygląd wtyczki.
+* Dodano obsługę tagów! Co za tym idzie wywalono pola Prefix i Suffix - teraz wygląd ustawia się jak przy normalnej zmianie opisu (pole Memo).
+
 1.0.3.6
 -----
 * Ucinanie numerów piosenki jest domyślnie włączone, opcja zniknęła z ustawień.
