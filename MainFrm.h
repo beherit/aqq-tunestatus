@@ -11,23 +11,33 @@
 #include <ExtCtrls.hpp>
 #include "XPMan.hpp"
 #include <ComCtrls.hpp>
+#include <Menus.hpp>
+#include <ImgList.hpp>
+#include "LMDBaseControl.hpp"
+#include "LMDBaseEdit.hpp"
+#include "LMDBaseGraphicButton.hpp"
+#include "LMDBaseGraphicControl.hpp"
+#include "LMDButtonControl.hpp"
+#include "LMDCheckBox.hpp"
+#include "LMDCheckListBox.hpp"
 #include "LMDControl.hpp"
 #include "LMDCustomBevelPanel.hpp"
+#include "LMDCustomCheckBox.hpp"
+#include "LMDCustomCheckListBox.hpp"
 #include "LMDCustomControl.hpp"
+#include "LMDCustomEdit.hpp"
+#include "LMDCustomExtSpinEdit.hpp"
+#include "LMDCustomImageListBox.hpp"
+#include "LMDCustomListBox.hpp"
+#include "LMDCustomMaskEdit.hpp"
 #include "LMDCustomPanel.hpp"
 #include "LMDCustomPanelFill.hpp"
 #include "LMDCustomParentPanel.hpp"
 #include "LMDCustomSheetControl.hpp"
+#include "LMDCustomSpeedButton.hpp"
 #include "LMDPageControl.hpp"
-#include "LMDButtonControl.hpp"
-#include "LMDCheckBox.hpp"
-#include "LMDCustomCheckBox.hpp"
 #include "LMDRadioButton.hpp"
-#include "LMDBaseEdit.hpp"
-#include "LMDCustomEdit.hpp"
-#include "LMDCustomExtSpinEdit.hpp"
-#include "LMDCustomMaskEdit.hpp"
-#include "LMDExtSpinEdit.hpp"
+#include "LMDSpeedButton.hpp"
 #include "LMDSpinEdit.hpp"
 //---------------------------------------------------------------------------
 class TMainForm : public TForm
@@ -49,8 +59,8 @@ __published:	// IDE-managed Components
         TAction *aSaveSettings;
         TAction *aAutoDown;
         TLMDPageControl *LMDPageControl;
-        TLMDTabSheet *HandlingLMDTabSheet;
-        TLMDTabSheet *SettingsLMDTabSheet;
+        TLMDTabSheet *HandlingTabSheet;
+        TLMDTabSheet *SettingsTabSheet;
         TLMDCheckBox *EnableFastOnOffCheckBox;
         TLMDCheckBox *EnablePluginOnStartCheckBox;
         TLMDCheckBox *SetOnlyInJabberCheckBox;
@@ -67,7 +77,7 @@ __published:	// IDE-managed Components
         TAction *aSetStatusLooks;
         TComboBox *TagsBox;
         TLabel *TagRequestLabel;
-        TLMDTabSheet *StatusLooksLMDTabSheet;
+        TLMDTabSheet *StatusLooksTabSheet;
         TMemo *PreviewStatusMemo;
         TLabel *SongTimerIntervalLabel1;
         TLMDSpinEdit *SongTimerSpin;
@@ -86,6 +96,25 @@ __published:	// IDE-managed Components
         TLMDCheckBox *CutRadiostationNameCheckBox;
         TLMDCheckBox *DisableSongTimerCheckBox;
         TBevel *Bevel1;
+        TLMDRadioButton *SongbirdDownRadio;
+        TAction *aSongbirdDown;
+        TPopupMenu *SongbirdPopupMenu;
+        TMenuItem *SongbirdDownload;
+        TPopupMenu *WMPPopupMenu;
+        TPopupMenu *iTunesPopupMenu;
+        TMenuItem *WMPDownload;
+        TMenuItem *iTunesDownload;
+        TPopupMenu *FoobarPopupMenu;
+        TMenuItem *FoobarDownload;
+        TLMDTabSheet *AdvancetAutoTabSheet;
+        TLMDCheckListBox *AutoDownCheckListBox;
+        TLMDSpeedButton *AutoDownUpButton;
+        TLMDSpeedButton *AutoDownDownButton;
+        TImageList *ImageList;
+        TLMDCheckListBox *AutoDownCheckListBoxPreview;
+        TBevel *Bevel3;
+        TLabel *AutoDownInfoLabel;
+        TButton *ResetButton;
         void __fastcall aWinampDownExecute(TObject *Sender);
         void __fastcall aFoobarDownExecute(TObject *Sender);
         void __fastcall aMPCDownExecute(TObject *Sender);
@@ -111,6 +140,15 @@ __published:	// IDE-managed Components
         void __fastcall aiTunesDownExecute(TObject *Sender);
         void __fastcall aALSongDownExecute(TObject *Sender);
         void __fastcall aPluginAQQRadioDownExecute(TObject *Sender);
+        void __fastcall aSongbirdDownExecute(TObject *Sender);
+        void __fastcall SongbirdDownloadClick(TObject *Sender);
+        void __fastcall WMPDownloadClick(TObject *Sender);
+        void __fastcall iTunesDownloadClick(TObject *Sender);
+        void __fastcall FoobarDownloadClick(TObject *Sender);
+        void __fastcall AutoDownUpButtonClick(TObject *Sender);
+        void __fastcall AutoDownDownButtonClick(TObject *Sender);
+        void __fastcall ResetButtonClick(TObject *Sender);
+        void __fastcall AutoDownCheckListBoxPreviewSelect(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         bool JustEnabled;

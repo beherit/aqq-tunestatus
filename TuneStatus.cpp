@@ -6,7 +6,7 @@
 #include <inifiles.hpp>
 #include <memory>
 #include "ikonka.rh"
-#include "AqqT.h"
+#include "Aqq.h"
 #include "MainFrm.h"
 #include "stdio.h"
 //---------------------------------------------------------------------------
@@ -163,6 +163,7 @@ AnsiString GetAQQRadioSong(AnsiString Song)
   Song=AQQRadioSong;
   return Song;
 }
+//---------------------------------------------------------------------------
 
 //Notyfikacja zmiany statusu
 int __stdcall OnSetNote(WPARAM wParam, LPARAM lParam)
@@ -198,7 +199,7 @@ extern "C" __declspec(dllexport) TPluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
   }*/
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,14);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,16);
   PluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   PluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   PluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
