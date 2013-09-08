@@ -5,9 +5,18 @@
 #include <inifiles.hpp>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
+#pragma link "sBevel"
+#pragma link "sButton"
+#pragma link "sLabel"
+#pragma link "sListBox"
+#pragma link "sSkinManager"
+#pragma link "sSkinProvider"
+#pragma link "sTabControl"
 #pragma resource "*.dfm"
 TUserTuneExceptionForm *UserTuneExceptionForm;
 //---------------------------------------------------------------------------
+__declspec(dllimport)UnicodeString GetThemeSkinDir();
+__declspec(dllimport)bool ChkSkinEnabled();
 __declspec(dllimport)UnicodeString GetPluginUserDir();
 __declspec(dllimport)void RefreshUserTuneException();
 //---------------------------------------------------------------------------
@@ -65,14 +74,19 @@ void __fastcall TUserTuneExceptionForm::DeleteButtonClick(TObject *Sender)
 void __fastcall TUserTuneExceptionForm::aReadSettingsExecute(TObject *Sender)
 {
   JIDListBox->Clear();
-
-  UnicodeString ExceptionPluginDirectory = GetPluginUserDir();
-
-  TIniFile *Ini = new TIniFile(ExceptionPluginDirectory + "\\\\TuneStatus\\\\TuneStatus.ini");
-  int ExceptionCount = Ini->ReadInteger("UserTune", "ExceptionCount", 0);
-  if(ExceptionCount!=0)
-   for(int Count=1;Count<=ExceptionCount;Count++)
-	JIDListBox->Items->Add(Ini->ReadString("UserTuneEx" + IntToStr(Count), "JID", ""));
+  TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
+  TStringList *JIDList = new TStringList;
+  Ini->ReadSection("UserTuneEx",JIDList);
+  int JIDListCount = JIDList->Count;
+  delete JIDList;
+  if(JIDListCount>0)
+  {
+	for(int Count=0;Count<JIDListCount;Count++)
+	{
+	  UnicodeString JID = Ini->ReadString("UserTuneEx",("JID"+IntToStr(Count+1)), "");
+	  if(!JID.IsEmpty()) JIDListBox->Items->Add(JID);
+    }
+  }
   delete Ini;
 }
 //---------------------------------------------------------------------------
@@ -82,10 +96,10 @@ void __fastcall TUserTuneExceptionForm::aSaveSettingsExecute(TObject *Sender)
   UnicodeString ExceptionPluginDirectory = GetPluginUserDir();
 
   TIniFile *Ini = new TIniFile(ExceptionPluginDirectory + "\\\\TuneStatus\\\\TuneStatus.ini");
-  Ini->WriteInteger("UserTune", "ExceptionCount", JIDListBox->Count);
+  Ini->EraseSection("UserTuneEx");
   if(JIDListBox->Count!=0)
    for(int Count=0;Count<JIDListBox->Count;Count++)
-   Ini->WriteString("UserTuneEx" + IntToStr(Count+1),"JID",JIDListBox->Items->Strings[Count]);
+	Ini->WriteString("UserTuneEx",("JID"+IntToStr(Count+1)),JIDListBox->Items->Strings[Count]);
   delete Ini;
 }
 //---------------------------------------------------------------------------
@@ -96,3 +110,30 @@ void __fastcall TUserTuneExceptionForm::CancelButtonClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TUserTuneExceptionForm::FormCreate(TObject *Sender)
+{
+  if(ChkSkinEnabled())
+  {
+	UnicodeString ThemeSkinDir = GetThemeSkinDir();
+	if(FileExists(ThemeSkinDir + "\\\\Skin.asz"))
+	{
+	  ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
+	  sSkinProvider->DrawNonClientArea = true;
+	}
+  }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TUserTuneExceptionForm::FormShow(TObject *Sender)
+{
+  if(!ChkSkinEnabled())
+  {
+	UnicodeString ThemeSkinDir = GetThemeSkinDir();
+	if(FileExists(ThemeSkinDir + "\\\\Skin.asz"))
+	{
+	  sSkinProvider->DrawNonClientArea = false;
+	}
+  }
+  aReadSettings->Execute();
+}
+//---------------------------------------------------------------------------
