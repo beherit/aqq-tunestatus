@@ -11,44 +11,56 @@
 #include <ExtCtrls.hpp>
 #include <Menus.hpp>
 #include <StdCtrls.hpp>
+#include "sButton.hpp"
+#include "sPageControl.hpp"
+#include "sSkinManager.hpp"
+#include "sSkinProvider.hpp"
+#include "sCheckListBox.hpp"
+#include "sLabel.hpp"
+#include "sListBox.hpp"
+#include "sBevel.hpp"
+#include "sComboBox.hpp"
+#include "sMemo.hpp"
+#include "sEdit.hpp"
+#include "sSpinEdit.hpp"
+#include "sCheckBox.hpp"
 //---------------------------------------------------------------------------
 class TMainForm : public TForm
 {
 __published:	// IDE-managed Components
-		TButton *SaveButton;
+		TsButton *SaveButton;
 		TActionList *ActionList;
 		TAction *aWinampDown;
 		TAction *aFoobarDown;
 		TAction *aMPCDown;
-		TTimer *Timer;
+	TTimer *AutoModeTimer;
 		TAction *aLastFMDown;
 		TAction *aWMPDown;
 		TAction *aVUPlayerDown;
 		TAction *aXMPlayDown;
 		TAction *aCutSongNumber;
-		TAction *aReadSettings;
+		TAction *aLoadSettings;
 		TAction *aSaveSettings;
-		TAction *aAutoDown;
-		TMemo *StatusMemo;
+	TAction *aAutoMode;
+		TsMemo *StatusMemo;
 		TAction *aSetStatusLooks;
-		TComboBox *TagsBox;
-		TMemo *PreviewStatusMemo;
-		TLabel *SongTimerIntervalLabel1;
-		TTimer *SongTimer;
-		TLabel *SongTimerIntervalLabel2;
+		TsComboBox *TagsBox;
+		TsMemo *PreviewStatusMemo;
+		TTimer *SetStatusTimer;
+		TsLabel *SetStatuslLabel;
 		TAction *aiTunesDown;
-		TMemo *SongFromFile;
+		TsMemo *SongFromFile;
 		TAction *aALSongDown;
 		TAction *aPluginAQQRadioDown;
 		TAction *aSongbirdDown;
-		TLabel *AutoDownInfoLabel;
-		TButton *ResetButton;
+	TsLabel *AutoModeInfoLabel;
+	TsButton *ResetButton;
 		TAction *aaTunesDown;
 		TAction *aCutWWW;
 		TAction *aScreamerRadioDown;
-		TTimer *TurnOffTimer;
-		TBevel *Bevel3;
-		TBevel *Bevel2;
+		TTimer *AutoTurnOffTimer;
+		TsBevel *Bevel3;
+		TsBevel *Bevel2;
 		TAction *aResetSettings;
 		TPopupMenu *FoobarPopupMenu;
 		TMenuItem *FoobarDownload;
@@ -58,71 +70,72 @@ __published:	// IDE-managed Components
 		TMenuItem *iTunesDownload;
 		TPopupMenu *SongbirdPopupMenu;
 		TMenuItem *SongbirdDownload;
-		TLabel *UserTuneTimeNLabel;
-		TBevel *Bevel4;
-		TTimer *UserTuneTimer;
-		TTimer *UserTuneSongTimer;
-		TLabel *UserTuneLabel;
-		TLabel *UserTuneSLabel;
-		TBevel *Bevel5;
-		TLabel *UserTuneTimeSLabel1;
-		TLabel *UserTuneTimeSLabel2;
+		TsBevel *Bevel4;
+	TTimer *UserTuneTimer;
+		TTimer *SetUserTuneTimer;
+		TsLabel *UserTuneLabel;
+		TsLabel *UserTuneSLabel;
+		TsBevel *Bevel5;
+		TsLabel *UserTuneSendLabel;
 		TAction *aCutWWWUserTune;
-		TTimer *AllowUserTuneNTimer;
-		TPageControl *PageControl;
-		TTabSheet *HandlingTabSheet;
-		TTabSheet *StatusTabSheet;
-	TTabSheet *OtherTabSheet;
-		TTabSheet *UserTuneTabSheet;
-		TCheckListBox *AutoDownCheckListBox;
-		TCheckListBox *AutoDownCheckListBoxPreview;
-		TCheckBox *RunPluginCheckBox;
-		TCheckBox *EnablePluginOnStartCheckBox;
-		TCheckBox *EnableFastOnOffCheckBox;
-		TCheckBox *SetOnlyInJabberCheckBox;
-		TCheckBox *BlockInvisibleCheckBox;
-		TCSpinEdit *SongTimerSpin;
-		TCheckBox *DisableSongTimerCheckBox;
-		TCheckBox *CutRadiostationNameCheckBox;
-		TCheckBox *CutWWWCheckBox;
-		TCheckBox *TimeTurnOffCheckBox;
-		TCSpinEdit *TimeTurnOffSpin;
-		TCheckBox *EnableUserTuneNCheckBox;
-		TCSpinEdit *UserTuneNSpin;
-		TCheckBox *EnableUserTuneSCheckBox;
-		TCSpinEdit *UserTuneSSpin;
-		TCheckBox *EnableAQQUserTuneSCheckBox;
+		TTimer *AllowUserTuneTimer;
+		TsPageControl *PageControl;
+		TsTabSheet *HandlingTabSheet;
+		TsTabSheet *StatusTabSheet;
+		TsTabSheet *OtherTabSheet;
+		TsTabSheet *UserTuneTabSheet;
+	TsCheckListBox *AutoModeCheckListBox;
+	TsCheckListBox *AutoModeCheckListBoxPreview;
+		TsCheckBox *RunPluginCheckBox;
+		TsCheckBox *EnableOnStartCheckBox;
+		TsCheckBox *FastAccessCheckBox;
+		TsCheckBox *SetOnlyInJabberCheckBox;
+		TsCheckBox *BlockInvisibleCheckBox;
+		TsSpinEdit *SetStatusSpin;
+		TsCheckBox *IgnorePluginsCheckBox;
+		TsCheckBox *CutRadiostationNameCheckBox;
+		TsCheckBox *CutWWWCheckBox;
+		TsCheckBox *AutoTurnOffCheckBox;
+		TsSpinEdit *AutoTurnOffSpin;
+		TsCheckBox *UserTuneNotificationCheckBox;
+		TsSpinEdit *UserTuneNotificationSpin;
+		TsCheckBox *UserTuneSendCheckBox;
+		TsSpinEdit *UserTuneSendSpin;
+		TsCheckBox *IgnoreCoreUserTuneCheckBox;
 		TTimer *GetStatusTimer;
-		TBevel *Bevel;
+		TsBevel *Bevel;
 		TAction *aExit;
-		TButton *UserTuneExceptionButton;
-		TAction *aAutoDownUserTune;
-		TBevel *Bevel1;
-		TCheckBox *MovieExceptionCheckBox;
-	TTimer *StateChangeTimer;
-	TAction *aSelectAll;
-	TButton *OKButton;
-	TAction *aAllowApply;
+		TsButton *UserTuneExceptionButton;
+	TAction *aUserTuneAutoMode;
+		TsBevel *Bevel1;
+		TsCheckBox *MovieExceptionCheckBox;
+		TTimer *StateChangeTimer;
+		TAction *aSelectAll;
+		TsButton *OKButton;
+		TAction *aAllowApply;
+		TsSkinManager *sSkinManager;
+		TsSkinProvider *sSkinProvider;
+		TAction *aPageControlSheetChange;
 		void __fastcall aWinampDownExecute(TObject *Sender);
 		void __fastcall aFoobarDownExecute(TObject *Sender);
 		void __fastcall aMPCDownExecute(TObject *Sender);
 		void __fastcall aLastFMDownExecute(TObject *Sender);
 		void __fastcall aWMPDownExecute(TObject *Sender);
-		void __fastcall TimerTimer(TObject *Sender);
+		void __fastcall AutoModeTimerTimer(TObject *Sender);
 		void __fastcall SaveButtonClick(TObject *Sender);
 		void __fastcall FormShow(TObject *Sender);
 		void __fastcall aVUPlayerDownExecute(TObject *Sender);
 		void __fastcall aXMPlayDownExecute(TObject *Sender);
 		void __fastcall aCutSongNumberExecute(TObject *Sender);
-		void __fastcall aReadSettingsExecute(TObject *Sender);
+		void __fastcall aLoadSettingsExecute(TObject *Sender);
 		void __fastcall aSaveSettingsExecute(TObject *Sender);
-		void __fastcall aAutoDownExecute(TObject *Sender);
+		void __fastcall aAutoModeExecute(TObject *Sender);
 		void __fastcall aSetStatusLooksExecute(TObject *Sender);
 		void __fastcall TagsBoxSelect(TObject *Sender);
 		void __fastcall TagsBoxCloseUp(TObject *Sender);
 		void __fastcall TagsBoxDropDown(TObject *Sender);
 		void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
-		void __fastcall SongTimerTimer(TObject *Sender);
+		void __fastcall SetStatusTimerTimer(TObject *Sender);
 		void __fastcall aiTunesDownExecute(TObject *Sender);
 		void __fastcall aALSongDownExecute(TObject *Sender);
 		void __fastcall aPluginAQQRadioDownExecute(TObject *Sender);
@@ -132,42 +145,45 @@ __published:	// IDE-managed Components
 		void __fastcall iTunesDownloadClick(TObject *Sender);
 		void __fastcall FoobarDownloadClick(TObject *Sender);
 		void __fastcall aaTunesDownExecute(TObject *Sender);
-		void __fastcall AutoDownCheckListBoxPreviewDragDrop(TObject *Sender, TObject *Source, int X, int Y);
-		void __fastcall AutoDownCheckListBoxPreviewDragOver(TObject *Sender, TObject *Source, int X, int Y, TDragState State, bool &Accept);
+		void __fastcall AutoModeCheckListBoxPreviewDragDrop(TObject *Sender, TObject *Source, int X, int Y);
+		void __fastcall AutoModeCheckListBoxPreviewDragOver(TObject *Sender, TObject *Source, int X, int Y, TDragState State, bool &Accept);
 		void __fastcall aCutWWWExecute(TObject *Sender);
 		void __fastcall aScreamerRadioDownExecute(TObject *Sender);
-		void __fastcall TurnOffTimerTimer(TObject *Sender);
+		void __fastcall AutoTurnOffTimerTimer(TObject *Sender);
 		void __fastcall aResetSettingsExecute(TObject *Sender);
-		void __fastcall AutoDownCheckListBoxPreviewMouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
+		void __fastcall AutoModeCheckListBoxPreviewMouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
 		void __fastcall UserTuneTimerTimer(TObject *Sender);
-		void __fastcall UserTuneSongTimerTimer(TObject *Sender);
+		void __fastcall SetUserTuneTimerTimer(TObject *Sender);
 		void __fastcall aCutWWWUserTuneExecute(TObject *Sender);
-		void __fastcall AllowUserTuneNTimerTimer(TObject *Sender);
+		void __fastcall AllowUserTuneTimerTimer(TObject *Sender);
 		void __fastcall RunPluginCheckBoxClick(TObject *Sender);
-		void __fastcall TimeTurnOffCheckBoxClick(TObject *Sender);
-		void __fastcall EnableUserTuneNCheckBoxClick(TObject *Sender);
-		void __fastcall EnableUserTuneSCheckBoxClick(TObject *Sender);
+		void __fastcall AutoTurnOffCheckBoxClick(TObject *Sender);
+		void __fastcall UserTuneNotificationCheckBoxClick(TObject *Sender);
+		void __fastcall UserTuneSendCheckBoxClick(TObject *Sender);
 		void __fastcall GetStatusTimerTimer(TObject *Sender);
 		void __fastcall aExitExecute(TObject *Sender);
 		void __fastcall UserTuneExceptionButtonClick(TObject *Sender);
-		void __fastcall aAutoDownUserTuneExecute(TObject *Sender);
-	void __fastcall StateChangeTimerTimer(TObject *Sender);
-	void __fastcall aSelectAllExecute(TObject *Sender);
-	void __fastcall OKButtonClick(TObject *Sender);
-	void __fastcall aAllowApplyExecute(TObject *Sender);
-	void __fastcall AutoDownCheckListBoxPreviewClick(TObject *Sender);
-	void __fastcall AutoDownCheckListBoxPreviewClickCheck(TObject *Sender);
-
+		void __fastcall aUserTuneAutoModeExecute(TObject *Sender);
+		void __fastcall StateChangeTimerTimer(TObject *Sender);
+		void __fastcall aSelectAllExecute(TObject *Sender);
+		void __fastcall OKButtonClick(TObject *Sender);
+		void __fastcall aAllowApplyExecute(TObject *Sender);
+		void __fastcall AutoModeCheckListBoxPreviewClick(TObject *Sender);
+		void __fastcall AutoModeCheckListBoxPreviewClickCheck(TObject *Sender);
+		void __fastcall FormCreate(TObject *Sender);
+		void __fastcall aPageControlSheetChangeExecute(TObject *Sender);
+	void __fastcall OtherTabSheetShow(TObject *Sender);
+	void __fastcall UserTuneTabSheetShow(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
-        bool JustEnabled;
-        int IntervalValue;
-		UnicodeString Opis_pocz;
-		UnicodeString OpisTMP;
-		UnicodeString Opis;
-        bool SetOnlyInJabberCheck;
-        bool BlockInvisibleCheck;
-        __fastcall TMainForm(TComponent* Owner);
+		bool JustEnabled;
+		int SetStatusDelay;
+		UnicodeString StartStatus;
+		UnicodeString TempStatus;
+		UnicodeString Status;
+		bool SetOnlyInJabberChk;
+		bool BlockInvisibleChk;
+		__fastcall TMainForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TMainForm *MainForm;

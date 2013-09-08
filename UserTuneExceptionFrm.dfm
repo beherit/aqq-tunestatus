@@ -4,7 +4,7 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsToolWindow
   Caption = 'TuneStatus - wyj'#261'tki UserTune'
-  ClientHeight = 209
+  ClientHeight = 211
   ClientWidth = 232
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -14,20 +14,20 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
   Font.Style = []
   OldCreateOrder = False
   Position = poOwnerFormCenter
-  OnShow = aReadSettingsExecute
+  OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object Bevel: TBevel
+  object Bevel: TsBevel
     Left = 0
-    Top = 177
+    Top = 173
     Width = 232
-    Height = 32
+    Height = 38
     Align = alBottom
     Shape = bsTopLine
-    ExplicitTop = 175
-    ExplicitWidth = 236
+    ExplicitTop = 177
   end
-  object SaveButton: TButton
+  object SaveButton: TsButton
     Left = 153
     Top = 181
     Width = 75
@@ -37,30 +37,29 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
     TabOrder = 0
     TabStop = False
     OnClick = SaveButtonClick
+    SkinData.SkinSection = 'BUTTON'
   end
-  object TabControl: TTabControl
+  object TabControl: TsTabControl
     AlignWithMargins = True
     Left = 6
     Top = 6
     Width = 220
-    Height = 165
+    Height = 161
     Margins.Left = 6
     Margins.Top = 6
     Margins.Right = 6
     Margins.Bottom = 6
     Align = alClient
     TabOrder = 1
-    ExplicitLeft = 8
-    ExplicitTop = 8
-    ExplicitHeight = 161
-    object InfoLabel: TLabel
+    SkinData.SkinSection = 'PAGECONTROL'
+    object InfoLabel: TsLabel
       Left = 29
       Top = 8
       Width = 161
       Height = 13
       Caption = 'Kontakty wy'#322#261'czone z notyfikacji:'
     end
-    object JIDListBox: TListBox
+    object JIDListBox: TsListBox
       Left = 8
       Top = 27
       Width = 202
@@ -68,8 +67,18 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
       ItemHeight = 13
       TabOrder = 0
       OnClick = JIDListBoxClick
+      BoundLabel.Indent = 0
+      BoundLabel.Font.Charset = DEFAULT_CHARSET
+      BoundLabel.Font.Color = clWindowText
+      BoundLabel.Font.Height = -11
+      BoundLabel.Font.Name = 'Tahoma'
+      BoundLabel.Font.Style = []
+      BoundLabel.Layout = sclLeft
+      BoundLabel.MaxWidth = 0
+      BoundLabel.UseSkinColor = True
+      SkinData.SkinSection = 'EDIT'
     end
-    object AddButton: TButton
+    object AddButton: TsButton
       Left = 8
       Top = 129
       Width = 75
@@ -77,8 +86,9 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
       Caption = 'Dodaj'
       TabOrder = 1
       OnClick = AddButtonClick
+      SkinData.SkinSection = 'BUTTON'
     end
-    object DeleteButton: TButton
+    object DeleteButton: TsButton
       Left = 135
       Top = 129
       Width = 75
@@ -87,9 +97,10 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
       Enabled = False
       TabOrder = 2
       OnClick = DeleteButtonClick
+      SkinData.SkinSection = 'BUTTON'
     end
   end
-  object CancelButton: TButton
+  object CancelButton: TsButton
     Left = 72
     Top = 181
     Width = 75
@@ -97,9 +108,11 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
     Caption = 'Anuluj'
     TabOrder = 2
     OnClick = CancelButtonClick
+    SkinData.SkinSection = 'BUTTON'
   end
   object ActionList: TActionList
-    Top = 232
+    Left = 32
+    Top = 176
     object aExit: TAction
       Caption = 'aExit'
       ShortCut = 27
@@ -113,5 +126,15 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
       Caption = 'aReadSettings'
       OnExecute = aReadSettingsExecute
     end
+  end
+  object sSkinProvider: TsSkinProvider
+    AddedTitle.Font.Charset = DEFAULT_CHARSET
+    AddedTitle.Font.Color = clNone
+    AddedTitle.Font.Height = -11
+    AddedTitle.Font.Name = 'Tahoma'
+    AddedTitle.Font.Style = []
+    SkinData.SkinSection = 'FORM'
+    TitleButtons = <>
+    Top = 176
   end
 end

@@ -1,3 +1,11 @@
+2.2.0.0
+-----
+* Pełne skórkowanie okna ustawień wtyczki.
+* Wsparcie wtyczki AQQ Streamer.
+* Poprawiono obsługę Scrobbler Last.fm.
+* Zmiany w strukturze pliku ustawień wtyczki.
+* Znaczna optymalizacja kodu.
+
 2.1.0.2
 -----
 * Poprawiono obsługę Scrobbler Last.fm.

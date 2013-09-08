@@ -14,86 +14,66 @@
 #pragma link "cspin"
 #pragma link "cspin"
 #pragma link "cspin"
+#pragma link "sButton"
+#pragma link "sPageControl"
+#pragma link "sSkinManager"
+#pragma link "sSkinProvider"
+#pragma link "sCheckListBox"
+#pragma link "sLabel"
+#pragma link "sListBox"
+#pragma link "sBevel"
+#pragma link "sComboBox"
+#pragma link "sMemo"
+#pragma link "sEdit"
+#pragma link "sSpinEdit"
+#pragma link "sCheckBox"
 #pragma resource "*.dfm"
 TMainForm *MainForm;
 //---------------------------------------------------------------------------
+__declspec(dllimport)UnicodeString GetThemeSkinDir();
+__declspec(dllimport)bool ChkSkinEnabled();
 __declspec(dllimport)void SetStatus(UnicodeString SetStatusStatus, bool SetStatusForce);
 __declspec(dllimport)UnicodeString GetPluginUserDir();
 __declspec(dllimport)UnicodeString GetPluginDir();
 __declspec(dllimport)UnicodeString GetStatus();
-__declspec(dllimport)UnicodeString GetAQQRadioSong();
-__declspec(dllimport)void BuildFastEnableAccess();
-__declspec(dllimport)void DestroyFastEnableAccess();
-__declspec(dllimport)void UpdateButton(bool Enabled);
+__declspec(dllimport)UnicodeString GetPluginSong();
+__declspec(dllimport)void BuildFastAccess();
+__declspec(dllimport)void DestroyFastAccess();
+__declspec(dllimport)void UpdateFastAccess(bool Enabled);
 __declspec(dllimport)bool AllowChangeStatus(bool WithInvisible);
-__declspec(dllimport)void ChangeUserTune(bool Enabled, int Value);
+__declspec(dllimport)void ChangeUserTune(bool Enabled, int Cloud);
 __declspec(dllimport)void SetUserTune(UnicodeString Tune, UnicodeString Time);
-__declspec(dllimport)void SetAllowUserTuneNTrue();
-__declspec(dllimport)void SetAQQUserTuneOff();
+__declspec(dllimport)void SetAllowUserTune();
+__declspec(dllimport)void TurnOffCoreUserTune();
 //---------------------------------------------------------------------------
 int GetStatusTimerInterval; //W³aczenie wtyczki wraz z AQQ - pobieranie opisu
-
 UnicodeString PlayerCaption; //Pobrany tekst okna
-UnicodeString PlayerCaption_UserTune; //Pobrany tekst okna (User Tune)
-UnicodeString Opis_TMP; //Zmienna tymczasowa opisu
-UnicodeString Opis_UserTune; //Zmienna opisu do UserTune
-UnicodeString Opis_UserTuneTMP; //Zmienna tymczasowa opisu do UserTune (do porownyawania zmian z w.w. zmienna)
-UnicodeString TMP; //Zmienna tymczasowa dla wycinania stron WWW i numeru piosenki
-UnicodeString TMP2; //j.w.
-
-bool EnableAQQUserTuneS; //czy WYSY£ANIE UserTune jest w³aczone
-bool JustEnabled; //do pierwszego uruchomienia SongTimer
+UnicodeString UserTunePlayerCaption; //Pobrany tekst okna (User Tune)
+UnicodeString UserTuneStatus; //Zmienna opisu do UserTune
+UnicodeString UserTuneStatusTMP; //Zmienna tymczasowa opisu do UserTune (do porownyawania zmian z w.w. zmienna)
+bool IgnoreCoreUserTuneChk; //czy WYSY£ANIE UserTune jest w³aczone
+bool JustEnabled; //do pierwszego uruchomienia SetStatusTimer
 UnicodeString iTunesStatusPath; //do sciezki iTunes (TuneStatus.txt)
 UnicodeString iTunesPlayerPath; //do sciezka iTunes
 UnicodeString PlayerPath; //do sciezka Lastfm/Songbird
-bool EnableFastOnOffCheck; //do pokazywania/ukrywania szybkiego przycisku
-bool DisableSongTimerCheck; //do wy³¹czania SongTimer'a dla AQQ Radio
-bool DoDisableSongTimerCheck; //j.w.
-bool CutRadiostationNameCheck; //do ucinania nazwy radiostacji z AQQ Radio
-bool CutWWWCheck; //do wycinania stron WWW z pobranego utworu
-bool TimeTurnOffCheck; //do wylaczania dziala wtyczki gdy utwor nie zmienia sie od X minut
-bool MovieExceptionCheck; //do wykluczenia filmow z pobierania
-//Zmienne-CC_SONGLENGTH------------------------------------------------------
-int res; //do pobierania nizej wymienionych danych
-UnicodeString SongLength; //dlugosc piosenki
-int Seconds; //j.w.
-int Minutes; //j.w.
+bool FastAccessChk; //do pokazywania/ukrywania szybkiego przycisku
+bool IgnorePluginsChk; //do wy³¹czania SetStatusTimer'a dla AQQ Radio
+bool DoIgnorePluginsChk; //j.w.
+bool CutRadiostationNameChk; //do ucinania nazwy radiostacji z AQQ Radio
+bool CutWWWChk; //do wycinania stron WWW z pobranego utworu
+bool AutoTurnOffChk; //do wylaczania dziala wtyczki gdy utwor nie zmienia sie od X minut
+bool MovieExceptionCk; //do wykluczenia filmow z pobierania
+UnicodeString CC_SONGLENGTH; //dlugosc piosenki
 //---------------------------------------------------------------------------
-HWND PlayerHwnd; //uchwytu do okien
 HWND LastfmWindowHwnd; //uchwyt do okna Last.fm Player
 HWND SongbirdWindowHwnd; //uchwyt do okna Songbird
 HWND ScreamerRadioWindowHwnd; //uchwyt do okna Screamer Radio
 HWND aTunesWindowHwnd; //uchwyt do okna iTunes
-wchar_t PlayerTitle[2048]; //Do pobierania tekstu okna
-wchar_t WindowCaptionName[2048]; //j.w.
-UnicodeString WindowCaptionNameW;
-DWORD procesID; //PID procesow
-//Do-Last.fm-Player/Songbird/Screamer-Radio/aTunes---------------------------
-UnicodeString ExeName;
-bool ExeExists;
 //---------------------------------------------------------------------------
 
 __fastcall TMainForm::TMainForm(TComponent* Owner)
         : TForm(Owner)
 {
-}
-//---------------------------------------------------------------------------
-
-//Pobieranie uchwytu okna przez PID
-HWND HwndPID(DWORD dwPID)
-{
-  HWND Hwnd = GetTopWindow(0);
-  HWND hWnd = 0;
-  DWORD pid;
-
-  while(Hwnd)
-  {
-    GetWindowThreadProcessId(Hwnd, &pid);
-    if(pid == dwPID) hWnd = Hwnd;
-    Hwnd = GetNextWindow(Hwnd, GW_HWNDNEXT);
-  }
-
-  return hWnd;
 }
 //---------------------------------------------------------------------------
 
@@ -206,9 +186,7 @@ UnicodeString GetPathOfProces(DWORD PID)
   HANDLE hSnapshot=CreateToolhelp32Snapshot(TH32CS_SNAPMODULE,PID);
   MODULEENTRY32 me32;
   Module32First(hSnapshot,&me32);
-
   CloseHandle(hSnapshot);
-
   return me32.szExePath;
 }
 //---------------------------------------------------------------------------
@@ -216,10 +194,12 @@ UnicodeString GetPathOfProces(DWORD PID)
 //Szukanie okna Last.fm
 bool CALLBACK FindLastfm(HWND hWnd, LPARAM lParam)
 {
+  wchar_t WindowCaptionName[255];
   GetClassNameW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
 
   if((UnicodeString)WindowCaptionName=="QWidget")
   {
+	DWORD procesID;
 	GetWindowThreadProcessId(hWnd, &procesID);
 	PlayerPath = GetPathOfProces(procesID);
 
@@ -255,7 +235,7 @@ bool CALLBACK FindLastfm(HWND hWnd, LPARAM lParam)
 		 &&((UnicodeString)WindowCaptionName!="")
 		)
 	  {
-		LastfmWindowHwnd=hWnd;
+		LastfmWindowHwnd = hWnd;
 		return false;
 	  }
 	}
@@ -267,10 +247,12 @@ bool CALLBACK FindLastfm(HWND hWnd, LPARAM lParam)
 //Szukanie okna Songbird
 bool CALLBACK FindSongbird(HWND hWnd, LPARAM lParam)
 {
+  wchar_t WindowCaptionName[255];
   GetClassNameW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
 
   if((UnicodeString)WindowCaptionName=="MozillaUIWindowClass")
   {
+	DWORD procesID;
 	GetWindowThreadProcessId(hWnd, &procesID);
 	PlayerPath = GetPathOfProces(procesID);
 
@@ -278,10 +260,8 @@ bool CALLBACK FindSongbird(HWND hWnd, LPARAM lParam)
 	{
 	  GetWindowTextW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
 
-	  if(
-		 ((UnicodeString)WindowCaptionName!="Birdtitle notifer")
-		 &&(!((UnicodeString)WindowCaptionName).IsEmpty())
-		)
+	  if(((UnicodeString)WindowCaptionName!="Birdtitle notifer")
+		 &&(!((UnicodeString)WindowCaptionName).IsEmpty()))
 	  {
 		SongbirdWindowHwnd=hWnd;
 		return false;
@@ -295,11 +275,12 @@ bool CALLBACK FindSongbird(HWND hWnd, LPARAM lParam)
 //Szukanie okna ScreamerRadio
 bool CALLBACK FindScreamerRadio(HWND hWnd, LPARAM lParam)
 {
+  wchar_t WindowCaptionName[255];
   GetClassNameW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
-  WindowCaptionNameW = WindowCaptionName;
 
-  if(WindowCaptionNameW.Pos("32770")>0)
+  if(AnsiPos("32770", (UnicodeString)WindowCaptionName))
   {
+	DWORD procesID;
 	GetWindowThreadProcessId(hWnd, &procesID);
 	PlayerPath = GetPathOfProces(procesID);
 
@@ -307,10 +288,8 @@ bool CALLBACK FindScreamerRadio(HWND hWnd, LPARAM lParam)
 	{
 	  GetWindowTextW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
 
-	  if(
-		 ((UnicodeString)WindowCaptionName!="Screamer Log")
-		 &&(!((UnicodeString)WindowCaptionName).IsEmpty())
-		)
+	  if(((UnicodeString)WindowCaptionName!="Screamer Log")
+		 &&(!((UnicodeString)WindowCaptionName).IsEmpty()))
 	  {
 		ScreamerRadioWindowHwnd=hWnd;
 		return false;
@@ -324,10 +303,12 @@ bool CALLBACK FindScreamerRadio(HWND hWnd, LPARAM lParam)
 //Szukanie okna ScreamerRadio
 bool CALLBACK FindaTunes(HWND hWnd, LPARAM lParam)
 {
+  wchar_t WindowCaptionName[255];
   GetClassNameW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
 
   if((UnicodeString)WindowCaptionName=="SunAwtFrame")
   {
+	DWORD procesID;
 	GetWindowThreadProcessId(hWnd, &procesID);
 
 	PlayerPath = GetPathOfProces(procesID);
@@ -344,17 +325,17 @@ bool CALLBACK FindaTunes(HWND hWnd, LPARAM lParam)
 
 void __fastcall TMainForm::aWinampDownExecute(TObject *Sender)
 {
-  PlayerHwnd = FindWindow("Winamp v1.x",NULL);
+  HWND PlayerHwnd = FindWindow("Winamp v1.x",NULL);
   if(!PlayerHwnd)
    PlayerHwnd = FindWindow("Studio",NULL);
 
   if(PlayerHwnd)
   {
-	//Winamp STOP?
-	res = SendMessage(PlayerHwnd,WM_USER,0,104);
-	if(res!=0)
+	//Winamp status !STOP
+	if(SendMessage(PlayerHwnd,WM_USER,0,104))
 	{
-      GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
+	  wchar_t PlayerTitle[255];
+	  GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
 	  PlayerCaption = PlayerTitle;
 
 	  //Usuwanie "Winamp"
@@ -362,34 +343,34 @@ void __fastcall TMainForm::aWinampDownExecute(TObject *Sender)
 	   PlayerCaption = "";
 
 	  //Usuwanie "- Winamp"
-	  if(PlayerCaption.Pos("- Winamp")>0)
+	  if(PlayerCaption.Pos("- Winamp"))
 	  {
 		PlayerCaption.Delete(PlayerCaption.Pos("- Winamp"), PlayerCaption.Length());
 		PlayerCaption=PlayerCaption.Trim();
 	  }
 
 	  //Usuwanie "*** "
-	  if(PlayerCaption.Pos("*** ")>0)
+	  if(PlayerCaption.Pos("*** "))
 	  {
 		PlayerCaption.Delete(1, PlayerCaption.Pos("*** ") + 3);
 		PlayerCaption=PlayerCaption.Trim();
 	  }
 
 	  //SongLength
-	  res = SendMessage(PlayerHwnd,WM_USER,1,105);
-	  if(res!=-1)
+	  int Result = SendMessage(PlayerHwnd,WM_USER,1,105);
+	  if(Result!=-1)
 	  {
-		Seconds = res % 60;
-		res = res - Seconds;
-		Minutes = res / 60;
+		int Seconds = Result % 60;
+		Result = Result - Seconds;
+		int Minutes = Result / 60;
 		//Formatowanie sekund
 		if(Seconds<10)
-		 SongLength = IntToStr(Minutes) + ":0" + IntToStr(Seconds);
+		 CC_SONGLENGTH = IntToStr(Minutes) + ":0" + IntToStr(Seconds);
 		else
-		 SongLength = IntToStr(Minutes) + ":" + IntToStr(Seconds);
+		 CC_SONGLENGTH = IntToStr(Minutes) + ":" + IntToStr(Seconds);
 	  }
 	  else
-	   SongLength = "";
+	   CC_SONGLENGTH = "";
 	}
 	else
 	 PlayerCaption = "";
@@ -397,16 +378,16 @@ void __fastcall TMainForm::aWinampDownExecute(TObject *Sender)
   else
    PlayerCaption = "";
 
-  if(!EnableAQQUserTuneS)
-   PlayerCaption_UserTune = "";
+  if(!IgnoreCoreUserTuneChk)
+   UserTunePlayerCaption = "";
   else
-   PlayerCaption_UserTune = PlayerCaption;
+   UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
 {
-  PlayerHwnd = FindWindow("Foobar_TuneStatus",NULL);
+  HWND PlayerHwnd = FindWindow("Foobar_TuneStatus",NULL);
   if(!PlayerHwnd) PlayerHwnd = FindWindow("PanelsUI",NULL);
   if(!PlayerHwnd) PlayerHwnd = FindWindow("{DA7CD0DE-1602-45e6-89A1-C2CA151E008E}/1",NULL);
   if(!PlayerHwnd) PlayerHwnd = FindWindow("{DA7CD0DE-1602-45e6-89A1-C2CA151E008E}",NULL);
@@ -416,52 +397,54 @@ void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
                                                            
   if(PlayerHwnd)
   {
+	wchar_t PlayerTitle[255];
 	GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
 	PlayerCaption = PlayerTitle;
 
 	//Usuwanie "[foobar2000"
-	if(PlayerCaption.Pos("[foobar2000")>0)
+	if(PlayerCaption.Pos("[foobar2000"))
 	{
 	  PlayerCaption.Delete(PlayerCaption.Pos("[foobar2000"), PlayerCaption.Length());
 	  PlayerCaption=PlayerCaption.Trim();
     }
 
 	//Usuwanie "foobar2000"
-	if(PlayerCaption.Pos("foobar2000")>0)
+	if(PlayerCaption.Pos("foobar2000"))
     {
 	  PlayerCaption.Delete(PlayerCaption.Pos("foobar2000"), PlayerCaption.Length());
 	  PlayerCaption=PlayerCaption.Trim();
     }
 
     //Usuwanie "fooAvA"
-	if(PlayerCaption.Pos("fooAvA")>0)
+	if(PlayerCaption.Pos("fooAvA"))
 	 PlayerCaption = "";
 
     //"Foo AvA" - Stopped
-	if(PlayerCaption.Pos("Foo AvA")>0)
+	if(PlayerCaption.Pos("Foo AvA"))
 	 PlayerCaption = "";
   }
   else
    PlayerCaption = "";
 
-  if(!EnableAQQUserTuneS)
-   PlayerCaption_UserTune = "";
+  if(!IgnoreCoreUserTuneChk)
+   UserTunePlayerCaption = "";
   else
-   PlayerCaption_UserTune = PlayerCaption;
+   UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aMPCDownExecute(TObject *Sender)
 {
-  PlayerHwnd = FindWindow("MediaPlayerClassicW",NULL);
+  HWND PlayerHwnd = FindWindow("MediaPlayerClassicW",NULL);
 
   if(PlayerHwnd)
   {
+	wchar_t PlayerTitle[255];
 	GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
     PlayerCaption = PlayerTitle;
 
 	//Usuwanie "- Media Player Classic"
-	if(PlayerCaption.Pos("- Media Player Classic")>0)
+	if(PlayerCaption.Pos("- Media Player Classic"))
 	{
 	  PlayerCaption.Delete(PlayerCaption.Pos("- Media Player Classic"), PlayerCaption.Length());
 	  PlayerCaption = PlayerCaption.Trim();
@@ -470,7 +453,7 @@ void __fastcall TMainForm::aMPCDownExecute(TObject *Sender)
   else
    PlayerCaption = "";
 
-  PlayerCaption_UserTune = PlayerCaption;
+  UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
@@ -478,20 +461,20 @@ void __fastcall TMainForm::aLastFMDownExecute(TObject *Sender)
 {
   if(!LastfmWindowHwnd)
   {
-    void *Snap;
+	bool ExeExists;
+	void *Snap;
     PROCESSENTRY32 proces;
 
     Snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS , 0);
     proces.dwSize = sizeof(PROCESSENTRY32);
 
     if(Process32First(Snap , &proces))
-    {
-      do
-      {
+	{
+	  do
+	  {
         if(proces.szExeFile[ 0 ] != '[')
         {
-		  ExeName=proces.szExeFile;
-          if(ExeName=="LastFM.exe")
+		  if(proces.szExeFile=="LastFM.exe")
 		   ExeExists=true;
 		}
 	  }
@@ -499,7 +482,7 @@ void __fastcall TMainForm::aLastFMDownExecute(TObject *Sender)
 	}
 	CloseHandle(Snap);
 
-	if(ExeExists==true)
+	if(ExeExists)
 	 EnumWindows((WNDENUMPROC)FindLastfm,0);
 	else
 	 PlayerCaption="";
@@ -509,10 +492,11 @@ void __fastcall TMainForm::aLastFMDownExecute(TObject *Sender)
   {
 	if(IsWindow(LastfmWindowHwnd))
 	{
+	  wchar_t PlayerTitle[255];
 	  GetWindowTextW(LastfmWindowHwnd,PlayerTitle,sizeof(PlayerTitle));
 	  PlayerCaption = PlayerTitle;
 
-	  if(PlayerCaption.Pos("Last.fm")>0)
+	  if(PlayerCaption.Pos("Last.fm"))
 	   PlayerCaption="";
 	}
 	else
@@ -524,7 +508,7 @@ void __fastcall TMainForm::aLastFMDownExecute(TObject *Sender)
   else
    PlayerCaption="";
 
-  PlayerCaption_UserTune=PlayerCaption;
+  UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
@@ -536,30 +520,30 @@ void __fastcall TMainForm::aWMPDownExecute(TObject *Sender)
   WMP->OpenKey("Software\\Microsoft\\MediaPlayer\\CurrentMetadata", false);
   PlayerCaption = WMP->ReadString("Author");
   if(!PlayerCaption.IsEmpty())
-   PlayerCaption = PlayerCaption + " - " + WMP->ReadString("Title");
-  //Album
-  //Author
-  //Title
-  //SongLength
-  SongLength = WMP->ReadString("durationString");
-  if(SongLength.Pos("0")==1)
-   SongLength.Delete(1,1);
-
+  {
+	PlayerCaption = PlayerCaption + " - " + WMP->ReadString("Title");
+	//SongLength
+	CC_SONGLENGTH = WMP->ReadString("durationString");
+	if(CC_SONGLENGTH.Pos("0")==1) CC_SONGLENGTH.Delete(1,1);
+  }
+  else
+   CC_SONGLENGTH = "";
   delete WMP;
 
   //Sposob drugi
   if(PlayerCaption.IsEmpty())
   {
-	PlayerHwnd = FindWindow("WMPlayerApp",NULL);
+	HWND PlayerHwnd = FindWindow("WMPlayerApp",NULL);
 	if(!PlayerHwnd) PlayerHwnd = FindWindow("Media Player 2",NULL);
 
 	if(PlayerHwnd)
 	{
+	  wchar_t PlayerTitle[255];
 	  GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
 	  PlayerCaption = PlayerTitle;
 
 	  //Usuwanie "- Windows Media Player"
-	  if(PlayerCaption.Pos("- Windows Media Player")>0)
+	  if(PlayerCaption.Pos("- Windows Media Player"))
 	  {
 		PlayerCaption.Delete(PlayerCaption.Pos("- Windows Media Player"), PlayerCaption.Length());
 		PlayerCaption=PlayerCaption.Trim();
@@ -573,42 +557,42 @@ void __fastcall TMainForm::aWMPDownExecute(TObject *Sender)
 	 PlayerCaption = "";
   }
 
-  PlayerCaption_UserTune=PlayerCaption;
+  UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::TimerTimer(TObject *Sender)
+void __fastcall TMainForm::AutoModeTimerTimer(TObject *Sender)
 {
-  aAutoDown->Execute();
+  aAutoMode->Execute();
 
   //Jezeli opis cos zawiera
-  if(Opis!="")
+  if(!Status.IsEmpty())
   {
-	if(Opis!=OpisTMP)
-    {
-	  OpisTMP=Opis;
+	if(Status!=TempStatus)
+	{
+	  TempStatus = Status;
 
-	  SongTimer->Enabled=false;
-	  if(DoDisableSongTimerCheck==true)
+	  SetStatusTimer->Enabled = false;
+	  if(DoIgnorePluginsChk)
       {
-        SongTimer->Interval=1000;
-        JustEnabled=true;
+		SetStatusTimer->Interval = 1000;
+		JustEnabled = true;
       }
-	  SongTimer->Enabled=true;
+	  SetStatusTimer->Enabled = true;
     }
   }
   //Jak opis jest pusty
-  else if(Opis=="")
+  else if(Status.IsEmpty())
   {
-	if(Opis_pocz!=OpisTMP)
+	if(StartStatus!=TempStatus)
 	{
-	  OpisTMP=Opis_pocz;
-	  while(GetStatus()!=Opis_pocz)
-	   SetStatus(Opis_pocz,!SetOnlyInJabberCheck);
-	  //Symulacja pierwszego uruchomienia SongTimer
-	  SongTimer->Enabled=false;
-	  SongTimer->Interval=1000;
-	  JustEnabled=true;
+	  TempStatus = StartStatus;
+	  while(GetStatus()!=StartStatus)
+	   SetStatus(StartStatus,!SetOnlyInJabberChk);
+	  //Symulacja pierwszego uruchomienia SetStatusTimer
+	  SetStatusTimer->Enabled = false;
+	  SetStatusTimer->Interval = 1000;
+	  JustEnabled = true;
 	}
   }
 }
@@ -619,18 +603,17 @@ void __fastcall TMainForm::SaveButtonClick(TObject *Sender)
   //Zapis ustawien
   aSaveSettings->Execute();
   //Ustawianie Timer'a dla ustawiania opisu
-  SongTimer->Interval=(1000*(SongTimerSpin->Value));
-  IntervalValue=(1000*(SongTimerSpin->Value));
+  SetStatusTimer->Interval = (1000*(SetStatusSpin->Value));
+  SetStatusDelay = (1000*(SetStatusSpin->Value));
   //Timer dla wylaczenia wtyczki
-  TurnOffTimer->Interval=(60000*(TimeTurnOffSpin->Value));
-  if(TimeTurnOffCheck==false)
-   TurnOffTimer->Enabled=false;
+  AutoTurnOffTimer->Interval = (60000*(AutoTurnOffSpin->Value));
+  if(!AutoTurnOffChk) AutoTurnOffTimer->Enabled = false;
   //Wymuszenie natychmiastowego ustawienienia w opisie dokonanych zmian
-  if(Timer->Enabled==true)
+  if(AutoModeTimer->Enabled)
   {
-	SongTimer->Enabled=false;
-	JustEnabled=true;
-	SongTimer->Interval=1000;
+	SetStatusTimer->Enabled = false;
+	JustEnabled = true;
+	SetStatusTimer->Interval = 1000;
   }
   //Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
   TagsBox->Items->Delete(6);
@@ -641,8 +624,23 @@ void __fastcall TMainForm::SaveButtonClick(TObject *Sender)
 
 void __fastcall TMainForm::FormShow(TObject *Sender)
 {
+  //AplhaSkins
+  if(!ChkSkinEnabled())
+  {
+	UnicodeString ThemeSkinDir = GetThemeSkinDir();
+	if(FileExists(ThemeSkinDir + "\\\\Skin.asz"))
+	{
+	  ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
+	  sSkinManager->SkinDirectory = ThemeSkinDir;
+	  sSkinManager->SkinName = "Skin.asz";
+	  sSkinProvider->DrawNonClientArea = false;
+	  sSkinManager->Active = true;
+	}
+	else
+	 sSkinManager->Active = false;
+  }
   //Odczyt ustawien
-  aReadSettings->Execute();
+  aLoadSettings->Execute();
   //Dodanie tekstu do TagsBox i ustawienie go jako element pokazywany
   TagsBox->Items->Add("Wybierz tag do wstawienia");
   TagsBox->ItemIndex = 6;
@@ -655,15 +653,16 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
 
 void __fastcall TMainForm::aVUPlayerDownExecute(TObject *Sender)
 {
-  PlayerHwnd = FindWindow("VUPlayerClass",NULL);
+  HWND PlayerHwnd = FindWindow("VUPlayerClass",NULL);
 
-  if(PlayerHwnd!=NULL)
+  if(PlayerHwnd)
   {     
+	wchar_t PlayerTitle[255];
 	GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
 	PlayerCaption = PlayerTitle;
 
 	//Usuwanie " ["
-	if(PlayerCaption.Pos(" [")>0)
+	if(PlayerCaption.Pos(" ["))
     {
 	  PlayerCaption.Delete(PlayerCaption.Pos(" ["), PlayerCaption.Length());
 	  PlayerCaption=PlayerCaption.Trim();
@@ -672,34 +671,31 @@ void __fastcall TMainForm::aVUPlayerDownExecute(TObject *Sender)
   else
    PlayerCaption = "";
 
-  PlayerCaption_UserTune=PlayerCaption;
+  UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aXMPlayDownExecute(TObject *Sender)
 {
-  PlayerHwnd = FindWindow("XMPLAY-MAIN",NULL);
+  HWND PlayerHwnd = FindWindow("XMPLAY-MAIN",NULL);
 
-  if(PlayerHwnd!=NULL)
+  if(PlayerHwnd)
   {
+	wchar_t PlayerTitle[255];
 	GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
     PlayerCaption = PlayerTitle;
 
     //Usuwanie "XMPlay"
-	if(PlayerCaption.Pos("XMPlay")>0)
+	if(PlayerCaption.Pos("XMPlay"))
      PlayerCaption = "";
 
-	if(PlayerHwnd!=NULL)
-    {
-      res = SendMessage(PlayerHwnd,WM_USER,0,104);
-      if(res==0)
-       PlayerCaption = "";
-    }
+	if(!SendMessage(PlayerHwnd,WM_USER,0,104))
+	 PlayerCaption = "";
   }
   else
    PlayerCaption = "";
 
-  PlayerCaption_UserTune=PlayerCaption;
+  UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
@@ -707,12 +703,11 @@ void __fastcall TMainForm::aXMPlayDownExecute(TObject *Sender)
 BOOL TestDigit(UnicodeString Text)
 {
   int digit[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-
-  int x = 0;
-  while(x < 10)
+  int count = 0;
+  while(count<10)
   {
-	if(Text.Pos((String)digit[x]) > 0) return true;
-	x++;
+	if(Text.Pos((String)digit[count])) return true;
+	count++;
   }
   return false;
 }
@@ -720,286 +715,307 @@ BOOL TestDigit(UnicodeString Text)
 
 void __fastcall TMainForm::aCutSongNumberExecute(TObject *Sender)
 {
+  //Status
   if((PlayerCaption.Pos(". ")>0)&&(PlayerCaption.Pos(". ")<7))
   {
-	TMP=PlayerCaption;
+	UnicodeString TMP = PlayerCaption;
 	TMP.Delete(PlayerCaption.Pos(". "), TMP.Length());
-	if(TestDigit(TMP)==true)
+	if(TestDigit(TMP))
 	{
 	  PlayerCaption.Delete(1, PlayerCaption.Pos(". "));
-	  PlayerCaption=PlayerCaption.Trim();
+	  PlayerCaption = PlayerCaption.Trim();
+	}
+  }
+  //User Tune
+  if((UserTunePlayerCaption.Pos(". ")>0)&&(UserTunePlayerCaption.Pos(". ")<7))
+  {
+	UnicodeString TMP = UserTunePlayerCaption;
+	TMP.Delete(UserTunePlayerCaption.Pos(". "), TMP.Length());
+	if(TestDigit(TMP))
+	{
+	  UserTunePlayerCaption.Delete(1, UserTunePlayerCaption.Pos(". "));
+	  UserTunePlayerCaption = UserTunePlayerCaption.Trim();
 	}
   }
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
+void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
 {
   TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
-
-  //Odczyt ustawieñ trybu automatycznego/manualnego
-  AutoDownCheckListBox->Clear();
-  AutoDownCheckListBoxPreview->Clear();
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player0", "Winamp/AIMP2/KMPlayer"));
-  AutoDownCheckListBox->Checked[0]=Ini->ReadBool("Auto", "PlayerCheck0", true);
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player1", "Foobar2000"));
-  AutoDownCheckListBox->Checked[1]=Ini->ReadBool("Auto", "PlayerCheck1", true);
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player2", "Windows Media Player"));
-  AutoDownCheckListBox->Checked[2]=Ini->ReadBool("Auto", "PlayerCheck2", true);
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player3", "VUPlayer"));
-  AutoDownCheckListBox->Checked[3]=Ini->ReadBool("Auto", "PlayerCheck3", true);
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player4", "XMPlay"));
-  AutoDownCheckListBox->Checked[4]=Ini->ReadBool("Auto", "PlayerCheck4", true);
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player5", "Media Player Classic"));
-  AutoDownCheckListBox->Checked[5]=Ini->ReadBool("Auto", "PlayerCheck5", true);
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player6", "iTunes"));
-  AutoDownCheckListBox->Checked[6]=Ini->ReadBool("Auto", "PlayerCheck6", true);
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player7", "ALSong"));
-  AutoDownCheckListBox->Checked[7]=Ini->ReadBool("Auto", "PlayerCheck7", true);
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player8", "AQQ Radio"));
-  AutoDownCheckListBox->Checked[8]=Ini->ReadBool("Auto", "PlayerCheck8", true);
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player9", "Screamer Radio"));
-  AutoDownCheckListBox->Checked[9]=Ini->ReadBool("Auto", "PlayerCheck9", true);
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player10", "aTunes"));
-  AutoDownCheckListBox->Checked[10]=Ini->ReadBool("Auto", "PlayerCheck10", false);
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player11", "Songbird"));
-  AutoDownCheckListBox->Checked[11]=Ini->ReadBool("Auto", "PlayerCheck11", false);
-  AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player12", "Last.fm Player"));
-  AutoDownCheckListBox->Checked[12]=Ini->ReadBool("Auto", "PlayerCheck12", false);
-  for(int i=0;i<=12;i++)
+  //Odczyt ustawieñ trybu automatycznego
+  AutoModeCheckListBox->Clear();
+  AutoModeCheckListBoxPreview->Clear();
+  for(int Count=0;Count<13;Count++)
   {
-	AutoDownCheckListBoxPreview->Items->Add(AutoDownCheckListBox->Items->Strings[i]);
-	AutoDownCheckListBoxPreview->Checked[i]=AutoDownCheckListBox->Checked[i];
+	UnicodeString Player = Ini->ReadString("AutoMode",("Player"+IntToStr(Count+1)),"");
+	if(!Player.IsEmpty())
+	{
+	  UnicodeString Enabled = Player;
+	  Enabled.Delete(1,Enabled.Pos(";"));
+	  Player.Delete(Player.Pos(";"),Player.Length());
+	  if(Player==1) Player = "Winamp/AIMP2/KMPlayer";
+	  else if(Player==2) Player = "Foobar2000";
+	  else if(Player==3) Player = "Windows Media Player";
+	  else if(Player==4) Player = "VUPlayer";
+	  else if(Player==5) Player = "XMPlay";
+	  else if(Player==6) Player = "Media Player Classic";
+	  else if(Player==7) Player = "iTunes";
+	  else if(Player==8) Player = "ALSong";
+	  else if(Player==9) Player = "Wtyczki (np. AQQ Radio)";
+	  else if(Player==10) Player = "Screamer Radio";
+	  else if(Player==11) Player = "aTunes";
+	  else if(Player==12) Player = "Songbird";
+	  else if(Player==13) Player = "Last.fm Player";
+	  AutoModeCheckListBox->Items->Add(Player);
+	  AutoModeCheckListBoxPreview->Items->Add(Player);
+	  AutoModeCheckListBox->Checked[Count] = StrToBool(Enabled);
+	  AutoModeCheckListBoxPreview->Checked[Count] = StrToBool(Enabled);
+	}
   }
-  //Sprawdzanie ilosci obslugiwanych odtwarzaczy - czy resetowac ustawienia
-  int Players = Ini->ReadInteger("Auto", "Players", 0);
-  if(Players!=13)
+  //Sprawdzanie ilosci obslugiwanych odtwarzaczy
+  if(AutoModeCheckListBox->Count!=13)
+   //Resetowanie ustawien
    aResetSettings->Execute();
-
+  //Status
   UnicodeString Status = UTF8ToUnicodeString((IniStrToStr(Ini->ReadString("Settings", "Status", ""))).t_str());
-  if(Status!="")
-   StatusMemo->Text = Status;
-
-  SetOnlyInJabberCheck = Ini->ReadBool("Settings", "SetOnlyInJabber", false);
-   SetOnlyInJabberCheckBox->Checked = SetOnlyInJabberCheck;
-
-  BlockInvisibleCheck = Ini->ReadBool("Settings", "BlockInvisible", true);
-   BlockInvisibleCheckBox->Checked= BlockInvisibleCheck;
-
-  EnablePluginOnStartCheckBox->Checked = Ini->ReadBool("Settings", "EnablePluginOnStart", false);
-
-  EnableFastOnOffCheck = Ini->ReadBool("Settings", "EnableFastOnOff", true);
-   EnableFastOnOffCheckBox->Checked = EnableFastOnOffCheck;
-
-  IntervalValue = 1000*(Ini->ReadInteger("Settings", "SongTimerInterval", 5));
-   SongTimer->Interval = IntervalValue;
-   if(IntervalValue<4000)
-   {
-	 IntervalValue = 4000;
-	 SongTimer->Interval = 4000;
-   }
-  SongTimerSpin->Value = Ini->ReadInteger("Settings", "SongTimerInterval", 5);
-   if(SongTimerSpin->Value<4) SongTimerSpin->Value = 4;
-
-  DisableSongTimerCheck = Ini->ReadBool("Settings", "DisableSongTimer", true);
-   DisableSongTimerCheckBox->Checked = DisableSongTimerCheck;
-
-  CutRadiostationNameCheck = Ini->ReadBool("Settings", "CutRadiostationName", true);
-   CutRadiostationNameCheckBox->Checked = CutRadiostationNameCheck;
-
-  CutWWWCheck = Ini->ReadBool("Settings", "CutWWW", false);
-   CutWWWCheckBox->Checked = CutWWWCheck;
-
-  TimeTurnOffCheck = Ini->ReadBool("Settings", "TimeTurnOff", false);
-   TimeTurnOffCheckBox->Checked = TimeTurnOffCheck;
-   TimeTurnOffSpin->Enabled = TimeTurnOffCheck;
-
-  TurnOffTimer->Interval = 60000*(Ini->ReadInteger("Settings", "TimeTurnOffInterval", 15));
-  TimeTurnOffSpin->Value = Ini->ReadInteger("Settings", "TimeTurnOffInterval", 15);
-
-  MovieExceptionCheck = Ini->ReadBool("Settings", "MovieException", true);
-   MovieExceptionCheckBox->Checked = MovieExceptionCheck;
-
-  EnableUserTuneNCheckBox->Checked = Ini->ReadBool("UserTune", "EnableN", false);
-   UserTuneTimeNLabel->Enabled = EnableUserTuneNCheckBox->Checked;
-   UserTuneNSpin->Enabled = EnableUserTuneNCheckBox->Checked;
-   UserTuneExceptionButton->Enabled = EnableUserTuneNCheckBox->Checked;
-  UserTuneNSpin->Value = Ini->ReadInteger("UserTune", "TimeOutN", 4);
-  EnableUserTuneSCheckBox->Checked = Ini->ReadBool("UserTune", "EnableS", false);
-   UserTuneTimeSLabel1->Enabled = EnableUserTuneSCheckBox->Checked;
-   UserTuneTimeSLabel2->Enabled = EnableUserTuneSCheckBox->Checked;
-   UserTuneSSpin->Enabled = EnableUserTuneSCheckBox->Checked;
-   EnableAQQUserTuneSCheckBox->Enabled = EnableUserTuneSCheckBox->Checked;
-  UserTuneSSpin->Value = Ini->ReadInteger("UserTune", "TimeOutS", 5);
-   if( UserTuneSSpin->Value<4) UserTuneSSpin->Value = 4;
-   UserTuneSongTimer->Interval = 1000*(UserTuneSSpin->Value);
-  EnableAQQUserTuneS = Ini->ReadBool("UserTune", "EnableAQQS", false);
-   EnableAQQUserTuneSCheckBox->Checked = EnableAQQUserTuneS;
-  if((EnableAQQUserTuneSCheckBox->Enabled==true)&&(EnableAQQUserTuneSCheckBox->Checked==true))
-   SetAQQUserTuneOff();
+  if(Status.IsEmpty()) Status = "Obecnie s³ucham: CC_TUNESTATUS";
+  StatusMemo->Text = Status;
+  PreviewStatusMemo->Text = StatusMemo->Text;
+  //SetOnlyInJabber
+  SetOnlyInJabberChk = Ini->ReadBool("Settings", "SetOnlyInJabber", false);
+  SetOnlyInJabberCheckBox->Checked = SetOnlyInJabberChk;
+  //BlockInvisible
+  BlockInvisibleChk = Ini->ReadBool("Settings", "BlockInvisible", true);
+  BlockInvisibleCheckBox->Checked = BlockInvisibleChk;
+  //EnableOnStart
+  EnableOnStartCheckBox->Checked = Ini->ReadBool("Settings", "EnableOnStart", false);
+  //FastAccess
+  FastAccessChk = Ini->ReadBool("Settings", "FastAccess", true);
+  FastAccessCheckBox->Checked = FastAccessChk;
+  //SetStatusDelay
+  SetStatusDelay = 1000*(Ini->ReadInteger("Settings", "SetStatusDelay", 5));
+  if(SetStatusDelay<4000) SetStatusDelay = 4000;
+  SetStatusTimer->Interval = SetStatusDelay;
+  SetStatusSpin->Value = SetStatusDelay/1000;
+  //IgnorePlugins
+  IgnorePluginsChk = Ini->ReadBool("Settings", "IgnorePlugins", true);
+  IgnorePluginsCheckBox->Checked = IgnorePluginsChk;
+  //CutRadiostationName
+  CutRadiostationNameChk = Ini->ReadBool("Settings", "CutRadiostationName", true);
+  CutRadiostationNameCheckBox->Checked = CutRadiostationNameChk;
+  //CutWWW
+  CutWWWChk = Ini->ReadBool("Settings", "CutWWW", false);
+  CutWWWCheckBox->Checked = CutWWWChk;
+  //AutoTurnOff
+  AutoTurnOffChk = Ini->ReadBool("Settings", "AutoTurnOff", false);
+  AutoTurnOffCheckBox->Checked = AutoTurnOffChk;
+  AutoTurnOffSpin->Enabled = AutoTurnOffChk;
+  //AutoTurnOffDelay
+  AutoTurnOffTimer->Interval = 60000*(Ini->ReadInteger("Settings", "AutoTurnOffDelay", 15));
+  AutoTurnOffSpin->Value = Ini->ReadInteger("Settings", "AutoTurnOffDelay", 15);
+  //MovieException
+  MovieExceptionCk = Ini->ReadBool("Settings", "MovieException", true);
+  MovieExceptionCheckBox->Checked = MovieExceptionCk;
+  //Notification
+  UserTuneNotificationCheckBox->Checked = Ini->ReadBool("UserTune", "Notification", false);
+  UserTuneNotificationSpin->Enabled = UserTuneNotificationCheckBox->Checked;
+  UserTuneExceptionButton->Enabled = UserTuneNotificationCheckBox->Checked;
+  //Cloud
+  UserTuneNotificationSpin->Value = Ini->ReadInteger("UserTune", "Cloud", 4);
+  //Send
+  UserTuneSendCheckBox->Checked = Ini->ReadBool("UserTune", "Send", false);
+  UserTuneSendLabel->Enabled = UserTuneSendCheckBox->Checked;
+  UserTuneSendSpin->Enabled = UserTuneSendCheckBox->Checked;
+  IgnoreCoreUserTuneCheckBox->Enabled = UserTuneSendCheckBox->Checked;
+  //SendDelay
+  UserTuneSendSpin->Value = Ini->ReadInteger("UserTune", "SendDelay", 5);
+  if(UserTuneSendSpin->Value<4) UserTuneSendSpin->Value = 4;
+  SetUserTuneTimer->Interval = 1000*(UserTuneSendSpin->Value);
+  //IgnoreCore
+  IgnoreCoreUserTuneChk = Ini->ReadBool("UserTune", "IgnoreCore", false);
+  IgnoreCoreUserTuneCheckBox->Checked = IgnoreCoreUserTuneChk;
+  if((IgnoreCoreUserTuneCheckBox->Enabled)&&(IgnoreCoreUserTuneCheckBox->Checked))
+   TurnOffCoreUserTune();
 
   delete Ini;
-
-  PreviewStatusMemo->Text=StatusMemo->Text;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 {
-  if(PreviewStatusMemo->Text.Pos("CC_TUNESTATUS")>0)
+  //Ustawianie zdefiniowanego opisu
+  if(PreviewStatusMemo->Text.Pos("CC_TUNESTATUS"))
    StatusMemo->Text = PreviewStatusMemo->Text;
+  //Ustawianie domyslnego opisu
   else
   {
 	StatusMemo->Text = "Obecnie s³ucham: CC_TUNESTATUS";
 	PreviewStatusMemo->Text = "Obecnie s³ucham: CC_TUNESTATUS";
   }
-
   TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
-
   //Zapis ustawien trybu automatycznego/manualnego
-  AutoDownCheckListBox->Clear();  
-  for(int i=0;i<=12;i++)
+  AutoModeCheckListBox->Clear();
+  for(int Count=0;Count<13;Count++)
   {
-	AutoDownCheckListBox->Items->Add(AutoDownCheckListBoxPreview->Items->Strings[i]);
-    AutoDownCheckListBox->Checked[i]=AutoDownCheckListBoxPreview->Checked[i];
+	AutoModeCheckListBox->Items->Add(AutoModeCheckListBoxPreview->Items->Strings[Count]);
+	AutoModeCheckListBox->Checked[Count] = AutoModeCheckListBoxPreview->Checked[Count];
 
-	Ini->WriteString("Auto", "Player" + IntToStr(i), AutoDownCheckListBox->Items->Strings[i]);
-	Ini->WriteBool("Auto", "PlayerCheck" + IntToStr(i), AutoDownCheckListBox->Checked[i]);
+	UnicodeString Player = AutoModeCheckListBox->Items->Strings[Count];
+	if(Player=="Winamp/AIMP2/KMPlayer") Player = 1;
+	else if(Player=="Foobar2000") Player = 2;
+	else if(Player=="Windows Media Player") Player = 3;
+	else if(Player=="VUPlayer") Player = 4;
+	else if(Player=="XMPlay") Player = 5;
+	else if(Player=="Media Player Classic") Player = 6;
+	else if(Player=="iTunes") Player = 7;
+	else if(Player=="ALSong") Player = 8;
+	else if(Player=="Wtyczki (np. AQQ Radio)") Player = 9;
+	else if(Player=="Screamer Radio") Player = 10;
+	else if(Player=="aTunes") Player = 11;
+	else if(Player=="Songbird") Player = 12;
+	else if(Player=="Last.fm Player") Player = 13;
+	int Enabled = AutoModeCheckListBox->Checked[Count];
+	Ini->WriteString("AutoMode", ("Player"+IntToStr(Count+1)), (Player+";"+IntToStr(Enabled)));
   }
-
-  //Zapis ilosci obslugiwanych odtwarzaczy
-  Ini->WriteInteger("Auto", "Players", 13);
-
+  //Status
   UnicodeString Status = StatusMemo->Text;
   ShortString StatusShort = UTF8EncodeToShortString(Status);
   Ini->WriteString("Settings", "Status", StrToIniStr(StatusShort.operator AnsiString()));
-
+  //SetOnlyInJabber
   Ini->WriteBool("Settings", "SetOnlyInJabber", SetOnlyInJabberCheckBox->Checked);
-  if(SetOnlyInJabberCheck!=SetOnlyInJabberCheckBox->Checked)
+  if(SetOnlyInJabberChk!=SetOnlyInJabberCheckBox->Checked)
   {
-    SetOnlyInJabberCheck = SetOnlyInJabberCheckBox->Checked;
-    if(RunPluginCheckBox->Checked==true)
-    {
-      if(SetOnlyInJabberCheck==true) //tylko jabber
-      {
-        if(Opis_pocz!=OpisTMP)
-        {
-		  OpisTMP=Opis_pocz;
-		  while(GetStatus()!=Opis_pocz)
-		   SetStatus(Opis_pocz,SetOnlyInJabberCheck);
+	SetOnlyInJabberChk = SetOnlyInJabberCheckBox->Checked;
+	if(RunPluginCheckBox->Checked)
+	{
+	  if(SetOnlyInJabberChk)
+	  {
+		if(StartStatus!=TempStatus)
+		{
+		  TempStatus = StartStatus;
+		  while(GetStatus()!=StartStatus)
+		   SetStatus(StartStatus,SetOnlyInJabberChk);
         }
-        if(Opis!="")
-        {
-          if(Opis!=OpisTMP)
-          {
-			OpisTMP=Opis;
-			while(GetStatus()!=Opis)
-             SetStatus(Opis,!SetOnlyInJabberCheck);
+		if(!Status.IsEmpty())
+		{
+		  if(Status!=TempStatus)
+		  {
+			TempStatus = Status;
+			while(GetStatus()!=Status)
+			 SetStatus(Status,!SetOnlyInJabberChk);
           }
         }
       }
-      else //wszystkie
-      {
-		OpisTMP=Opis;
-		while(GetStatus()!=Opis)
-		 SetStatus(Opis,!SetOnlyInJabberCheck);
+	  else
+	  {
+		TempStatus = Status;
+		while(GetStatus()!=Status)
+		 SetStatus(Status,!SetOnlyInJabberChk);
       }
     }
   }
-
+  //BlockInvisible
   Ini->WriteBool("Settings", "BlockInvisible", BlockInvisibleCheckBox->Checked);
-   BlockInvisibleCheck = BlockInvisibleCheckBox->Checked;
-
-  Ini->WriteBool("Settings", "EnablePluginOnStart", EnablePluginOnStartCheckBox->Checked);
-
-  Ini->WriteBool("Settings", "EnableFastOnOff", EnableFastOnOffCheckBox->Checked);
-  DestroyFastEnableAccess();
-  if(EnableFastOnOffCheckBox->Checked)
-  {
-	BuildFastEnableAccess();
-	UpdateButton(Timer->Enabled);
-  }
-
-  Ini->WriteInteger("Settings", "SongTimerInterval", SongTimerSpin->Value);
-
-  Ini->WriteBool("Settings", "DisableSongTimer", DisableSongTimerCheckBox->Checked);
-   DisableSongTimerCheck = DisableSongTimerCheckBox->Checked;
-
+  BlockInvisibleChk = BlockInvisibleCheckBox->Checked;
+  //EnableOnStart
+  Ini->WriteBool("Settings", "EnableOnStart", EnableOnStartCheckBox->Checked);
+  //FastAccess
+  Ini->WriteBool("Settings", "FastAccess", FastAccessCheckBox->Checked);
+  FastAccessChk = FastAccessCheckBox->Checked;
+  DestroyFastAccess();
+  if(FastAccessChk)	BuildFastAccess();
+  //SetStatusDelay
+  Ini->WriteInteger("Settings", "SetStatusDelay", SetStatusSpin->Value);
+  SetStatusDelay = 1000*SetStatusSpin->Value;
+  SetStatusTimer->Interval = SetStatusDelay;
+  //IgnorePlugins
+  Ini->WriteBool("Settings", "IgnorePlugins", IgnorePluginsCheckBox->Checked);
+  IgnorePluginsChk = IgnorePluginsCheckBox->Checked;
+  //CutRadiostationName
   Ini->WriteBool("Settings", "CutRadiostationName", CutRadiostationNameCheckBox->Checked);
-   CutRadiostationNameCheck = CutRadiostationNameCheckBox->Checked;
-
+  CutRadiostationNameChk = CutRadiostationNameCheckBox->Checked;
+  //CutWWW
   Ini->WriteBool("Settings", "CutWWW", CutWWWCheckBox->Checked);
-   CutWWWCheck = CutWWWCheckBox->Checked;
-
-  Ini->WriteBool("Settings", "TimeTurnOff", TimeTurnOffCheckBox->Checked);
-   TimeTurnOffCheck = TimeTurnOffCheckBox->Checked;
-  Ini->WriteInteger("Settings", "TimeTurnOffInterval", TimeTurnOffSpin->Value);
-
+  CutWWWChk = CutWWWCheckBox->Checked;
+  //AutoTurnOff
+  Ini->WriteBool("Settings", "AutoTurnOff", AutoTurnOffCheckBox->Checked);
+  AutoTurnOffChk = AutoTurnOffCheckBox->Checked;
+  //AutoTurnOffDelay
+  Ini->WriteInteger("Settings", "AutoTurnOffDelay", AutoTurnOffSpin->Value);
+  AutoTurnOffTimer->Interval = 60000*AutoTurnOffSpin->Value;
+  if(!AutoTurnOffChk) AutoTurnOffTimer->Enabled = false;
+  //MovieException
   Ini->WriteBool("Settings", "MovieException", MovieExceptionCheckBox->Checked);
-   MovieExceptionCheck = MovieExceptionCheckBox->Checked;
-
-  Ini->WriteBool("UserTune", "EnableN", EnableUserTuneNCheckBox->Checked);
-  Ini->WriteInteger("UserTune", "TimeOutN", UserTuneNSpin->Value);
-  ChangeUserTune(EnableUserTuneNCheckBox->Checked,UserTuneNSpin->Value);
-  Ini->WriteBool("UserTune", "EnableS", EnableUserTuneSCheckBox->Checked);
-  if((EnableUserTuneSCheckBox->Checked==false)&&(UserTuneTimer->Enabled==true))
+  MovieExceptionCk = MovieExceptionCheckBox->Checked;
+  //Notification
+  Ini->WriteBool("UserTune", "Notification", UserTuneNotificationCheckBox->Checked);
+  //Cloud
+  Ini->WriteInteger("UserTune", "Cloud", UserTuneNotificationSpin->Value);
+  ChangeUserTune(UserTuneNotificationCheckBox->Checked,UserTuneNotificationSpin->Value);
+  //Send
+  Ini->WriteBool("UserTune", "Send", UserTuneSendCheckBox->Checked);
+  if((!UserTuneSendCheckBox->Checked)&&(UserTuneTimer->Enabled))
   {
-    UserTuneTimer->Enabled=false;
-    SetUserTune("","");
-    Opis_UserTuneTMP="";
+	UserTuneTimer->Enabled = false;
+	SetUserTune("","");
+	UserTuneStatusTMP = "";
   }
-  if((EnableUserTuneSCheckBox->Checked==true)&&(UserTuneTimer->Enabled==false))
+  if((UserTuneSendCheckBox->Checked)&&(!UserTuneTimer->Enabled))
   {
-    Opis_UserTuneTMP="";
-	UserTuneTimer->Enabled=true;
+	UserTuneStatusTMP = "";
+	UserTuneTimer->Enabled = true;
   }
-  Ini->WriteInteger("UserTune", "TimeOutS", UserTuneSSpin->Value);
-   UserTuneSongTimer->Interval = 1000*(UserTuneSSpin->Value);
-  Ini->WriteBool("UserTune", "EnableAQQS", EnableAQQUserTuneSCheckBox->Checked);
-  if((EnableAQQUserTuneSCheckBox->Enabled==true)&&(EnableAQQUserTuneSCheckBox->Checked==true))
-   SetAQQUserTuneOff();
-  EnableAQQUserTuneS = EnableAQQUserTuneSCheckBox->Checked;
+  //SendDelay
+  Ini->WriteInteger("UserTune", "SendDelay", UserTuneSendSpin->Value);
+  SetUserTuneTimer->Interval = 1000*(UserTuneSendSpin->Value);
+  //IgnoreCore
+  Ini->WriteBool("UserTune", "IgnoreCore", IgnoreCoreUserTuneCheckBox->Checked);
+  IgnoreCoreUserTuneChk = IgnoreCoreUserTuneCheckBox->Checked;
+  if((IgnoreCoreUserTuneCheckBox->Enabled)&&(IgnoreCoreUserTuneCheckBox->Checked))
+   TurnOffCoreUserTune();
 
   delete Ini;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::aAutoDownExecute(TObject *Sender)
+void __fastcall TMainForm::aAutoModeExecute(TObject *Sender)
 {
-  for(int i=0;i<=12;i++)
+  for(int Count=0;Count<13;Count++)
   {
-	if(AutoDownCheckListBox->Checked[i]==true)
+	if(AutoModeCheckListBox->Checked[Count])
 	{
-	  if(AutoDownCheckListBox->Items->Strings[i]=="Winamp/AIMP2/KMPlayer")
+	  if(AutoModeCheckListBox->Items->Strings[Count]=="Winamp/AIMP2/KMPlayer")
 	   aWinampDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="Foobar2000")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Foobar2000")
 	   aFoobarDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="Windows Media Player")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Windows Media Player")
 	   aWMPDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="VUPlayer")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="VUPlayer")
 	   aVUPlayerDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="XMPlay")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="XMPlay")
 	   aXMPlayDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="Media Player Classic")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Media Player Classic")
 	   aMPCDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="iTunes")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="iTunes")
 	   aiTunesDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="ALSong")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="ALSong")
 	   aALSongDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="AQQ Radio")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Wtyczki (np. AQQ Radio)")
 	   aPluginAQQRadioDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="Screamer Radio")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Screamer Radio")
        aScreamerRadioDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="aTunes")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="aTunes")
 	   aaTunesDown->Execute();
-      if(AutoDownCheckListBox->Items->Strings[i]=="Songbird")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Songbird")
 	   aSongbirdDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="Last.fm Player")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Last.fm Player")
 	   aLastFMDown->Execute();
 
-	  PlayerCaption=PlayerCaption.Trim();
+	  PlayerCaption = PlayerCaption.Trim();
 
-	  if(MovieExceptionCheck==true)
+	  //Zablokowanie plikow filmowych
+	  if((!PlayerCaption.IsEmpty())&&(MovieExceptionCk))
 	  {
 		if(PlayerCaption.LowerCase().Pos(".avi")>0)
 		 PlayerCaption="";
@@ -1011,7 +1027,7 @@ void __fastcall TMainForm::aAutoDownExecute(TObject *Sender)
 		 PlayerCaption="";
 	  }
 
-	  if(PlayerCaption!="")
+	  if(!PlayerCaption.IsEmpty())
 	  {
 		//Wywalanie zbednych znakow
 		if(PlayerCaption.LowerCase().Pos(".mp3")>0)
@@ -1028,25 +1044,23 @@ void __fastcall TMainForm::aAutoDownExecute(TObject *Sender)
 		 PlayerCaption.Delete(PlayerCaption.LowerCase().Pos(".rmvb"),PlayerCaption.LowerCase().Pos(".rmvb")+4);
 		//Ucinanie numeru utworu
 		aCutSongNumber->Execute();
+		//Wycinanie adresów stron WWW
+		if(CutWWWChk) aCutWWW->Execute();
 		//Przypisanie wlasciwego opisu
-		Opis = PlayerCaption;
+		Status = PlayerCaption;
 		//Zakonczenie petli
-		i=13;
+		Count = 13;
 	  }
 	  else
-	   Opis = "";
+	   Status = "";
 	}
   }
 
-  if(Opis!="")
+  if(!Status.IsEmpty())
   {
-	//Wycinanie adresów stron WWW
-	if(CutWWWCheck==true)
-	 aCutWWW->Execute();
 	//Odtagowywanie opisu na opis w³asciwy
 	aSetStatusLooks->Execute();
-	//Uciannie spacji z lewej i prawej strony
-	Opis=Opis.Trim();
+	Status = Status.Trim();
   }
 }
 //---------------------------------------------------------------------------
@@ -1054,24 +1068,23 @@ void __fastcall TMainForm::aAutoDownExecute(TObject *Sender)
 
 void __fastcall TMainForm::aSetStatusLooksExecute(TObject *Sender)
 {
-  if(Opis!="")
+  if(!Status.IsEmpty())
   {
-	Opis_TMP = StatusMemo->Text.SubString(0, 512);
 	//Pobrany utwór
-	if(Opis_TMP.Pos("CC_TUNESTATUS")!=0)
-     Opis = StringReplace(Opis_TMP, "CC_TUNESTATUS", Opis, TReplaceFlags() << rfReplaceAll);
-    //Opis pocz¹tkowy
-	if(Opis.Pos("CC_STARTSTATUS")!=0)
-	 Opis = StringReplace(Opis, "CC_STARTSTATUS", Opis_pocz, TReplaceFlags() << rfReplaceAll);
+	if(StatusMemo->Text.Pos("CC_TUNESTATUS"))
+	 Status = StringReplace(StatusMemo->Text, "CC_TUNESTATUS", Status, TReplaceFlags());
+	//Opis pocz¹tkowy
+	if(Status.Pos("CC_STARTSTATUS"))
+	 Status = StringReplace(Status, "CC_STARTSTATUS", StartStatus, TReplaceFlags());
 	//Wersja TuneStatus
-	if(Opis.Pos("CC_PLUGINVERSION")!=0)
-	 Opis = StringReplace(Opis, "CC_PLUGINVERSION", GetFileVersionInfo(GetPluginDir().t_str(), "FileVersion"), TReplaceFlags() << rfReplaceAll);
+	if(Status.Pos("CC_PLUGINVERSION"))
+	 Status = StringReplace(Status, "CC_PLUGINVERSION", GetFileVersionInfo(GetPluginDir().t_str(), "FileVersion"), TReplaceFlags());
 	//Wersja AQQ
-	if(Opis.Pos("CC_AQQVERSION")!=0)
-	 Opis = StringReplace(Opis, "CC_AQQVERSION", GetFileVersionInfo(NULL, "FileVersion"), TReplaceFlags() << rfReplaceAll);
+	if(Status.Pos("CC_AQQVERSION"))
+	 Status = StringReplace(Status, "CC_AQQVERSION", GetFileVersionInfo(NULL, "FileVersion"), TReplaceFlags());
 	//SongLength
-	if(Opis.Pos("CC_SONGLENGTH")!=0)
-	 Opis = StringReplace(Opis, "CC_SONGLENGTH", SongLength, TReplaceFlags() << rfReplaceAll);
+	if(Status.Pos("CC_SONGLENGTH"))
+	 Status = StringReplace(Status, "CC_SONGLENGTH", CC_SONGLENGTH, TReplaceFlags());
   }
 }
 //---------------------------------------------------------------------------
@@ -1086,13 +1099,12 @@ void __fastcall TMainForm::TagsBoxSelect(TObject *Sender)
 
 	if(PreviewStatusMemo->Text.Pos(Tag)==0)
 	{
-	  UnicodeString Before,Fore;
+	  UnicodeString Before,After;
 
-	  Before=PreviewStatusMemo->Text.SubString(0,PreviewStatusMemo->SelStart);
-	  Fore=PreviewStatusMemo->Text.SubString(PreviewStatusMemo->SelStart+1,(PreviewStatusMemo->Text).Length());
+	  Before = PreviewStatusMemo->Text.SubString(0,PreviewStatusMemo->SelStart);
+	  After = PreviewStatusMemo->Text.SubString(PreviewStatusMemo->SelStart+1,(PreviewStatusMemo->Text).Length());
       PreviewStatusMemo->Clear();
-
-	  PreviewStatusMemo->Text=Before+ " " + Tag + " " +Fore;
+	  PreviewStatusMemo->Text = Before + " " + Tag + " " + After;
     }
   }
 }
@@ -1100,7 +1112,7 @@ void __fastcall TMainForm::TagsBoxSelect(TObject *Sender)
 
 void __fastcall TMainForm::TagsBoxCloseUp(TObject *Sender)
 {
-  if(TagsBox->Text=="")
+  if(TagsBox->Text.IsEmpty())
   {
 	TagsBox->Items->Delete(6);
     TagsBox->Items->Add("Wybierz tag do wstawienia");
@@ -1118,54 +1130,53 @@ void __fastcall TMainForm::TagsBoxDropDown(TObject *Sender)
 void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
   TagsBox->Items->Delete(6);
-  aReadSettings->Execute();
+  aLoadSettings->Execute();
 }
 //---------------------------------------------------------------------------
 
-
-void __fastcall TMainForm::SongTimerTimer(TObject *Sender)
+void __fastcall TMainForm::SetStatusTimerTimer(TObject *Sender)
 {
-  SongTimer->Enabled=false;
-  DoDisableSongTimerCheck=false;
+  SetStatusTimer->Enabled = false;
+  DoIgnorePluginsChk = false;
 
-  if(Opis!=GetStatus())
+  if(Status!=GetStatus())
   {
-    TurnOffTimer->Enabled=false;
-	if(AllowChangeStatus(BlockInvisibleCheck)==true)
+	AutoTurnOffTimer->Enabled = false;
+	if(AllowChangeStatus(BlockInvisibleChk))
 	{
-	  while(GetStatus()!=Opis)
-	   SetStatus(Opis,!SetOnlyInJabberCheck);
-	  if(TimeTurnOffCheck==true)
-       TurnOffTimer->Enabled=true;
+	  while(GetStatus()!=Status)
+	   SetStatus(Status,!SetOnlyInJabberChk);
+	  if(AutoTurnOffChk) AutoTurnOffTimer->Enabled = true;
     }
     else
     {
-      //Symulacja pierwszego uruchomienia SongTimer
-	  SongTimer->Enabled=false;
-	  SongTimer->Interval=1000;
-	  JustEnabled=true;
+      //Symulacja pierwszego uruchomienia SetStatusTimer
+	  SetStatusTimer->Enabled = false;
+	  SetStatusTimer->Interval = 1000;
+	  JustEnabled = true;
     }
   }
   //Sprawdzenie czy to by³o pierwsze uruchomienie Timer'a
-  if(JustEnabled==true)
+  if(JustEnabled)
   {
     //Przywrócenie zapisanych ustawieñ
-    SongTimer->Interval = IntervalValue;
-    JustEnabled=false;
+	SetStatusTimer->Interval = SetStatusDelay;
+	JustEnabled = false;
   }
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aiTunesDownExecute(TObject *Sender)
 {
-  PlayerHwnd = FindWindow("iTunes",NULL);
+  HWND PlayerHwnd = FindWindow("iTunes",NULL);
 
-  if(PlayerHwnd!=NULL)
+  if(PlayerHwnd)
   {
     //Ustalanie sciezki iTunes
-	if(iTunesStatusPath=="")
+	if(iTunesStatusPath.IsEmpty())
 	{
-      GetWindowThreadProcessId(PlayerHwnd, &procesID);
+	  DWORD procesID;
+	  GetWindowThreadProcessId(PlayerHwnd, &procesID);
       iTunesStatusPath = GetPathOfProces(procesID);
       iTunesStatusPath = StringReplace(iTunesStatusPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
       iTunesStatusPath = ExtractFilePath(iTunesStatusPath) + "TuneStatus.txt";
@@ -1180,69 +1191,68 @@ void __fastcall TMainForm::aiTunesDownExecute(TObject *Sender)
   }
   else
   {
-	iTunesStatusPath="";
-	PlayerCaption="";
+	iTunesStatusPath = "";
+	PlayerCaption = "";
   }
 
-  PlayerCaption_UserTune=PlayerCaption;
+  UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aALSongDownExecute(TObject *Sender)
 {
-  PlayerHwnd = FindWindow("ALSongKernelWindow",NULL);
+  HWND PlayerHwnd = FindWindow("ALSongKernelWindow",NULL);
 
-  if(PlayerHwnd!=NULL)
+  if(PlayerHwnd)
   {
+	wchar_t PlayerTitle[255];
 	GetWindowTextW(PlayerHwnd,PlayerTitle,sizeof(PlayerTitle));
 	PlayerCaption = PlayerTitle;
 
     //Usuwanie "ALSong"
-	if(PlayerCaption.Pos("ALSong")>0)
+	if(PlayerCaption.Pos("ALSong"))
 	 PlayerCaption = "";
   }
   else
    PlayerCaption = "";
 
-  PlayerCaption_UserTune=PlayerCaption;
+  UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aPluginAQQRadioDownExecute(TObject *Sender)
 {
-  PlayerCaption="";
-  PlayerCaption=GetAQQRadioSong();
-
-  //Usuwanie "Wtyczka AQQ Radio:"
-  if(PlayerCaption.Pos("Wtyczka AQQ Radio:")>0)
+  PlayerCaption = GetPluginSong();
+  if(!PlayerCaption.IsEmpty())
   {
-    //Symulacja pierwszego uruchomienia SongTimer
-    if(DisableSongTimerCheck==true)
-	 DoDisableSongTimerCheck=true;
-
-	PlayerCaption.Delete(1, PlayerCaption.Pos(":"));
-    PlayerCaption=PlayerCaption.Trim();
-    if(CutRadiostationNameCheck==true)
-    {
-	  PlayerCaption.Delete(1, PlayerCaption.Pos("- "));
-	  PlayerCaption=PlayerCaption.Trim();
-    }
+	//Usuwanie "Wtyczka AQQ Radio:"
+	if(PlayerCaption.Pos("Wtyczka AQQ Radio:"))
+	{
+	  PlayerCaption.Delete(1, PlayerCaption.Pos(":"));
+	  PlayerCaption = PlayerCaption.Trim();
+	  if(CutRadiostationNameChk)
+	  {
+		PlayerCaption.Delete(1, PlayerCaption.Pos("- "));
+		PlayerCaption = PlayerCaption.Trim();
+	  }
+	}
+	//Symulacja pierwszego uruchomienia SetStatusTimer
+	if(IgnorePluginsChk) DoIgnorePluginsChk = true;
   }
-  else
-   PlayerCaption = "";
 
-  if(EnableAQQUserTuneS==false)
-   PlayerCaption_UserTune="";
+  if(!IgnoreCoreUserTuneChk)
+   UserTunePlayerCaption = "";
   else
-   PlayerCaption_UserTune = PlayerCaption;
+   UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aSongbirdDownExecute(TObject *Sender)
 {
-  if(SongbirdWindowHwnd==NULL)
+  if(!SongbirdWindowHwnd)
   {
-    void *Snap;
+	bool ExeExists;
+	void *Snap;
     PROCESSENTRY32 proces;
 
     Snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS , 0);
@@ -1254,45 +1264,45 @@ void __fastcall TMainForm::aSongbirdDownExecute(TObject *Sender)
       {
         if(proces.szExeFile[ 0 ] != '[')
         {
-          ExeName=proces.szExeFile;
-          if(ExeName=="songbird.exe")
-		   ExeExists=true;
+		  if(proces.szExeFile=="songbird.exe")
+		   ExeExists = true;
         }
       }
       while(Process32Next(Snap , &proces));
     }
     CloseHandle(Snap);
 
-	if(ExeExists==true)
+	if(ExeExists)
 	 EnumWindows((WNDENUMPROC)FindSongbird,0);
     else
-     PlayerCaption="";
+     PlayerCaption = "";
   }
 
-  if(SongbirdWindowHwnd!=NULL)
+  if(SongbirdWindowHwnd)
   {
-	if(IsWindow(SongbirdWindowHwnd)==true)
+	if(IsWindow(SongbirdWindowHwnd))
 	{
+	  wchar_t PlayerTitle[255];
 	  GetWindowTextW(SongbirdWindowHwnd,PlayerTitle,sizeof(PlayerTitle));
 	  PlayerCaption = PlayerTitle;
-	  PlayerCaption=PlayerCaption.Trim();
+	  PlayerCaption = PlayerCaption.Trim();
 
-	  if(PlayerCaption.Pos("[Stopped]")>0)
+	  if(PlayerCaption.Pos("[Stopped]"))
 	   PlayerCaption = "";
 
-	  if(PlayerCaption.Pos("Songbird")>0)
+	  if(PlayerCaption.Pos("Songbird"))
 	   PlayerCaption = "";
 	}
 	else
 	{
-	  SongbirdWindowHwnd=NULL;
-	  PlayerCaption="";
+	  SongbirdWindowHwnd = NULL;
+	  PlayerCaption = "";
 	}
   }
   else
-   PlayerCaption="";
+   PlayerCaption = "";
 
-  PlayerCaption_UserTune=PlayerCaption;
+  UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
@@ -1322,9 +1332,10 @@ void __fastcall TMainForm::FoobarDownloadClick(TObject *Sender)
 
 void __fastcall TMainForm::aaTunesDownExecute(TObject *Sender)
 {
-  if(aTunesWindowHwnd==NULL)
+  if(!aTunesWindowHwnd)
   {
-    void *Snap;
+	bool ExeExists;
+	void *Snap;
     PROCESSENTRY32 proces;
 
     Snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS , 0);
@@ -1336,89 +1347,89 @@ void __fastcall TMainForm::aaTunesDownExecute(TObject *Sender)
       {
         if(proces.szExeFile[ 0 ] != '[')
 		{
-          ExeName=proces.szExeFile;
-		  if(ExeName=="aTunes.exe")
-		   ExeExists=true;
+		  if(proces.szExeFile=="aTunes.exe")
+		   ExeExists = true;
         }
       }
       while(Process32Next(Snap , &proces));
 	}
 	CloseHandle(Snap);
 
-	if(ExeExists==true)
+	if(ExeExists)
 	 EnumWindows((WNDENUMPROC)FindaTunes,0);
 	else
-	 PlayerCaption="";
+	 PlayerCaption = "";
   }
 
-  if(aTunesWindowHwnd!=NULL)
+  if(!aTunesWindowHwnd)
   {
-	if(IsWindow(aTunesWindowHwnd)==true)
+	if(IsWindow(aTunesWindowHwnd))
 	{
+	  wchar_t PlayerTitle[255];
 	  GetWindowTextW(aTunesWindowHwnd,PlayerTitle,sizeof(PlayerTitle));
 	  PlayerCaption = PlayerTitle;
-	  PlayerCaption=PlayerCaption.Trim();
+	  PlayerCaption = PlayerCaption.Trim();
 
 	  //Usuwanie "- aTunes [wersja]""
-	  if(PlayerCaption.Pos("- aTunes")>0)
+	  if(PlayerCaption.Pos("- aTunes"))
 	  {
 		PlayerCaption.Delete(PlayerCaption.Pos("- aTunes"), PlayerCaption.Length());
-		PlayerCaption=PlayerCaption.Trim();
+		PlayerCaption = PlayerCaption.Trim();
 	  }
 
 	  //Usuwanie "aTunes [wersja]"
-	  if(PlayerCaption.Pos("aTunes")>0)
+	  if(PlayerCaption.Pos("aTunes"))
 	   PlayerCaption = "";
 	}
 	else
 	{
-	  aTunesWindowHwnd=NULL;
-	  PlayerCaption="";
+	  aTunesWindowHwnd = NULL;
+	  PlayerCaption = "";
     }
   }
   else
-   PlayerCaption="";
+   PlayerCaption = "";
 
-  PlayerCaption_UserTune=PlayerCaption;
+  UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::AutoDownCheckListBoxPreviewDragDrop(
+void __fastcall TMainForm::AutoModeCheckListBoxPreviewDragDrop(
 	  TObject *Sender, TObject *Source, int X, int Y)
 {
-  if(Sender->ClassNameIs("TCheckListBox") && Source->ClassNameIs("TCheckListBox"))
+  if(Sender->ClassNameIs("TsCheckListBox") && Source->ClassNameIs("TsCheckListBox"))
   {
 	TPoint Point;
-	Point.x=X;
-	Point.y=Y;
-	if(AutoDownCheckListBoxPreview->ItemAtPos(Point,true)!=-1)
+	Point.x = X;
+	Point.y = Y;
+	if(AutoModeCheckListBoxPreview->ItemAtPos(Point,true)!=-1)
 	{
-	  AutoDownCheckListBoxPreview->Items->Exchange(AutoDownCheckListBoxPreview->ItemIndex,AutoDownCheckListBoxPreview->ItemAtPos(Point,true));
+	  AutoModeCheckListBoxPreview->Items->Exchange(AutoModeCheckListBoxPreview->ItemIndex,AutoModeCheckListBoxPreview->ItemAtPos(Point,true));
 	  SaveButton->Enabled = true;
 	}
   }
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::AutoDownCheckListBoxPreviewDragOver(
+void __fastcall TMainForm::AutoModeCheckListBoxPreviewDragOver(
 	  TObject *Sender, TObject *Source, int X, int Y, TDragState State,
 	  bool &Accept)
 {
-  Accept = Source->ClassNameIs("TCheckListBox");
+  Accept = Source->ClassNameIs("TsCheckListBox");
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aCutWWWExecute(TObject *Sender)
 {
-  while(Opis.Pos("http://")>0)
+  while(PlayerCaption.Pos("http://")>0)
   {
-	TMP=Opis;
+	UnicodeString TMP = PlayerCaption;
 
 	TMP.Delete(1,TMP.Pos("http://")-1);
 	if(TMP.Pos(" ")>0)
 	 TMP.Delete(TMP.Pos(" "),TMP.Length());
 
-	TMP2 = Opis;
+	UnicodeString TMP2 = PlayerCaption;
 	TMP2.Delete(TMP2.Pos("http://"),TMP2.Length());
 
 	while(TMP2.Pos(" "))
@@ -1426,20 +1437,20 @@ void __fastcall TMainForm::aCutWWWExecute(TObject *Sender)
 
 	TMP = TMP2 + TMP;
 
-	Opis = StringReplace(Opis, TMP, "", TReplaceFlags() << rfReplaceAll);
-	Opis = StringReplace(Opis, "  ", " ", TReplaceFlags() << rfReplaceAll);
-	Opis=Opis.Trim();
+	PlayerCaption = StringReplace(PlayerCaption, TMP, "", TReplaceFlags() << rfReplaceAll);
+	PlayerCaption = StringReplace(PlayerCaption, "  ", " ", TReplaceFlags() << rfReplaceAll);
+	PlayerCaption = PlayerCaption.Trim();
   }
 
-  while(Opis.Pos("www.")>0)
+  while(PlayerCaption.Pos("www.")>0)
   {
-	TMP=Opis;
+	UnicodeString TMP = PlayerCaption;
 
 	TMP.Delete(1,TMP.Pos("www.")-1);
 	if(TMP.Pos(" ")>0)
 	 TMP.Delete(TMP.Pos(" "),TMP.Length());
 
-	TMP2 = Opis;
+	UnicodeString TMP2 = PlayerCaption;
 	TMP2.Delete(TMP2.Pos("www."),TMP2.Length());
 
 	while(TMP2.Pos(" "))
@@ -1447,17 +1458,18 @@ void __fastcall TMainForm::aCutWWWExecute(TObject *Sender)
 
 	TMP = TMP2 + TMP;
 
-	Opis = StringReplace(Opis, TMP, "", TReplaceFlags() << rfReplaceAll);
-	Opis = StringReplace(Opis, "  ", " ", TReplaceFlags() << rfReplaceAll);
-	Opis=Opis.Trim();
+	PlayerCaption = StringReplace(PlayerCaption, TMP, "", TReplaceFlags() << rfReplaceAll);
+	PlayerCaption = StringReplace(PlayerCaption, "  ", " ", TReplaceFlags() << rfReplaceAll);
+	PlayerCaption = PlayerCaption.Trim();
   }
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aScreamerRadioDownExecute(TObject *Sender)
 {
-  if(ScreamerRadioWindowHwnd==NULL)
+  if(!ScreamerRadioWindowHwnd)
   {
+	bool ExeExists;
 	void *Snap;
 	PROCESSENTRY32 proces;
 
@@ -1470,132 +1482,129 @@ void __fastcall TMainForm::aScreamerRadioDownExecute(TObject *Sender)
 	  {
 		if(proces.szExeFile[ 0 ] != '[')
 		{
-		  ExeName=proces.szExeFile;
-		  if(ExeName=="screamer.exe")
-		   ExeExists=true;
+		  if(proces.szExeFile=="screamer.exe")
+		   ExeExists = true;
 		}
 	  }
 	  while(Process32Next(Snap , &proces));
 	}
 	CloseHandle(Snap);
 
-	if(ExeExists==true)
+	if(ExeExists)
 	{
 	  EnumWindows((WNDENUMPROC)FindScreamerRadio,0);
 	  if(ScreamerRadioWindowHwnd==NULL)
 	   EnumDesktopWindows(NULL,(WNDENUMPROC)FindScreamerRadio,0);
 	}
 	else
-	 PlayerCaption="";
+	 PlayerCaption = "";
   }
 
-  if(ScreamerRadioWindowHwnd!=NULL)
+  if(ScreamerRadioWindowHwnd)
   {
-	if(IsWindow(ScreamerRadioWindowHwnd)==true)
+	if(IsWindow(ScreamerRadioWindowHwnd))
 	{
+	  wchar_t PlayerTitle[255];
 	  GetWindowTextW(ScreamerRadioWindowHwnd,PlayerTitle,sizeof(PlayerTitle));
-	  PlayerCaption=PlayerTitle;
+	  PlayerCaption = PlayerTitle;
 
 	  //Usuwanie "Screamer Radio"
-	  if(PlayerCaption.Pos("Screamer Radio")>0)
-	   PlayerCaption="";
+	  if(PlayerCaption.Pos("Screamer Radio"))
+	   PlayerCaption = "";
 	}
 	else
 	{
-	  ScreamerRadioWindowHwnd=NULL;
-	  PlayerCaption="";
+	  ScreamerRadioWindowHwnd = NULL;
+	  PlayerCaption = "";
     }
   }
   else
-   PlayerCaption="";
+   PlayerCaption = "";
 
-  PlayerCaption_UserTune=PlayerCaption;
+  UserTunePlayerCaption = PlayerCaption;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::TurnOffTimerTimer(TObject *Sender)
+void __fastcall TMainForm::AutoTurnOffTimerTimer(TObject *Sender)
 {
-  TurnOffTimer->Enabled=false;
-  SongTimer->Enabled=false;
-  Timer->Enabled=false;
-  if(EnableFastOnOffCheckBox->Checked==true)
-   UpdateButton(false);
-  OpisTMP=GetStatus();
-  if(Opis_pocz!=OpisTMP)
+  AutoTurnOffTimer->Enabled = false;
+  SetStatusTimer->Enabled = false;
+  AutoModeTimer->Enabled = false;
+  if(FastAccessChk) UpdateFastAccess(false);
+  TempStatus = GetStatus();
+  if(StartStatus!=TempStatus)
   {
-	while(GetStatus()!=Opis_pocz)
-	 SetStatus(Opis_pocz,!SetOnlyInJabberCheck);
-    OpisTMP="";
+	while(GetStatus()!=StartStatus)
+	 SetStatus(StartStatus,!SetOnlyInJabberChk);
+    TempStatus = "";
   }
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aResetSettingsExecute(TObject *Sender)
 {
-  AutoDownCheckListBoxPreview->Clear();
+  AutoModeCheckListBoxPreview->Clear();
 
-  AutoDownCheckListBoxPreview->Items->Add("Winamp/AIMP2/KMPlayer");
-  AutoDownCheckListBoxPreview->Items->Add("Foobar2000");
-  AutoDownCheckListBoxPreview->Items->Add("Windows Media Player");
-  AutoDownCheckListBoxPreview->Items->Add("VUPlayer");
-  AutoDownCheckListBoxPreview->Items->Add("XMPlay");
-  AutoDownCheckListBoxPreview->Items->Add("Media Player Classic");
-  AutoDownCheckListBoxPreview->Items->Add("iTunes");
-  AutoDownCheckListBoxPreview->Items->Add("ALSong");
-  AutoDownCheckListBoxPreview->Items->Add("AQQ Radio");
-  AutoDownCheckListBoxPreview->Items->Add("Screamer Radio");
-  AutoDownCheckListBoxPreview->Items->Add("aTunes");
-  AutoDownCheckListBoxPreview->Items->Add("Songbird");
-  AutoDownCheckListBoxPreview->Items->Add("Last.fm Player");
+  AutoModeCheckListBoxPreview->Items->Add("Winamp/AIMP2/KMPlayer");
+  AutoModeCheckListBoxPreview->Items->Add("Foobar2000");
+  AutoModeCheckListBoxPreview->Items->Add("Windows Media Player");
+  AutoModeCheckListBoxPreview->Items->Add("VUPlayer");
+  AutoModeCheckListBoxPreview->Items->Add("XMPlay");
+  AutoModeCheckListBoxPreview->Items->Add("Media Player Classic");
+  AutoModeCheckListBoxPreview->Items->Add("iTunes");
+  AutoModeCheckListBoxPreview->Items->Add("ALSong");
+  AutoModeCheckListBoxPreview->Items->Add("Wtyczki (np. AQQ Radio)");
+  AutoModeCheckListBoxPreview->Items->Add("Screamer Radio");
+  AutoModeCheckListBoxPreview->Items->Add("aTunes");
+  AutoModeCheckListBoxPreview->Items->Add("Songbird");
+  AutoModeCheckListBoxPreview->Items->Add("Last.fm Player");
 
-  for(int x=0;x<10;x++)
-   AutoDownCheckListBoxPreview->Checked[x]=true;
-  AutoDownCheckListBoxPreview->Checked[9]=false;
-  AutoDownCheckListBoxPreview->Checked[10]=false;
-  AutoDownCheckListBoxPreview->Checked[11]=false;
-  AutoDownCheckListBoxPreview->Checked[12]=false;
+  for(int Count=0;Count<9;Count++)
+   AutoModeCheckListBoxPreview->Checked[Count] = true;
+  for(int Count=9;Count<13;Count++)
+   AutoModeCheckListBoxPreview->Checked[Count] = false;
 
   SaveButton->Enabled = true;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::AutoDownCheckListBoxPreviewMouseMove(
+void __fastcall TMainForm::AutoModeCheckListBoxPreviewMouseMove(
       TObject *Sender, TShiftState Shift, int X, int Y)
 {
   TPoint Point;
-  Point.x=X;
-  Point.y=Y;
-  if(AutoDownCheckListBoxPreview->ItemAtPos(Point,true)!=-1)
+  Point.x = X;
+  Point.y = Y;
+  if(AutoModeCheckListBoxPreview->ItemAtPos(Point,true)!=-1)
   {
-	if(AutoDownCheckListBoxPreview->Items->Strings[AutoDownCheckListBoxPreview->ItemAtPos(Point,true)]=="Foobar2000")
+	if(AutoModeCheckListBoxPreview->Items->Strings[AutoModeCheckListBoxPreview->ItemAtPos(Point,true)]=="Foobar2000")
 	{
-	  AutoDownCheckListBoxPreview->Hint="Dla lepszego dzia³ania zaleca siê zainstalowaæ wtyczkê do Foobar2000";
-      AutoDownCheckListBoxPreview->PopupMenu=FoobarPopupMenu;
-      AutoDownCheckListBoxPreview->Cursor=crHelp;
+	  AutoModeCheckListBoxPreview->Hint = "Dla lepszego dzia³ania zaleca siê zainstalowaæ wtyczkê do Foobar2000";
+	  AutoModeCheckListBoxPreview->PopupMenu = FoobarPopupMenu;
+	  AutoModeCheckListBoxPreview->Cursor = crHelp;
     }
-    else if(AutoDownCheckListBoxPreview->Items->Strings[AutoDownCheckListBoxPreview->ItemAtPos(Point,true)]=="Windows Media Player")
+	else if(AutoModeCheckListBoxPreview->Items->Strings[AutoModeCheckListBoxPreview->ItemAtPos(Point,true)]=="Windows Media Player")
     {
-      AutoDownCheckListBoxPreview->Hint="Dla wersji WMP powy¿ej 7 do ob³sugi potrzebny jest plugin w WMP";
-      AutoDownCheckListBoxPreview->PopupMenu=WMPPopupMenu;
-      AutoDownCheckListBoxPreview->Cursor=crHelp;
+	  AutoModeCheckListBoxPreview->Hint = "Dla wersji WMP powy¿ej 7 do ob³sugi potrzebny jest plugin w WMP";
+	  AutoModeCheckListBoxPreview->PopupMenu = WMPPopupMenu;
+	  AutoModeCheckListBoxPreview->Cursor = crHelp;
     }
-    else if(AutoDownCheckListBoxPreview->Items->Strings[AutoDownCheckListBoxPreview->ItemAtPos(Point,true)]=="iTunes")
+	else if(AutoModeCheckListBoxPreview->Items->Strings[AutoModeCheckListBoxPreview->ItemAtPos(Point,true)]=="iTunes")
     {
-      AutoDownCheckListBoxPreview->Hint="Do obs³ugi potrzebny jest plugin w iTunes";
-      AutoDownCheckListBoxPreview->PopupMenu=iTunesPopupMenu;
-      AutoDownCheckListBoxPreview->Cursor=crHelp;
+	  AutoModeCheckListBoxPreview->Hint = "Do obs³ugi potrzebny jest plugin w iTunes";
+	  AutoModeCheckListBoxPreview->PopupMenu = iTunesPopupMenu;
+	  AutoModeCheckListBoxPreview->Cursor = crHelp;
     }
-	else if(AutoDownCheckListBoxPreview->Items->Strings[AutoDownCheckListBoxPreview->ItemAtPos(Point,true)]=="Songbird")
+	else if(AutoModeCheckListBoxPreview->Items->Strings[AutoModeCheckListBoxPreview->ItemAtPos(Point,true)]=="Songbird")
 	{
-	  AutoDownCheckListBoxPreview->Hint="Do obs³ugi potrzebne jest rozszerzenie Birdtitle zainstalowane w Songbird";
-      AutoDownCheckListBoxPreview->PopupMenu=SongbirdPopupMenu;
-      AutoDownCheckListBoxPreview->Cursor=crHelp;
+	  AutoModeCheckListBoxPreview->Hint = "Do obs³ugi potrzebne jest rozszerzenie Birdtitle zainstalowane w Songbird";
+	  AutoModeCheckListBoxPreview->PopupMenu = SongbirdPopupMenu;
+	  AutoModeCheckListBoxPreview->Cursor = crHelp;
     }
     else
     {
-      AutoDownCheckListBoxPreview->Hint="";
-      AutoDownCheckListBoxPreview->PopupMenu=NULL;
-      AutoDownCheckListBoxPreview->Cursor=crDefault;
+	  AutoModeCheckListBoxPreview->Hint = "";
+	  AutoModeCheckListBoxPreview->PopupMenu = NULL;
+	  AutoModeCheckListBoxPreview->Cursor = crDefault;
     }
   }
 }
@@ -1603,50 +1612,50 @@ void __fastcall TMainForm::AutoDownCheckListBoxPreviewMouseMove(
 
 void __fastcall TMainForm::UserTuneTimerTimer(TObject *Sender)
 {
-  aAutoDownUserTune->Execute();
+  aUserTuneAutoMode->Execute();
 
   //Jezeli opis cos zawiera
-  if(Opis_UserTune!="")
+  if(!UserTuneStatus.IsEmpty())
   {
-    if(Opis_UserTune!=Opis_UserTuneTMP)
+	if(UserTuneStatus!=UserTuneStatusTMP)
     {
-	  UserTuneSongTimer->Enabled=false;
-	  Opis_UserTuneTMP=Opis_UserTune;
-	  UserTuneSongTimer->Enabled=true;
+	  SetUserTuneTimer->Enabled = false;
+	  UserTuneStatusTMP = UserTuneStatus;
+	  SetUserTuneTimer->Enabled = true;
     }
   }
   //Jak opis jest pusty
-  else if(Opis_UserTune=="")
+  else
   {
-	if(Opis_UserTuneTMP!="")
+	if(!UserTuneStatusTMP.IsEmpty())
 	{
       SetUserTune("","");
-      Opis_UserTuneTMP="";
-	  UserTuneSongTimer->Enabled=false;
+	  UserTuneStatusTMP = "";
+	  SetUserTuneTimer->Enabled = false;
     }
   }
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::UserTuneSongTimerTimer(TObject *Sender)
+void __fastcall TMainForm::SetUserTuneTimerTimer(TObject *Sender)
 {
-  UserTuneSongTimer->Enabled=false;
+  SetUserTuneTimer->Enabled = false;
 
-  SetUserTune(Opis_UserTuneTMP,SongLength);
+  SetUserTune(UserTuneStatusTMP,CC_SONGLENGTH);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aCutWWWUserTuneExecute(TObject *Sender)
 {
-  while(Opis_UserTune.Pos("http://")>0)
+  while(UserTunePlayerCaption.Pos("http://")>0)
   {
-	TMP=Opis_UserTune;
+	UnicodeString TMP = UserTunePlayerCaption;
 
 	TMP.Delete(1,TMP.Pos("http://")-1);
 	if(TMP.Pos(" ")>0)
 	 TMP.Delete(TMP.Pos(" "),TMP.Length());
 
-	TMP2 = Opis_UserTune;
+	UnicodeString TMP2 = UserTunePlayerCaption;
 	TMP2.Delete(TMP2.Pos("http://"),TMP2.Length());
 
 	while(TMP2.Pos(" "))
@@ -1654,20 +1663,20 @@ void __fastcall TMainForm::aCutWWWUserTuneExecute(TObject *Sender)
 
 	TMP = TMP2 + TMP;
 
-	Opis_UserTune = StringReplace(Opis_UserTune, TMP, "", TReplaceFlags() << rfReplaceAll);
-	Opis_UserTune = StringReplace(Opis_UserTune, "  ", " ", TReplaceFlags() << rfReplaceAll);
-	Opis_UserTune=Opis_UserTune.Trim();
+	UserTunePlayerCaption = StringReplace(UserTunePlayerCaption, TMP, "", TReplaceFlags() << rfReplaceAll);
+	UserTunePlayerCaption = StringReplace(UserTunePlayerCaption, "  ", " ", TReplaceFlags() << rfReplaceAll);
+	UserTunePlayerCaption = UserTunePlayerCaption.Trim();
   }
 
-  while(Opis_UserTune.Pos("www.")>0)
+  while(UserTunePlayerCaption.Pos("www.")>0)
   {
-	TMP=Opis_UserTune;
+	UnicodeString TMP = UserTunePlayerCaption;
 
 	TMP.Delete(1,TMP.Pos("www.")-1);
 	if(TMP.Pos(" ")>0)
 	 TMP.Delete(TMP.Pos(" "),TMP.Length());
 
-	TMP2 = Opis_UserTune;
+	UnicodeString TMP2 = UserTunePlayerCaption;
 	TMP2.Delete(TMP2.Pos("www."),TMP2.Length());
 
 	while(TMP2.Pos(" "))
@@ -1675,17 +1684,17 @@ void __fastcall TMainForm::aCutWWWUserTuneExecute(TObject *Sender)
 
 	TMP = TMP2 + TMP;
 
-	Opis_UserTune = StringReplace(Opis_UserTune, TMP, "", TReplaceFlags() << rfReplaceAll);
-	Opis_UserTune = StringReplace(Opis_UserTune, "  ", " ", TReplaceFlags() << rfReplaceAll);
-	Opis_UserTune  =Opis_UserTune.Trim();
+	UserTunePlayerCaption = StringReplace(UserTunePlayerCaption, TMP, "", TReplaceFlags() << rfReplaceAll);
+	UserTunePlayerCaption = StringReplace(UserTunePlayerCaption, "  ", " ", TReplaceFlags() << rfReplaceAll);
+	UserTunePlayerCaption = UserTunePlayerCaption.Trim();
   }
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::AllowUserTuneNTimerTimer(TObject *Sender)
+void __fastcall TMainForm::AllowUserTuneTimerTimer(TObject *Sender)
 {
-  AllowUserTuneNTimer->Enabled = false;
-  SetAllowUserTuneNTrue();
+  AllowUserTuneTimer->Enabled = false;
+  SetAllowUserTune();
 }
 //---------------------------------------------------------------------------
 
@@ -1693,54 +1702,50 @@ void __fastcall TMainForm::RunPluginCheckBoxClick(TObject *Sender)
 {
   if(RunPluginCheckBox->Checked)
   {
-	Opis_pocz = GetStatus();
-	SongTimer->Interval = 1000;
+	StartStatus = GetStatus();
+	SetStatusTimer->Interval = 1000;
 	JustEnabled = true;
-	Timer->Enabled = true;
-	if(EnableFastOnOffCheckBox->Checked)
-     UpdateButton(true);
+	AutoModeTimer->Enabled = true;
+	if(FastAccessChk) UpdateFastAccess(true);
   }
   else
   {
-	SongTimer->Enabled = false;
-	Timer->Enabled = false;
-	if(EnableFastOnOffCheckBox->Checked)
-     UpdateButton(false);
-    OpisTMP=GetStatus();
-    if(Opis_pocz!=OpisTMP)
-    {
-	  while(GetStatus()!=Opis_pocz)
-	   SetStatus(Opis_pocz,!SetOnlyInJabberCheck);
-      OpisTMP = "";
+	SetStatusTimer->Enabled = false;
+	AutoModeTimer->Enabled = false;
+	if(FastAccessChk) UpdateFastAccess(false);
+	TempStatus = GetStatus();
+	if(StartStatus!=TempStatus)
+	{
+	  while(GetStatus()!=StartStatus)
+	   SetStatus(StartStatus,!SetOnlyInJabberChk);
+      TempStatus = "";
     }
-  }        
+  }
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::TimeTurnOffCheckBoxClick(TObject *Sender)
+void __fastcall TMainForm::AutoTurnOffCheckBoxClick(TObject *Sender)
 {
-  TimeTurnOffSpin->Enabled=TimeTurnOffCheckBox->Checked;
+  AutoTurnOffSpin->Enabled = AutoTurnOffCheckBox->Checked;
 
   SaveButton->Enabled = true;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::EnableUserTuneNCheckBoxClick(TObject *Sender)
+void __fastcall TMainForm::UserTuneNotificationCheckBoxClick(TObject *Sender)
 {
-  UserTuneTimeNLabel->Enabled = EnableUserTuneNCheckBox->Checked;
-  UserTuneNSpin->Enabled = EnableUserTuneNCheckBox->Checked;
-  UserTuneExceptionButton->Enabled = EnableUserTuneNCheckBox->Checked;
+  UserTuneNotificationSpin->Enabled = UserTuneNotificationCheckBox->Checked;
+  UserTuneExceptionButton->Enabled = UserTuneNotificationCheckBox->Checked;
 
   SaveButton->Enabled = true;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::EnableUserTuneSCheckBoxClick(TObject *Sender)
+void __fastcall TMainForm::UserTuneSendCheckBoxClick(TObject *Sender)
 {
-  UserTuneTimeSLabel1->Enabled = EnableUserTuneSCheckBox->Checked;
-  UserTuneTimeSLabel2->Enabled = EnableUserTuneSCheckBox->Checked;
-  UserTuneSSpin->Enabled = EnableUserTuneSCheckBox->Checked;
-  EnableAQQUserTuneSCheckBox->Enabled = EnableUserTuneSCheckBox->Checked;
+  UserTuneSendLabel->Enabled = UserTuneSendCheckBox->Checked;
+  UserTuneSendSpin->Enabled = UserTuneSendCheckBox->Checked;
+  IgnoreCoreUserTuneCheckBox->Enabled = UserTuneSendCheckBox->Checked;
 
   SaveButton->Enabled = true;
 }
@@ -1748,14 +1753,14 @@ void __fastcall TMainForm::EnableUserTuneSCheckBoxClick(TObject *Sender)
 
 void __fastcall TMainForm::GetStatusTimerTimer(TObject *Sender)
 {
-  Opis_pocz = GetStatus();
-  if((!Opis_pocz.IsEmpty())||(GetStatusTimerInterval==100))
+  StartStatus = GetStatus();
+  if((!StartStatus.IsEmpty())||(GetStatusTimerInterval==100))
   {
 	GetStatusTimer->Enabled = false;
-	Timer->Enabled = true;
+	AutoModeTimer->Enabled = true;
 	RunPluginCheckBox->Checked = true;
-	if(EnableFastOnOffCheckBox->Checked)
-	 UpdateButton(true);
+	if(FastAccessChk)
+	 UpdateFastAccess(true);
   }
   else
    GetStatusTimerInterval++;
@@ -1776,98 +1781,81 @@ void __fastcall TMainForm::UserTuneExceptionButtonClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::aAutoDownUserTuneExecute(TObject *Sender)
+void __fastcall TMainForm::aUserTuneAutoModeExecute(TObject *Sender)
 {
-  bool ThisSame;
-
-  for(int i=0;i<=12;i++)
+  for(int Count=0;Count<13;Count++)
   {
-	if(AutoDownCheckListBox->Checked[i]==true)
+	if(AutoModeCheckListBox->Checked[Count])
 	{
-	  if(AutoDownCheckListBox->Items->Strings[i]=="Winamp/AIMP2/KMPlayer")
+	  if(AutoModeCheckListBox->Items->Strings[Count]=="Winamp/AIMP2/KMPlayer")
 	   aWinampDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="Foobar2000")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Foobar2000")
 	   aFoobarDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="Windows Media Player")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Windows Media Player")
 	   aWMPDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="VUPlayer")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="VUPlayer")
 	   aVUPlayerDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="XMPlay")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="XMPlay")
 	   aXMPlayDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="Media Player Classic")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Media Player Classic")
 	   aMPCDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="iTunes")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="iTunes")
 	   aiTunesDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="ALSong")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="ALSong")
 	   aALSongDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="AQQ Radio")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Wtyczki (np. AQQ Radio)")
 	   aPluginAQQRadioDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="Screamer Radio")
-       aScreamerRadioDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="aTunes")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Screamer Radio")
+	   aScreamerRadioDown->Execute();
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="aTunes")
 	   aaTunesDown->Execute();
-      if(AutoDownCheckListBox->Items->Strings[i]=="Songbird")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Songbird")
 	   aSongbirdDown->Execute();
-	  if(AutoDownCheckListBox->Items->Strings[i]=="Last.fm Player")
+	  else if(AutoModeCheckListBox->Items->Strings[Count]=="Last.fm Player")
 	   aLastFMDown->Execute();
 
-	  PlayerCaption = PlayerCaption.Trim();
-	  PlayerCaption_UserTune = PlayerCaption_UserTune.Trim();
+	  UserTunePlayerCaption = UserTunePlayerCaption.Trim();
 
-	  if(MovieExceptionCheck)
+	  //Zablokowanie plikow filmowych
+	  if((!UserTunePlayerCaption.IsEmpty())&&(MovieExceptionCk))
 	  {
-		if(PlayerCaption.LowerCase().Pos(".avi")>0)
-		 PlayerCaption = "";
-		if(PlayerCaption.LowerCase().Pos(".mpg")>0)
-		 PlayerCaption = "";
-		if(PlayerCaption.LowerCase().Pos(".mpeg")>0)
-		 PlayerCaption = "";
-		if(PlayerCaption.LowerCase().Pos(".rmvb")>0)
-		 PlayerCaption = "";
+		if(UserTunePlayerCaption.LowerCase().Pos(".avi"))
+		 UserTunePlayerCaption = "";
+		if(UserTunePlayerCaption.LowerCase().Pos(".mpg"))
+		 UserTunePlayerCaption = "";
+		if(UserTunePlayerCaption.LowerCase().Pos(".mpeg"))
+		 UserTunePlayerCaption = "";
+		if(UserTunePlayerCaption.LowerCase().Pos(".rmvb"))
+		 UserTunePlayerCaption = "";
 	  }
 
-	  if(!PlayerCaption.IsEmpty())
+	  if(!UserTunePlayerCaption.IsEmpty())
 	  {
-		//Sprawdzenie czy UserTune jest taki sam jak "Opis"
-		if(PlayerCaption_UserTune==PlayerCaption)
-		 ThisSame = true;
-		else
-		 ThisSame = false;
 		//Wywalanie zbednych znakow
-		if(PlayerCaption.LowerCase().Pos(".mp3")>0)
-		 PlayerCaption.Delete(PlayerCaption.LowerCase().Pos(".mp3"),PlayerCaption.LowerCase().Pos(".mp3")+3);
-		if(PlayerCaption.LowerCase().Pos(".wma")>0)
-		 PlayerCaption.Delete(PlayerCaption.LowerCase().Pos(".wma"),PlayerCaption.LowerCase().Pos(".wma")+3);
-		if(PlayerCaption.LowerCase().Pos(".avi")>0)
-		 PlayerCaption.Delete(PlayerCaption.LowerCase().Pos(".avi"),PlayerCaption.LowerCase().Pos(".avi")+3);
-		if(PlayerCaption.LowerCase().Pos(".mpg")>0)
-		 PlayerCaption.Delete(PlayerCaption.LowerCase().Pos(".mpg"),PlayerCaption.LowerCase().Pos(".mpg")+3);
-		if(PlayerCaption.LowerCase().Pos(".mpeg")>0)
-		 PlayerCaption.Delete(PlayerCaption.LowerCase().Pos(".mpeg"),PlayerCaption.LowerCase().Pos(".mpeg")+4);
-		if(PlayerCaption.LowerCase().Pos(".rmvb")>0)
-		 PlayerCaption.Delete(PlayerCaption.LowerCase().Pos(".rmvb"),PlayerCaption.LowerCase().Pos(".rmvb")+4);
+		if(UserTunePlayerCaption.LowerCase().Pos(".mp3"))
+		 UserTunePlayerCaption.Delete(UserTunePlayerCaption.LowerCase().Pos(".mp3"),UserTunePlayerCaption.LowerCase().Pos(".mp3")+3);
+		if(UserTunePlayerCaption.LowerCase().Pos(".wma"))
+		 UserTunePlayerCaption.Delete(UserTunePlayerCaption.LowerCase().Pos(".wma"),UserTunePlayerCaption.LowerCase().Pos(".wma")+3);
+		if(UserTunePlayerCaption.LowerCase().Pos(".avi"))
+		 UserTunePlayerCaption.Delete(UserTunePlayerCaption.LowerCase().Pos(".avi"),UserTunePlayerCaption.LowerCase().Pos(".avi")+3);
+		if(UserTunePlayerCaption.LowerCase().Pos(".mpg"))
+		 UserTunePlayerCaption.Delete(UserTunePlayerCaption.LowerCase().Pos(".mpg"),UserTunePlayerCaption.LowerCase().Pos(".mpg")+3);
+		if(UserTunePlayerCaption.LowerCase().Pos(".mpeg"))
+		 UserTunePlayerCaption.Delete(UserTunePlayerCaption.LowerCase().Pos(".mpeg"),UserTunePlayerCaption.LowerCase().Pos(".mpeg")+4);
+		if(UserTunePlayerCaption.LowerCase().Pos(".rmvb"))
+		 UserTunePlayerCaption.Delete(UserTunePlayerCaption.LowerCase().Pos(".rmvb"),UserTunePlayerCaption.LowerCase().Pos(".rmvb")+4);
 		//Ucinanie numeru utworu
 		aCutSongNumber->Execute();
+		//Wycinanie adresów stron WWW
+		if(CutWWWChk) aCutWWWUserTune->Execute();
 		//Przypisanie UserTune
-		if(ThisSame)
-		 Opis_UserTune = PlayerCaption;
-		else
-		 Opis_UserTune = "";
+		UserTuneStatus = UserTunePlayerCaption.Trim();
 		//Zakonczenie petli
-		i=13;
+		Count = 13;
 	  }
 	  else
-       Opis_UserTune = "";
+       UserTuneStatus = "";
 	}
-  }
-
-  if(!Opis_UserTune.IsEmpty())
-  {
-	//Wycinanie adresów stron WWW
-	if(CutWWWCheck)
-	 aCutWWWUserTune->Execute();
-	//Uciannie spacji z lewej i prawej strony
-	Opis_UserTune = Opis_UserTune.Trim();
   }
 }
 //---------------------------------------------------------------------------
@@ -1875,21 +1863,21 @@ void __fastcall TMainForm::aAutoDownUserTuneExecute(TObject *Sender)
 void __fastcall TMainForm::StateChangeTimerTimer(TObject *Sender)
 {
   //Wylaczanie timera
-  SongTimer->Enabled = false;
-  Timer->Enabled = false;
+  SetStatusTimer->Enabled = false;
+  AutoModeTimer->Enabled = false;
 
-  OpisTMP=GetStatus();
-  if(Opis_pocz!=OpisTMP)
+  TempStatus = GetStatus();
+  if(StartStatus!=TempStatus)
   {
-	while(GetStatus()!=Opis_pocz)
-	 SetStatus(Opis_pocz,!SetOnlyInJabberCheck);
-	OpisTMP = "";
+	while(GetStatus()!=StartStatus)
+	 SetStatus(StartStatus,!SetOnlyInJabberChk);
+	TempStatus = "";
   }
 
   //Wlaczanie timera
-  SongTimer->Interval=1000;
-  JustEnabled=1;
-  Timer->Enabled = true;
+  SetStatusTimer->Interval = 1000;
+  JustEnabled = true;
+  AutoModeTimer->Enabled = true;
 
   StateChangeTimer->Enabled = false;
 }
@@ -1905,19 +1893,12 @@ void __fastcall TMainForm::OKButtonClick(TObject *Sender)
 {
   //Zapis ustawien
   aSaveSettings->Execute();
-  //Ustawianie Timer'a dla ustawiania opisu
-  SongTimer->Interval = (1000*(SongTimerSpin->Value));
-  IntervalValue = (1000*(SongTimerSpin->Value));
-  //Timer dla wylaczenia wtyczki
-  TurnOffTimer->Interval = (60000*(TimeTurnOffSpin->Value));
-  if(!TimeTurnOffCheck)
-   TurnOffTimer->Enabled = false;
   //Wymuszenie natychmiastowego ustawienienia w opisie dokonanych zmian
-  if(Timer->Enabled)
+  if(AutoModeTimer->Enabled)
   {
-	SongTimer->Enabled = false;
+	SetStatusTimer->Enabled = false;
 	JustEnabled = true;
-	SongTimer->Interval = 1000;
+	SetStatusTimer->Interval = 1000;
   }
   //Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
   TagsBox->Items->Delete(6);
@@ -1932,17 +1913,72 @@ void __fastcall TMainForm::aAllowApplyExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::AutoDownCheckListBoxPreviewClick(TObject *Sender)
+void __fastcall TMainForm::AutoModeCheckListBoxPreviewClick(TObject *Sender)
 {
-  if(AutoDownCheckListBoxPreview->Items->Text!=AutoDownCheckListBox->Items->Text)
+  if(AutoModeCheckListBoxPreview->Items->Text!=AutoModeCheckListBox->Items->Text)
    SaveButton->Enabled = true;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::AutoDownCheckListBoxPreviewClickCheck(TObject *Sender)
-
+void __fastcall TMainForm::AutoModeCheckListBoxPreviewClickCheck(TObject *Sender)
 {
   SaveButton->Enabled = true;
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TMainForm::FormCreate(TObject *Sender)
+{
+  //AlphaSkins
+  if(ChkSkinEnabled())
+  {
+	UnicodeString ThemeSkinDir = GetThemeSkinDir();
+	if(FileExists(ThemeSkinDir + "\\\\Skin.asz"))
+	{
+	  ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
+	  sSkinManager->SkinDirectory = ThemeSkinDir;
+	  sSkinManager->SkinName = "Skin.asz";
+	  sSkinProvider->DrawNonClientArea = true;
+	  sSkinManager->Active = true;
+	}
+	else
+	 sSkinManager->Active = false;
+  }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::aPageControlSheetChangeExecute(TObject *Sender)
+{
+  if(!SaveButton->Focused()&&!OKButton->Focused()&&!RunPluginCheckBox->Focused())
+  {
+	if(PageControl->TabIndex!=3)
+	 PageControl->TabIndex = PageControl->TabIndex + 1;
+	else
+	 PageControl->TabIndex = 0;
+  }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::OtherTabSheetShow(TObject *Sender)
+{
+  if(!AutoTurnOffSpin->Enabled)
+  {
+	AutoTurnOffSpin->Enabled = true;
+	AutoTurnOffSpin->Enabled = false;
+  }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::UserTuneTabSheetShow(TObject *Sender)
+{
+  if(!UserTuneNotificationSpin->Enabled)
+  {
+	UserTuneNotificationSpin->Enabled = true;
+	UserTuneNotificationSpin->Enabled = false;
+  }
+  if(!UserTuneSendSpin->Enabled)
+  {
+	UserTuneSendSpin->Enabled = true;
+	UserTuneSendSpin->Enabled = false;
+  }
+}
+//---------------------------------------------------------------------------
