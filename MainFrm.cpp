@@ -47,8 +47,6 @@ AnsiString SongLength; //Dlugosc piosenki
 AnsiString PlayerName; //Zmienna nazwy playera (tag CC_PLAYERNAME)
 AnsiString PlayerName_TMP; //Do porównania nazwy playera z nowa pobranym
 bool IsPlayerName=0; //Czy w opisie jest tag CC_PLAYERNAME
-AnsiString opisTMP2;
-bool SongTimerEnabled=0; //Czy w³¹czono SongTimer?
 bool JustEnabled=0; //Do pierwszego uruchomienia SongTimer
 //---------------------------------------------------------------------------
 
@@ -531,18 +529,9 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
   {
     if(opis!=opisTMP)
     {
-      if(opis!=opisTMP2)
-      {
-        SongTimerEnabled=0;
-        SongTimer->Enabled=false;
-      }
-      if(SongTimerEnabled==0)
-      {
-        SongTimer->Enabled=false;
-        SongTimer->Enabled=true;
-        SongTimerEnabled=1;
-        opisTMP2=opis;
-      }
+      SongTimer->Enabled=false;
+      SongTimer->Enabled=true;
+      opisTMP=opis;
     }
   }
   //Jak opis jest pusty
@@ -980,11 +969,9 @@ void __fastcall TMainForm::PreviewStatusMemoChange(TObject *Sender)
 
 void __fastcall TMainForm::SongTimerTimer(TObject *Sender)
 {
-  SongTimerEnabled=0;
   SongTimer->Enabled=false;
-  opisTMP=opis;
-  opis = opis;
-  UstawOpis(opis,!SetOnlyInJabberCheck);
+  if(opis==opisTMP)
+   UstawOpis(opis,!SetOnlyInJabberCheck);
   //Sprawdzenie czy to by³o pierwsze uruchomienie Timer'a
   if(JustEnabled==1)
   {
