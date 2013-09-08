@@ -1,6 +1,6 @@
 object MainForm: TMainForm
-  Left = 446
-  Top = 116
+  Left = 647
+  Top = 80
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus by Beherit'

@@ -1,3 +1,7 @@
+1.0.4.12
+-----
+* Poprawienie działania funkcji po jakim czasie od rozpoczęcia utworu ma zmieniać się opis.
+
 1.0.4.11
 -----
 * Dodanie opcji ucinania nazwy radiostacji z pobieranego utworu z wtyczki AQQ Radio (domyślnie włączone).
