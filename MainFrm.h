@@ -46,10 +46,8 @@ __published:	// IDE-managed Components
         TRadioButton *VUPlayerDownRadio;
         TRadioButton *XMPlayDownRadio;
         TAction *aXMPlayDown;
-        TCheckBox *CutSongNumberCheckBox;
-        TLabel *CutSongNumberLabel;
         TAction *aCutSongNumber;
-        TLabel *Label1;
+        TLabel *NewLineLabel;
         TCheckBox *SetOnlyInJabberCheckBox;
         TAction *aReadSettings;
         TCheckBox *EnablePluginOnStartCheckBox;

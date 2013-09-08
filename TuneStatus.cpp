@@ -8,6 +8,7 @@
 #include "ikonka.rh"
 #include "Aqq.h"
 #include "MainFrm.h"
+#include "stdio.h"
 //---------------------------------------------------------------------------
 
 HINSTANCE hInstance; //uchwyt do wtyczki
@@ -40,8 +41,8 @@ int plugin_icon_idx_off;
 int plugin_icon_idx_on;
 
 //Do buttona
-int EnableFastOnOff;
-int EnablePluginOnStart;
+bool EnableFastOnOff;
+bool EnablePluginOnStart;
 
 //Pobieranie aktualnego opisu
 AnsiString PobierzOpis(AnsiString opis)
@@ -53,50 +54,58 @@ AnsiString PobierzOpis(AnsiString opis)
   return opis;
 }
 
+//Ustawianie opisu
+void UstawOpis(AnsiString opis, bool force)
+{
+  TPluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&TPluginStateChange),0);
+
+  TPluginStateChange.cbSize = sizeof(PluginStateChange);
+  TPluginStateChange.Status = AnsiTowchar_t(opis);
+  TPluginStateChange.Force = force;
+
+  TPluginLink.CallService(AQQ_SYSTEM_SETSHOWANDSTATUS,0,(LPARAM)(&TPluginStateChange));
+}
+
 //Serwis szybkiego wlaczenia/wylaczenia wtyczki
 int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
 {
-  if (handle==NULL)
+  if(handle==NULL)
   {
     Application->Handle = MainForm;
     handle = new TMainForm(Application);
     handle->aReadSettings->Execute();
-    if(handle->EnablePluginOnStartCheckBox->Checked==false)
-    {
-      handle->opis_pocz = PobierzOpis(handle->opis_pocz);
-      handle->Timer->Enabled=!handle->Timer->Enabled;
-      handle->RunPluginCheckBox->Checked=!handle->RunPluginCheckBox->Checked;
-      if(handle->Timer->Enabled==true)
-      {
-        TPluginActionButton.IconIndex = plugin_icon_idx_on;
-        TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&TPluginActionButton));
-      }
-      else
-      {
-        TPluginActionButton.IconIndex = plugin_icon_idx_off;
-        TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&TPluginActionButton));
-      }
-    }
+    handle->opis_pocz = PobierzOpis(handle->opis_pocz);
+    handle->Timer->Enabled=true;
+    handle->RunPluginCheckBox->Checked=true;
+    //Update buttonu
+    TPluginActionButton.IconIndex = plugin_icon_idx_on;
+    TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&TPluginActionButton));
   }
   else
   {
-    if(handle->RunPluginCheckBox->Checked==false)
-     handle->opis_pocz = PobierzOpis(handle->opis_pocz);
-
-    handle->aReadSettings->Execute();
-    handle->Timer->Enabled=!handle->Timer->Enabled;
-    handle->RunPluginCheckBox->Checked=!handle->RunPluginCheckBox->Checked;
-
-    if(handle->Timer->Enabled==true)
+    if(handle->Timer->Enabled==false)
     {
+      handle->opis_pocz = PobierzOpis(handle->opis_pocz);
+      handle->Timer->Enabled=true;
+      //Update buttonu
       TPluginActionButton.IconIndex = plugin_icon_idx_on;
       TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&TPluginActionButton));
     }
     else
     {
+      handle->Timer->Enabled=false;
+      handle->Preview->Text="";
+      handle->opisTMP=PobierzOpis(handle->opisTMP);
+      if(handle->opis_pocz!=handle->opisTMP)
+      {
+        UstawOpis(handle->opis_pocz,!handle->SetOnlyInJabberCheckBox->Checked);
+        handle->opisTMP="";
+      }
+      //Update buttonu
       TPluginActionButton.IconIndex = plugin_icon_idx_off;
       TPluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&TPluginActionButton));
-    }
+    } 
+    handle->RunPluginCheckBox->Checked=!handle->RunPluginCheckBox->Checked;
   }
 
   return 0;
@@ -105,7 +114,7 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
 //Serwis otwarcia formy
 int __stdcall TuneStatusService (WPARAM, LPARAM)
 {
-  if (handle==NULL)
+  if(handle==NULL)
   {
   Application->Handle = MainForm;
   handle = new TMainForm(Application);
@@ -120,7 +129,7 @@ int __stdcall TuneStatusService (WPARAM, LPARAM)
 //Notyfikacja zmiany statusu
 int __stdcall OnSetNoteClose (WPARAM wParam, LPARAM lParam)
 {
-  if (handle!=NULL)
+  if(handle!=NULL)
   {
     TPluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&TPluginStateChange),0);
     AnsiString nowy_opis = TPluginStateChange.Status;
@@ -137,9 +146,19 @@ int __stdcall OnSetNoteClose (WPARAM wParam, LPARAM lParam)
 //Program
 extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQVersion)
 {
+  //Sprawdzanie wersji AQQ
+  if (CompareVersion(AQQVersion,PLUGIN_MAKE_VERSION(2,0,4,69))<0)
+  {
+    AQQVersion=false;
+    Application->MessageBox(
+      "Wymagana wesja AQQ przez wtyczkê to minimum 2.0.4.69!\n"
+      "Wtyczka TuneStatus nie bêdzie dzia³aæ poprawnie!",
+      "Nieprawid³owa wersja AQQ",
+      MB_OK | MB_ICONEXCLAMATION);
+  }
   TPluginInfo.cbSize = sizeof(PluginInfo);
   TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,3,4);
+  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,3,6);
   TPluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -224,15 +243,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
   eDir = StringReplace(eDir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
 
   if(!DirectoryExists(eDir + "\\\\TuneStatus"))
-  {
-    CreateDir(eDir + "\\\\TuneStatus");
-    if(FileExists(eDir + "\\\\TuneStatusOn.png"))
-     DeleteFile(eDir + "\\\\TuneStatusOn.png");
-    if(FileExists(eDir + "\\\\TuneStatusOff.png"))
-     DeleteFile(eDir + "\\\\TuneStatusOff.png");
-    if(FileExists(eDir + "\\\\TuneStatus.dat"))
-     MoveFile((eDir + "\\\\TuneStatus.dat").c_str(), (eDir + "\\\\TuneStatus\\\\TuneStatus.ini").c_str());
-  }
+   CreateDir(eDir + "\\\\TuneStatus");
 
   //Wypakowanie ikon
   ExtractExe(ID_PNG1,"TuneStatus.png");
@@ -288,7 +299,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
 //Otwieranie formy przez ustawienia
 extern "C" int __declspec(dllexport)__stdcall Settings()
 {
-  if (handle==NULL)
+  if(handle==NULL)
   {
   Application->Handle = MainForm;
   handle = new TMainForm(Application);
@@ -308,24 +319,13 @@ AnsiString GetPluginPath(AnsiString Dir)
   return Dir;
 }
 
-//Ustawianie opisu
-void UstawOpis(AnsiString opis, bool force)
-{
-  TPluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&TPluginStateChange),0);
-
-  TPluginStateChange.cbSize = sizeof(PluginStateChange);
-  TPluginStateChange.Status = AnsiTowchar_t(opis);
-  TPluginStateChange.Force = force;
-
-  TPluginLink.CallService(AQQ_SYSTEM_SETSHOWANDSTATUS,0,(LPARAM)(&TPluginStateChange));
-}
-
 //OnUnload plugin
 extern "C" int __declspec(dllexport) __stdcall Unload()
 {
-  if (handle!=NULL)
+  if(handle!=NULL)
   {
-    if(handle->opis_pocz!="")
+    handle->opisTMP=PobierzOpis(handle->opisTMP);
+    if(handle->opis_pocz!=handle->opisTMP)
      UstawOpis(handle->opis_pocz,!handle->SetOnlyInJabberCheckBox->Checked);
   }
   TPluginLink.UnhookEvent(OnSetNoteClose);

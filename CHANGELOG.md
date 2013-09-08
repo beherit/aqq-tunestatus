@@ -1,3 +1,12 @@
+1.0.3.6
+-----
+* Ucinanie numerów piosenki jest domyślnie włączone, opcja zniknęła z ustawień.
+* Za nową linię odpowiada %n.
+* Zmiany w odczycie/zapisie prefix/suffix.
+* Poprawki w pozostawianiu opisu po wtyczce podczas jej wyłączania/wyładowywania.
+* Dodanie ostrzeżenia gdy AQQ nie spełnia wymagań co do wersji.
+* Inne drobne poprawki w kodzie.
+
 1.0.3.4
 -----
 * Poprawiono błąd ze wstawianiem do opisu "Nokia PC Suite" i "PCSuite".
