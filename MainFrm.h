@@ -1,22 +1,7 @@
 //---------------------------------------------------------------------------
-
 #ifndef MainFrmH
 #define MainFrmH
-//---------------------------------------------------------------------------
-#include <Classes.hpp>
-#include <Controls.hpp>
-#include <StdCtrls.hpp>
-#include <Forms.hpp>
-#include <ActnList.hpp>
-#include <ExtCtrls.hpp>
-#include "XPMan.hpp"
-#include <ComCtrls.hpp>
-#include <Menus.hpp>
-#include <ImgList.hpp>
-#include "LMDBaseControl.hpp"
 #include "LMDBaseEdit.hpp"
-#include "LMDBaseGraphicButton.hpp"
-#include "LMDBaseGraphicControl.hpp"
 #include "LMDButtonControl.hpp"
 #include "LMDCheckBox.hpp"
 #include "LMDCheckListBox.hpp"
@@ -34,11 +19,15 @@
 #include "LMDCustomPanelFill.hpp"
 #include "LMDCustomParentPanel.hpp"
 #include "LMDCustomSheetControl.hpp"
-#include "LMDCustomSpeedButton.hpp"
 #include "LMDPageControl.hpp"
-#include "LMDRadioButton.hpp"
-#include "LMDSpeedButton.hpp"
 #include "LMDSpinEdit.hpp"
+#include "XPMan.hpp"
+#include <ActnList.hpp>
+#include <Classes.hpp>
+#include <Controls.hpp>
+#include <ExtCtrls.hpp>
+#include <StdCtrls.hpp>
+#include <Menus.hpp>
 //---------------------------------------------------------------------------
 class TMainForm : public TForm
 {
@@ -59,19 +48,10 @@ __published:	// IDE-managed Components
         TAction *aSaveSettings;
         TAction *aAutoDown;
         TLMDPageControl *LMDPageControl;
-        TLMDTabSheet *HandlingTabSheet;
         TLMDTabSheet *SettingsTabSheet;
         TLMDCheckBox *EnableFastOnOffCheckBox;
         TLMDCheckBox *EnablePluginOnStartCheckBox;
         TLMDCheckBox *SetOnlyInJabberCheckBox;
-        TLMDRadioButton *WinampDownRadio;
-        TLMDRadioButton *FoobarDownRadio;
-        TLMDRadioButton *LastFMDownRadio;
-        TLMDRadioButton *WMPDownRadio;
-        TLMDRadioButton *VUPlayerDownRadio;
-        TLMDRadioButton *XMPlayDownRadio;
-        TLMDRadioButton *MPCDownRadio;
-        TLMDRadioButton *AutoDownRadio;
         TLMDCheckBox *RunPluginCheckBox;
         TMemo *StatusMemo;
         TAction *aSetStatusLooks;
@@ -83,38 +63,41 @@ __published:	// IDE-managed Components
         TLMDSpinEdit *SongTimerSpin;
         TTimer *SongTimer;
         TLabel *SongTimerIntervalLabel2;
-        TLMDRadioButton *iTunesDownRadio;
         TLabel *TagInfoLabel1;
         TAction *aiTunesDown;
         TMemo *SongFromFile;
-        TLMDRadioButton *ALSongDownRadio;
         TAction *aALSongDown;
         TLabel *TagInfoLabel2;
-        TBevel *Bevel2;
-        TLMDRadioButton *PluginAQQRadioDownRadio;
         TAction *aPluginAQQRadioDown;
         TLMDCheckBox *CutRadiostationNameCheckBox;
         TLMDCheckBox *DisableSongTimerCheckBox;
-        TBevel *Bevel1;
-        TLMDRadioButton *SongbirdDownRadio;
         TAction *aSongbirdDown;
-        TPopupMenu *SongbirdPopupMenu;
-        TMenuItem *SongbirdDownload;
-        TPopupMenu *WMPPopupMenu;
-        TPopupMenu *iTunesPopupMenu;
-        TMenuItem *WMPDownload;
-        TMenuItem *iTunesDownload;
-        TPopupMenu *FoobarPopupMenu;
-        TMenuItem *FoobarDownload;
-        TLMDTabSheet *AdvancetAutoTabSheet;
+        TLMDTabSheet *HandlingTabSheet;
         TLMDCheckListBox *AutoDownCheckListBox;
-        TLMDSpeedButton *AutoDownUpButton;
-        TLMDSpeedButton *AutoDownDownButton;
-        TImageList *ImageList;
         TLMDCheckListBox *AutoDownCheckListBoxPreview;
         TBevel *Bevel3;
         TLabel *AutoDownInfoLabel;
         TButton *ResetButton;
+        TAction *aaTunesDown;
+        TLabel *AutoDownInfoLabel2;
+        TAction *aCutWWW;
+        TLMDCheckBox *CutWWWCheckBox;
+        TAction *aScreamerRadioDown;
+        TTimer *TurnOffTimer;
+        TLMDCheckBox *TimeTurnOffCheckBox;
+        TLMDSpinEdit *TimeTurnOffSpin;
+        TLabel *TimeTurnOffLabel;
+        TBevel *Bevel1;
+        TBevel *Bevel2;
+        TAction *aResetSettings;
+        TPopupMenu *FoobarPopupMenu;
+        TMenuItem *FoobarDownload;
+        TPopupMenu *WMPPopupMenu;
+        TMenuItem *WMPDownload;
+        TPopupMenu *iTunesPopupMenu;
+        TMenuItem *iTunesDownload;
+        TPopupMenu *SongbirdPopupMenu;
+        TMenuItem *SongbirdDownload;
         void __fastcall aWinampDownExecute(TObject *Sender);
         void __fastcall aFoobarDownExecute(TObject *Sender);
         void __fastcall aMPCDownExecute(TObject *Sender);
@@ -145,10 +128,20 @@ __published:	// IDE-managed Components
         void __fastcall WMPDownloadClick(TObject *Sender);
         void __fastcall iTunesDownloadClick(TObject *Sender);
         void __fastcall FoobarDownloadClick(TObject *Sender);
-        void __fastcall AutoDownUpButtonClick(TObject *Sender);
-        void __fastcall AutoDownDownButtonClick(TObject *Sender);
-        void __fastcall ResetButtonClick(TObject *Sender);
-        void __fastcall AutoDownCheckListBoxPreviewSelect(TObject *Sender);
+        void __fastcall aaTunesDownExecute(TObject *Sender);
+        void __fastcall AutoDownCheckListBoxPreviewClick(TObject *Sender);
+        void __fastcall AutoDownCheckListBoxPreviewDragDrop(
+          TObject *Sender, TObject *Source, int X, int Y);
+        void __fastcall AutoDownCheckListBoxPreviewDragOver(
+          TObject *Sender, TObject *Source, int X, int Y, TDragState State,
+          bool &Accept);
+        void __fastcall aCutWWWExecute(TObject *Sender);
+        void __fastcall aScreamerRadioDownExecute(TObject *Sender);
+        void __fastcall TurnOffTimerTimer(TObject *Sender);
+        void __fastcall TimeTurnOffCheckBoxChange(TObject *Sender);
+        void __fastcall aResetSettingsExecute(TObject *Sender);
+        void __fastcall AutoDownCheckListBoxPreviewMouseMove(
+          TObject *Sender, TShiftState Shift, int X, int Y);
 private:	// User declarations
 public:		// User declarations
         bool JustEnabled;
