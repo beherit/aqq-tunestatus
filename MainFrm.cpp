@@ -20,48 +20,52 @@ __declspec(dllimport)void PrzypiszButton();
 __declspec(dllimport)void UsunButton();
 __declspec(dllimport)void UpdateButton(bool OnOff);
 //---------------------------------------------------------------------------
-AnsiString ePluginDirectory; //Zmiena sciezki
-AnsiString opis; //Zmienna opisu
-AnsiString opis_TMP; //Zmienna opisu (tymczasowa)
-AnsiString opis2; //j.w.
+AnsiString ePluginDirectory=""; //Zmiena sciezki
+AnsiString opis=""; //Zmienna opisu
+AnsiString opis_TMP=""; //Zmienna opisu (tymczasowa)
+AnsiString opis2=""; //j.w.
 
-int res; //Do pobierania nizej wymienionych danych
-AnsiString Samplerate; //Samplerate piosenki
-AnsiString Bitrate; //Bitrate piosenki
-AnsiString Channels; //Liczba kana³ów (mono/stereo)
-AnsiString SongLength; //Dlugosc piosenki
-int sekundy; //j.w.
-int minuty; //j.w.
+int res=0; //Do pobierania nizej wymienionych danych
+AnsiString Samplerate=""; //Samplerate piosenki
+AnsiString Bitrate=""; //Bitrate piosenki
+AnsiString Channels=""; //Liczba kana³ów (mono/stereo)
+AnsiString SongLength=""; //Dlugosc piosenki
+int sekundy=0; //j.w.
+int minuty=0; //j.w.
 bool IsSamplerate=0; //Czy w opisie jest tag CC_SAMPLERATE
 bool IsBitrate=0; //Czy w opisie jest tag CC_BITRATE
 bool IsChannels=0; //Czy w opisie jest tag CC_CHANNELS
 bool IsSongLength=0; //Czy w opisie jest tag CC_SONGLENGTH
 
 bool JustEnabled=0; //Do pierwszego uruchomienia SongTimer
-AnsiString iTunesStatusPath; //Do sciezki iTunes (TuneStatus.txt)
-AnsiString iTunesPlayerPath; //Do sciezka iTunes
-AnsiString PlayerPath; //Do sciezka Lastfm/Songbird
-bool EnableFastOnOffCheck; //Do pokazywania/ukrywania szybkiego przycisku
-bool DisableSongTimerCheck; //Do wy³¹czania SongTimer'a dla AQQ Radio
-bool CutRadiostationNameCheck; //Do ucinania nazwy radiostacji z AQQ Radio
+AnsiString iTunesStatusPath=""; //Do sciezki iTunes (TuneStatus.txt)
+AnsiString iTunesPlayerPath=""; //Do sciezka iTunes
+AnsiString PlayerPath=""; //Do sciezka Lastfm/Songbird
+bool EnableFastOnOffCheck=1; //Do pokazywania/ukrywania szybkiego przycisku
+bool DisableSongTimerCheck=1; //Do wy³¹czania SongTimer'a dla AQQ Radio
+bool CutRadiostationNameCheck=1; //Do ucinania nazwy radiostacji z AQQ Radio
 
 //Do trybu automatycznego
-AnsiString Player;
-bool PlayerCheck;
+AnsiString Player="";
+bool PlayerCheck=0;
 
-HWND WindowHwnd; //Zmienna uchwytu do okien
-HWND LastfmWindowHwnd; //j.w.
-HWND SongbirdWindowHwnd; //j.w.
-char this_title[2048]; //Do pobierania tekstu okna
-char WindowName[2048], ClassName[2048]; //j.w. ale dla Lastfm/Songbird
+HWND WindowHwnd=NULL; //Zmienna uchwytu do okien
+HWND LastfmWindowHwnd=NULL; //j.w.
+HWND SongbirdWindowHwnd=NULL; //j.w.
+char this_title[2048]=""; //Do pobierania tekstu okna
+char WindowName[2048]="", ClassName[2048]=""; //j.w. ale dla Lastfm/Songbird
 
-AnsiString ClassNameAnsi;
-AnsiString WindowNameAnsi;
+AnsiString ClassNameAnsi="";
+AnsiString WindowNameAnsi="";
 
-int IsThere; //Do sprawdzania czy dany ciag char/AnsiString jest w innym ciagu
-int IsThereLength; //j.w. ale dlugosc
+int IsThere=0; //Do sprawdzania czy dany ciag char/AnsiString jest w innym ciagu
+int IsThereLength=0; //j.w. ale dlugosc
 
-DWORD procesID; //do PID
+DWORD procesID=0; //do PID
+
+//Do Lastfm/Songbird
+AnsiString ExeName="";
+bool IsThereExe=0; 
 //---------------------------------------------------------------------------
 
 __fastcall TMainForm::TMainForm(TComponent* Owner)
@@ -201,7 +205,7 @@ bool CALLBACK FindLastfm(HWND hWnd)
     {
       if(
          (WindowNameAnsi!="LastFM")
-         &&(WindowNameAnsi!="Last.fm")
+         /*&&(WindowNameAnsi!="Last.fm") //Nie potrzebne */
          &&(WindowNameAnsi!="Diagnostyka")
          &&(WindowNameAnsi!="Poleæ")
          &&(WindowNameAnsi!="Zaloguj")
@@ -223,7 +227,7 @@ bool CALLBACK FindLastfm(HWND hWnd)
 }
 //---------------------------------------------------------------------------
 
-//Szukanie okna Last.fm
+//Szukanie okna Songbird
 bool CALLBACK FindSongbird(HWND hWnd)
 {
   GetWindowText(hWnd, WindowName, 2048);
@@ -240,18 +244,12 @@ bool CALLBACK FindSongbird(HWND hWnd)
     {
       if(
          (WindowNameAnsi!="Birdtitle notifer")
-         &&(WindowNameAnsi!="Songbird")
+         /*&&(WindowNameAnsi!="Songbird") //Nie potrzebne*/
          &&(WindowNameAnsi!="")
         )
       {
-        SongbirdWindowHwnd=hWnd;
-
+        SongbirdWindowHwnd=hWnd;  
         opis=WindowNameAnsi;
-        opis=opis.Trim();
-
-        IsThere = AnsiPos("[Stopped]", opis);
-        if(IsThere>0)
-         opis = "";
       }
     }
   }
@@ -425,11 +423,41 @@ void __fastcall TMainForm::aMPCDownExecute(TObject *Sender)
 void __fastcall TMainForm::aLastFMDownExecute(TObject *Sender)
 {
   if(LastfmWindowHwnd==NULL)
-   EnumWindows((WNDENUMPROC)FindLastfm,0);
+  {
+    void *Snap;
+    PROCESSENTRY32 proces;
+
+    Snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS , 0);
+    proces.dwSize = sizeof(PROCESSENTRY32);
+
+    if(Process32First(Snap , &proces))
+    {
+      do
+      {
+        if(proces.szExeFile[ 0 ] != '[')
+        {
+          ExeName=proces.szExeFile;
+          if(ExeName=="LastFM.exe")
+           IsThereExe=1;
+        }
+      }
+      while(Process32Next(Snap , &proces));
+    }
+    CloseHandle(Snap);
+
+    if(IsThereExe==1)
+     EnumWindows((WNDENUMPROC)FindLastfm,0);
+    else
+     opis="";
+  }
   else
   {
     GetWindowText(LastfmWindowHwnd,this_title,sizeof(this_title));
     opis = this_title;
+
+    IsThere = AnsiPos("Last.fm", opis);
+    if(IsThere>0)
+     opis="";
   }
 }
 //---------------------------------------------------------------------------
@@ -720,9 +748,9 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
   AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player8", "AQQ Radio"));
   AutoDownCheckListBox->Checked[8]=Ini->ReadBool("Auto", "PlayerCheck8", 1);
   AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player9", "Songbird"));
-  AutoDownCheckListBox->Checked[9]=Ini->ReadBool("Auto", "PlayerCheck9", 1);
+  AutoDownCheckListBox->Checked[9]=Ini->ReadBool("Auto", "PlayerCheck9", 0);
   AutoDownCheckListBox->Items->Add(Ini->ReadString("Auto", "Player10", "Last.fm Player"));
-  AutoDownCheckListBox->Checked[10]=Ini->ReadBool("Auto", "PlayerCheck10", 1);
+  AutoDownCheckListBox->Checked[10]=Ini->ReadBool("Auto", "PlayerCheck10", 0);
 
 
   for(int i=0;i<11;i++)
@@ -1084,14 +1112,13 @@ void __fastcall TMainForm::aALSongDownExecute(TObject *Sender)
 
 void __fastcall TMainForm::aPluginAQQRadioDownExecute(TObject *Sender)
 {
+  opis="";
   opis=GetAQQRadioSong(opis);
 
   //Usuwanie "Wtyczka AQQ Radio:"
   IsThere = AnsiPos("Wtyczka AQQ Radio:", opis);
   if (IsThere>0)
   {
-    IsThere = AnsiPos(":", opis);
-
     //Symulacja pierwszego uruchomienia SongTimer
     if(DisableSongTimerCheck==true)
     {
@@ -1100,6 +1127,7 @@ void __fastcall TMainForm::aPluginAQQRadioDownExecute(TObject *Sender)
       JustEnabled=1;
       SongTimer->Enabled=true;
     }
+    IsThere = AnsiPos(":", opis);
 
     opis.Delete(1, IsThere);
     opis=opis.Trim();
@@ -1118,7 +1146,33 @@ void __fastcall TMainForm::aPluginAQQRadioDownExecute(TObject *Sender)
 void __fastcall TMainForm::aSongbirdDownExecute(TObject *Sender)
 {
   if(SongbirdWindowHwnd==NULL)
-   EnumWindows((WNDENUMPROC)FindSongbird,0);
+  {
+    void *Snap;
+    PROCESSENTRY32 proces;
+
+    Snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS , 0);
+    proces.dwSize = sizeof(PROCESSENTRY32);
+
+    if(Process32First(Snap , &proces))
+    {
+      do
+      {
+        if(proces.szExeFile[ 0 ] != '[')
+        {
+          ExeName=proces.szExeFile;
+          if(ExeName=="songbird.exe")
+           IsThereExe=1;
+        }
+      }
+      while(Process32Next(Snap , &proces));
+    }
+    CloseHandle(Snap);
+
+    if(IsThereExe==1)
+     EnumWindows((WNDENUMPROC)FindSongbird,0);
+    else
+     opis="";
+  }
   else
   {
     GetWindowText(SongbirdWindowHwnd,this_title,sizeof(this_title));
@@ -1127,6 +1181,10 @@ void __fastcall TMainForm::aSongbirdDownExecute(TObject *Sender)
     opis=opis.Trim();
 
     IsThere = AnsiPos("[Stopped]", opis);
+    if(IsThere>0)
+     opis = "";
+
+    IsThere = AnsiPos("Songbird", opis);
     if(IsThere>0)
      opis = "";
   }
@@ -1238,6 +1296,8 @@ void __fastcall TMainForm::ResetButtonClick(TObject *Sender)
   AutoDownCheckListBoxPreview->Items->Add("Last.fm Player");
 
   AutoDownCheckListBoxPreview->CheckAll();
+  AutoDownCheckListBoxPreview->Checked[9]=0;
+  AutoDownCheckListBoxPreview->Checked[10]=0;
 }
 //---------------------------------------------------------------------------
 

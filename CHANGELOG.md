@@ -1,3 +1,9 @@
+1.0.4.18
+-----
+* Optymalizacja działania dla Last.fm Player i Songbird.
+* Domyślnie Last.fm Player i Songbird są wyłączone z automatycznego trybu.
+* Inne poprawki w kodzie.
+
 1.0.4.16
 -----
 * Bardzo znacząca optymalizacja kodu.
