@@ -97,7 +97,7 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
       handle->opisTMP=PobierzOpis(handle->opisTMP);
       if(handle->opis_pocz!=handle->opisTMP)
       {
-        UstawOpis(handle->opis_pocz,!handle->SetOnlyInJabberCheckBox->Checked);
+        UstawOpis(handle->opis_pocz,!handle->SetOnlyInJabberCheck);
         handle->opisTMP="";
       }
       //Update buttonu
@@ -157,7 +157,7 @@ extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
   }
   TPluginInfo.cbSize = sizeof(PluginInfo);
   TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,0);
+  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,2);
   TPluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -333,7 +333,7 @@ extern "C" int __declspec(dllexport) __stdcall Unload()
   {
     handle->opisTMP=PobierzOpis(handle->opisTMP);
     if(handle->opis_pocz!=handle->opisTMP)
-     UstawOpis(handle->opis_pocz,!handle->SetOnlyInJabberCheckBox->Checked);
+     UstawOpis(handle->opis_pocz,!handle->SetOnlyInJabberCheck);
   }
   TPluginLink.UnhookEvent(OnSetNoteClose);
   TPluginLink.DestroyServiceFunction(TuneStatusService);

@@ -65,6 +65,7 @@ __published:	// IDE-managed Components
         TComboBox *TagsBox;
         TLabel *TagRequestLabel;
         TLMDTabSheet *StatusLooksLMDTabSheet;
+        TMemo *PreviewStatusMemo;
         void __fastcall aWinampDownExecute(TObject *Sender);
         void __fastcall aFoobarDownExecute(TObject *Sender);
         void __fastcall aWMP64DownExecute(TObject *Sender);
@@ -72,13 +73,11 @@ __published:	// IDE-managed Components
         void __fastcall aLastFMDownExecute(TObject *Sender);
         void __fastcall aWMP7_11DownExecute(TObject *Sender);
         void __fastcall TimerTimer(TObject *Sender);
-        void __fastcall RunPluginCheckBoxClick(TObject *Sender);
         void __fastcall OkButtonClick(TObject *Sender);
         void __fastcall FormShow(TObject *Sender);
         void __fastcall aVUPlayerDownExecute(TObject *Sender);
         void __fastcall aXMPlayDownExecute(TObject *Sender);
         void __fastcall aCutSongNumberExecute(TObject *Sender);
-        void __fastcall SetOnlyInJabberCheckBoxClick(TObject *Sender);
         void __fastcall aReadSettingsExecute(TObject *Sender);
         void __fastcall aSaveSettingsExecute(TObject *Sender);
         void __fastcall aAutoDownExecute(TObject *Sender);
@@ -89,10 +88,12 @@ __published:	// IDE-managed Components
         void __fastcall TagsBoxCloseUp(TObject *Sender);
         void __fastcall TagsBoxDropDown(TObject *Sender);
         void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+        void __fastcall PreviewStatusMemoChange(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         AnsiString opis_pocz;
         AnsiString opisTMP;
+        bool SetOnlyInJabberCheck;
         __fastcall TMainForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------

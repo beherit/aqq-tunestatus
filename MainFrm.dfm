@@ -1,6 +1,6 @@
 object MainForm: TMainForm
-  Left = 551
-  Top = 98
+  Left = 508
+  Top = 44
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus by Beherit'
@@ -61,6 +61,7 @@ object MainForm: TMainForm
     Width = 75
     Height = 25
     Caption = 'OK'
+    Enabled = False
     TabOrder = 0
     OnClick = OkButtonClick
   end
@@ -74,7 +75,7 @@ object MainForm: TMainForm
     RaggedRight = False
     DockOrientation = doNoOrient
     DefaultPage = HandlingLMDTabSheet
-    ActivePage = HandlingLMDTabSheet
+    ActivePage = SettingsLMDTabSheet
     object HandlingLMDTabSheet: TLMDTabSheet
       Left = 4
       Top = 27
@@ -237,6 +238,30 @@ object MainForm: TMainForm
         ParentFont = False
         Transparent = True
       end
+      object StatusMemo: TMemo
+        Left = 8
+        Top = 32
+        Width = 258
+        Height = 170
+        Lines.Strings = (
+          'TuneStatus CC_PLUGINVERSION'
+          'http://www.beherit.za.pl/?page_id=118'
+          ''
+          '~ CC_TUNESTATUS ~')
+        MaxLength = 512
+        ScrollBars = ssVertical
+        TabOrder = 1
+      end
+      object PreviewStatusMemo: TMemo
+        Left = 8
+        Top = 32
+        Width = 258
+        Height = 170
+        MaxLength = 512
+        ScrollBars = ssVertical
+        TabOrder = 2
+        OnChange = PreviewStatusMemoChange
+      end
       object TagsBox: TComboBox
         Left = 8
         Top = 4
@@ -254,25 +279,10 @@ object MainForm: TMainForm
           'CC_PLUGINVERSION   (wersja TuneStatus)'
           'CC_AQQVERSION        (wersja AQQ)'
           'CC_PLAYERNAME        (nazwa odtwarzacza)'
-          'CC_PLAYERVERSION   (wersja odtwarzacza)'
           'CC_SAMPLERATE        (samplerate)'
           'CC_BITRATE                (birate)'
           'CC_CHANNELS             (ilo'#347#263' kana'#322#243'w)'
           'CC_SONGLENGTH       (d'#322'ugo'#347#263' utworu [mm:ss])')
-      end
-      object StatusMemo: TMemo
-        Left = 8
-        Top = 32
-        Width = 258
-        Height = 170
-        Lines.Strings = (
-          'TuneStatus CC_PLUGINVERSION'
-          'http://www.beherit.za.pl/?page_id=118'
-          ''
-          '~ CC_TUNESTATUS ~')
-        MaxLength = 512
-        ScrollBars = ssVertical
-        TabOrder = 1
       end
     end
     object SettingsLMDTabSheet: TLMDTabSheet

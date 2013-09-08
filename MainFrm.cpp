@@ -39,9 +39,8 @@ AnsiString Bitrate;
 AnsiString Channels;
 AnsiString SongLength;
 AnsiString PlayerName;
-AnsiString PlayerVersion;
 AnsiString PlayerName_TMP;
-AnsiString PlayerVersion_TMP;
+bool IsPlayerName=0;
 //---------------------------------------------------------------------------
 __fastcall TMainForm::TMainForm(TComponent* Owner)
         : TForm(Owner)
@@ -172,12 +171,7 @@ bool CALLBACK EnumWindowsProc(HWND hWnd)
   if(ExtractFileName(PlayerPath)=="LastFM.exe")
   {
     PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerVersion = GetFileVersionInfo(PlayerPath.c_str(),"FileVersion");
-    PlayerVersion = StringReplace(PlayerVersion, ",", ".", TReplaceFlags() << rfReplaceAll);
-    if(PlayerVersion=="") PlayerVersion = PlayerVersion_TMP;
-    else PlayerVersion_TMP = PlayerVersion;
-
+    
     PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
     if(PlayerName=="") PlayerName = PlayerName_TMP;
     else PlayerName_TMP = PlayerName;
@@ -207,17 +201,12 @@ void __fastcall TMainForm::aWinampDownExecute(TObject *Sender)
    hwndWinamp = FindWindow("Studio",NULL);
 
   //Informacje o Playerze
-  if(hwndWinamp!=NULL)
+  if((hwndWinamp!=NULL)&&(IsPlayerName==1))
   {
     DWORD procesID;
     GetWindowThreadProcessId(hwndWinamp, &procesID);
     AnsiString PlayerPath = GetPathOfProces(procesID);
     PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerVersion = GetFileVersionInfo(PlayerPath.c_str(),"FileVersion");
-    PlayerVersion = StringReplace(PlayerVersion, ",", ".", TReplaceFlags() << rfReplaceAll);
-    if(PlayerVersion=="") PlayerVersion = PlayerVersion_TMP;
-    else PlayerVersion_TMP = PlayerVersion;
 
     PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
     if(PlayerName=="") PlayerName = PlayerName_TMP;
@@ -306,17 +295,12 @@ void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
   if(!hwndFoobar) hwndFoobar = FindWindow("{E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8}",NULL);
 
   //Informacje o Playerze
-  if(hwndFoobar!=NULL)
+  if((hwndFoobar!=NULL)&&(IsPlayerName==1))
   {
     DWORD procesID;
     GetWindowThreadProcessId(hwndFoobar, &procesID);
     AnsiString PlayerPath = GetPathOfProces(procesID);
     PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerVersion = GetFileVersionInfo(PlayerPath.c_str(),"FileVersion");
-    PlayerVersion = StringReplace(PlayerVersion, ",", ".", TReplaceFlags() << rfReplaceAll);
-    if(PlayerVersion=="") PlayerVersion = PlayerVersion_TMP;
-    else PlayerVersion_TMP = PlayerVersion;
 
     PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
     if(PlayerName=="") PlayerName = PlayerName_TMP;
@@ -358,17 +342,12 @@ void __fastcall TMainForm::aWMP64DownExecute(TObject *Sender)
   HWND hwndWMP64 = FindWindow("Media Player 2",NULL);
 
   //Informacje o Playerze
-  if(hwndWMP64!=NULL)
+  if((hwndWMP64!=NULL)&&(IsPlayerName==1))
   {
     DWORD procesID;
     GetWindowThreadProcessId(hwndWMP64, &procesID);
     AnsiString PlayerPath = GetPathOfProces(procesID);
     PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerVersion = GetFileVersionInfo(PlayerPath.c_str(),"FileVersion");
-    PlayerVersion = StringReplace(PlayerVersion, ",", ".", TReplaceFlags() << rfReplaceAll);
-    if(PlayerVersion=="") PlayerVersion = PlayerVersion_TMP;
-    else PlayerVersion_TMP = PlayerVersion;
 
     PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
     if(PlayerName=="") PlayerName = PlayerName_TMP;
@@ -405,17 +384,12 @@ void __fastcall TMainForm::aMPCDownExecute(TObject *Sender)
   HWND hwndMPC = FindWindow("MediaPlayerClassicW",NULL);
 
   //Informacje o Playerze
-  if(hwndMPC!=NULL)
+  if((hwndMPC!=NULL)&&(IsPlayerName==1))
   {
     DWORD procesID;
     GetWindowThreadProcessId(hwndMPC, &procesID);
     AnsiString PlayerPath = GetPathOfProces(procesID);
     PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerVersion = GetFileVersionInfo(PlayerPath.c_str(),"FileVersion");
-    PlayerVersion = StringReplace(PlayerVersion, ",", ".", TReplaceFlags() << rfReplaceAll);
-    if(PlayerVersion=="") PlayerVersion = PlayerVersion_TMP;
-    else PlayerVersion_TMP = PlayerVersion;
 
     PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
     if(PlayerName=="") PlayerName = PlayerName_TMP;
@@ -455,17 +429,12 @@ void __fastcall TMainForm::aWMP7_11DownExecute(TObject *Sender)
   HWND hwndWMP7_11 = FindWindow("WMPlayerApp",NULL);
 
   //Informacje o Playerze
-  if(hwndWMP7_11!=NULL)
+  if((hwndWMP7_11!=NULL)&&(IsPlayerName==1))
   {
     DWORD procesID;
     GetWindowThreadProcessId(hwndWMP7_11, &procesID);
     AnsiString PlayerPath = GetPathOfProces(procesID);
     PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerVersion = GetFileVersionInfo(PlayerPath.c_str(),"FileVersion");
-    PlayerVersion = StringReplace(PlayerVersion, ",", ".", TReplaceFlags() << rfReplaceAll);
-    if(PlayerVersion=="") PlayerVersion = PlayerVersion_TMP;
-    else PlayerVersion_TMP = PlayerVersion;
 
     PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
     if(PlayerName=="") PlayerName = PlayerName_TMP;
@@ -503,7 +472,6 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
   Bitrate="";
   Channels="";
   SongLength="";
-  PlayerVersion="";
   PlayerName="";
 
   if(WinampDownRadio->Checked==true)
@@ -528,14 +496,14 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
   aCutSongNumber->Execute();
   aSetStatusLooks->Execute();
 
-  opis=opis.TrimRight();
+  opis=opis.Trim();
 
   if(opis!="")
   {
     if(opis!=opisTMP)
     {
       opisTMP=opis;
-      UstawOpis(opis,!SetOnlyInJabberCheckBox->Checked);
+      UstawOpis(opis,!SetOnlyInJabberCheck);
     }
   }
   else
@@ -543,31 +511,7 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
     if(opis_pocz!=opisTMP)
     {
       opisTMP=opis_pocz;
-      UstawOpis(opis_pocz,!SetOnlyInJabberCheckBox->Checked);
-    }
-  }
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TMainForm::RunPluginCheckBoxClick(TObject *Sender)
-{
-  if(RunPluginCheckBox->Checked==true)
-  {
-    opis_pocz = PobierzOpis(opis_pocz);
-    Timer->Enabled=true;
-    if(EnableFastOnOffCheckBox->Checked==true)
-     UpdateButton(true);
-  }
-  else if(RunPluginCheckBox->Checked==false)
-  {
-    Timer->Enabled=false;
-    if(EnableFastOnOffCheckBox->Checked==true)
-     UpdateButton(false);
-    opisTMP=PobierzOpis(opisTMP);
-    if(opis_pocz!=opisTMP)
-    {
-      UstawOpis(opis_pocz,!SetOnlyInJabberCheckBox->Checked);
-      opisTMP="";
+      UstawOpis(opis_pocz,!SetOnlyInJabberCheck);
     }
   }
 }
@@ -576,7 +520,7 @@ void __fastcall TMainForm::RunPluginCheckBoxClick(TObject *Sender)
 void __fastcall TMainForm::OkButtonClick(TObject *Sender)
 {
   aSaveSettings->Execute();
-  TagsBox->Items->Delete(10);
+  TagsBox->Items->Delete(9);
 
   Visible=false;
 }
@@ -587,7 +531,7 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
   aReadSettings->Execute();
   FormShowed=1;
   TagsBox->Items->Add("Wybierz tag do wstawienia");
-  TagsBox->ItemIndex = 10;
+  TagsBox->ItemIndex = 9;
 }
 //---------------------------------------------------------------------------
 
@@ -596,17 +540,12 @@ void __fastcall TMainForm::aVUPlayerDownExecute(TObject *Sender)
   HWND hwndVUPlayer = FindWindow("VUPlayerClass",NULL);
 
   //Informacje o Playerze
-  if(hwndVUPlayer!=NULL)
+  if((hwndVUPlayer!=NULL)&&(IsPlayerName==1))
   {
     DWORD procesID;
     GetWindowThreadProcessId(hwndVUPlayer, &procesID);
     AnsiString PlayerPath = GetPathOfProces(procesID);
     PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerVersion = GetFileVersionInfo(PlayerPath.c_str(),"FileVersion");
-    PlayerVersion = StringReplace(PlayerVersion, ",", ".", TReplaceFlags() << rfReplaceAll);
-    if(PlayerVersion=="") PlayerVersion = PlayerVersion_TMP;
-    else PlayerVersion_TMP = PlayerVersion;
 
     PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
     if(PlayerName=="") PlayerName = PlayerName_TMP;
@@ -639,17 +578,12 @@ void __fastcall TMainForm::aXMPlayDownExecute(TObject *Sender)
   HWND hwndXMPlay = FindWindow("XMPLAY-MAIN",NULL);
 
   //Informacje o Playerze
-  if(hwndXMPlay!=NULL)
+  if((hwndXMPlay!=NULL)&&(IsPlayerName==1))
   {
     DWORD procesID;
     GetWindowThreadProcessId(hwndXMPlay, &procesID);
     AnsiString PlayerPath = GetPathOfProces(procesID);
     PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerVersion = GetFileVersionInfo(PlayerPath.c_str(),"FileVersion");
-    PlayerVersion = StringReplace(PlayerVersion, ",", ".", TReplaceFlags() << rfReplaceAll);
-    if(PlayerVersion=="") PlayerVersion = PlayerVersion_TMP;
-    else PlayerVersion_TMP = PlayerVersion;
 
     PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
     if(PlayerName=="") PlayerName = PlayerName_TMP;
@@ -710,12 +644,6 @@ void __fastcall TMainForm::aCutSongNumberExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::SetOnlyInJabberCheckBoxClick(TObject *Sender)
-{
-  opisTMP="";
-}
-//---------------------------------------------------------------------------
-
 void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
 {
   ePluginDirectory = GetPluginUserDir(ePluginDirectory);
@@ -747,17 +675,22 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
    StatusMemo->Text = Status;
 
   SetOnlyInJabberCheckBox->Checked = Ini->ReadInteger("Settings", "SetOnlyInJabber", 0);
+  SetOnlyInJabberCheck = Ini->ReadInteger("Settings", "SetOnlyInJabber", 0);
 
   EnablePluginOnStartCheckBox->Checked = Ini->ReadInteger("Settings", "EnablePluginOnStart", 0);
 
   EnableFastOnOffCheckBox->Checked = Ini->ReadInteger("Settings", "EnableFastOnOff", 1);
 
   delete Ini;
+
+  PreviewStatusMemo->Text=StatusMemo->Text;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 {
+  StatusMemo->Text=PreviewStatusMemo->Text;
+
   ePluginDirectory = GetPluginUserDir(ePluginDirectory);
 
   TIniFile *Ini = new TIniFile(ePluginDirectory + "\\\\TuneStatus\\\\TuneStatus.ini");
@@ -784,6 +717,34 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
   Ini->WriteString("Settings", "Status", StrToIniStr(StatusMemo->Text.SubString(0, 2047)).TrimRight());
 
   Ini->WriteInteger("Settings", "SetOnlyInJabber", SetOnlyInJabberCheckBox->Checked);
+  if(SetOnlyInJabberCheck!=SetOnlyInJabberCheckBox->Checked)
+  {
+    SetOnlyInJabberCheck = SetOnlyInJabberCheckBox->Checked;
+    if(RunPluginCheckBox->Checked==true)
+    {
+      if(SetOnlyInJabberCheck==true) //tylko jabber
+      {
+        if(opis_pocz!=opisTMP)
+        {
+          opisTMP=opis_pocz;
+          UstawOpis(opis_pocz,SetOnlyInJabberCheck);
+        }
+        if(opis!="")
+        {
+          if(opis!=opisTMP)
+          {
+            opisTMP=opis;
+            UstawOpis(opis,!SetOnlyInJabberCheck);
+          }
+        }
+      }
+      else //wszystkie
+      {
+        opisTMP=opis;
+        UstawOpis(opis,!SetOnlyInJabberCheck);
+      }
+    }
+  }
 
   Ini->WriteInteger("Settings", "EnablePluginOnStart", EnablePluginOnStartCheckBox->Checked);
 
@@ -847,7 +808,7 @@ void __fastcall TMainForm::RunPluginCheckBoxChange(TObject *Sender)
     opisTMP=PobierzOpis(opisTMP);
     if(opis_pocz!=opisTMP)
     {
-      UstawOpis(opis_pocz,!SetOnlyInJabberCheckBox->Checked);
+      UstawOpis(opis_pocz,!SetOnlyInJabberCheck);
       opisTMP="";
     }
   }        
@@ -878,11 +839,11 @@ void __fastcall TMainForm::aSetStatusLooksExecute(TObject *Sender)
     //PlayerName
     x = AnsiPos("CC_PLAYERNAME", opis);
     if(x!=0)
-     opis = StringReplace(opis, "CC_PLAYERNAME", PlayerName, TReplaceFlags() << rfReplaceAll);
-    //PlayerVersion
-    x = AnsiPos("CC_PLAYERVERSION", opis);
-    if(x!=0)
-     opis = StringReplace(opis, "CC_PLAYERVERSION", PlayerVersion, TReplaceFlags() << rfReplaceAll);
+    {
+      opis = StringReplace(opis, "CC_PLAYERNAME", PlayerName, TReplaceFlags() << rfReplaceAll);
+      IsPlayerName=1;
+    }
+    else IsPlayerName=0;
     //Samplerate
     x = AnsiPos("CC_SAMPLERATE", opis);
     if(x!=0)                    
@@ -911,11 +872,11 @@ void __fastcall TMainForm::TagsBoxSelect(TObject *Sender)
 
   AnsiString Before,Fore;
 
-  Before=StatusMemo->Text.SubString(0,StatusMemo->SelStart);
-  Fore=StatusMemo->Text.SubString(StatusMemo->SelStart+1,(StatusMemo->Text).Length());
-  StatusMemo->Clear();
+  Before=PreviewStatusMemo->Text.SubString(0,PreviewStatusMemo->SelStart);
+  Fore=PreviewStatusMemo->Text.SubString(PreviewStatusMemo->SelStart+1,(PreviewStatusMemo->Text).Length());
+  PreviewStatusMemo->Clear();
 
-  StatusMemo->Text=Before+Tag+Fore;
+  PreviewStatusMemo->Text=Before+Tag+Fore;
 }
 //---------------------------------------------------------------------------
 
@@ -923,23 +884,34 @@ void __fastcall TMainForm::TagsBoxCloseUp(TObject *Sender)
 {
   if(TagsBox->Text=="")
   {
-    TagsBox->Items->Delete(10);
+    TagsBox->Items->Delete(9);
     TagsBox->Items->Add("Wybierz tag do wstawienia");
-    TagsBox->ItemIndex = 10;
+    TagsBox->ItemIndex = 9;
   }
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::TagsBoxDropDown(TObject *Sender)
 {
-  TagsBox->Items->Delete(10);
+  TagsBox->Items->Delete(9);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
-  TagsBox->Items->Delete(10);
+  TagsBox->Items->Delete(9);
   aReadSettings->Execute();
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TMainForm::PreviewStatusMemoChange(TObject *Sender)
+{
+  int x = AnsiPos("CC_TUNESTATUS", PreviewStatusMemo->Text);
+  if(x!=0)
+   OkButton->Enabled=true;
+  else
+   OkButton->Enabled=false;
+}
+//---------------------------------------------------------------------------
+
 
