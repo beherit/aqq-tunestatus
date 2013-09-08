@@ -1,3 +1,7 @@
+1.0.4.6
+-----
+* Poprawienie działania funkcji po jakim czasie od rozpoczęcia utworu ma zmieniać się opis.
+
 1.0.4.5
 -----
 * Mała poprawka przy pobieraniu opisu z Foobar2000 gdy używa się wtyczki fooAvA.
