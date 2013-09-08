@@ -58,8 +58,8 @@ IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=1
 MinorVer=0
-Release=2
-Build=1
+Release=3
+Build=0
 Debug=0
 PreRelease=0
 Special=0
@@ -71,14 +71,14 @@ CodePage=1250
 [Version Info Keys]
 CompanyName=Krzysztof Grochocki (Beherit)
 FileDescription=
-FileVersion=1.0.2.1
+FileVersion=1.0.3.0
 InternalName=TuneStatus
 LegalCopyright=Krzysztof Grochocki (Beherit)
 LegalTrademarks=Krzysztof Grochocki (Beherit)
 OriginalFilename=TuneStatus.dll
 ProductName=TuneStatus
-ProductVersion=1.0.2.1
-Comments=
+ProductVersion=1.0.3.0
+Comments=Wstawianie do opisu aktualnie słuchanego utworu z wielu odtwarzaczy
 
 [Excluded Packages]
 C:\Program Files\ZipForge\Lib\C++ Builder 6\dclZipForgeb6.bpl=ZipForge Package

@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 564
-  Top = 79
+  Left = 412
+  Top = 113
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus by Beherit'
-  ClientHeight = 368
-  ClientWidth = 295
+  ClientHeight = 300
+  ClientWidth = 290
   Color = clBtnFace
   Font.Charset = EASTEUROPE_CHARSET
   Font.Color = clWindowText
@@ -55,182 +55,249 @@ object MainForm: TMainForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object HandlingGroupBox: TGroupBox
-    Left = 6
-    Top = 6
-    Width = 283
-    Height = 230
-    Caption = 'Obs'#322'uga'
-    TabOrder = 0
-    object Label1: TLabel
-      Left = 32
-      Top = 112
-      Width = 196
-      Height = 13
-      Caption = 'Do obs'#322'ugi potrzebny jest plugin w WMP!'
-      Enabled = False
-      Font.Charset = EASTEUROPE_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-    end
-    object WinampDownRadio: TRadioButton
-      Left = 8
-      Top = 20
-      Width = 173
-      Height = 17
-      Caption = 'Pobieraj dane z Winamp/AIMP2'
-      Checked = True
-      TabOrder = 0
-      TabStop = True
-    end
-    object FoobarDownRadio: TRadioButton
-      Left = 8
-      Top = 44
-      Width = 158
-      Height = 17
-      Caption = 'Pobieraj dane z Foobar2000'
-      TabOrder = 1
-    end
-    object WMP64DownRadio: TRadioButton
-      Left = 8
-      Top = 132
-      Width = 226
-      Height = 17
-      Caption = 'Pobieraj dane z Windows Media Player 6.4'
-      TabOrder = 4
-    end
-    object MPCDownRadio: TRadioButton
-      Left = 8
-      Top = 204
-      Width = 193
-      Height = 17
-      Caption = 'Pobieraj dane z Media Player Classic'
-      TabOrder = 5
-    end
-    object LastFMDownRadio: TRadioButton
-      Left = 8
-      Top = 68
-      Width = 169
-      Height = 17
-      Caption = 'Pobieraj dane z Last.fm Player'
-      TabOrder = 2
-    end
-    object WMP7_11DownRadio: TRadioButton
-      Left = 8
-      Top = 92
-      Width = 233
-      Height = 17
-      Caption = 'Pobieraj dane z Windows Media Player 7-11'
-      TabOrder = 3
-    end
-    object VUPlayerDownRadio: TRadioButton
-      Left = 8
-      Top = 156
-      Width = 140
-      Height = 17
-      Caption = 'Pobieraj dane z VUPlayer'
-      TabOrder = 6
-    end
-    object XMPlayDownRadio: TRadioButton
-      Left = 8
-      Top = 180
-      Width = 129
-      Height = 17
-      Caption = 'Pobieraj dane z XMPlay'
-      TabOrder = 7
-    end
-  end
-  object SettingsGroupBox: TGroupBox
-    Left = 6
-    Top = 238
-    Width = 283
-    Height = 94
-    Caption = 'Opcje'
-    TabOrder = 1
-    object PreviewLabel: TLabel
-      Left = 8
-      Top = 20
-      Width = 38
-      Height = 13
-      Caption = 'Podgl'#261'd'
-    end
-    object PrefixLabel: TLabel
-      Left = 8
-      Top = 44
-      Width = 28
-      Height = 13
-      Caption = 'Prefix'
-    end
-    object SuffixLabel: TLabel
-      Left = 8
-      Top = 68
-      Width = 28
-      Height = 13
-      Caption = 'Suffix'
-    end
-    object Preview: TEdit
-      Left = 52
-      Top = 16
-      Width = 221
-      Height = 21
-      ReadOnly = True
-      TabOrder = 0
-    end
-    object PrefixEdit: TEdit
-      Left = 52
-      Top = 40
-      Width = 181
-      Height = 21
-      TabOrder = 1
-    end
-    object SuffixEdit: TEdit
-      Left = 52
-      Top = 64
-      Width = 181
-      Height = 21
-      TabOrder = 3
-    end
-    object PrefixCheckBox: TCheckBox
-      Left = 240
-      Top = 42
-      Width = 37
-      Height = 17
-      Caption = 'On'
-      TabOrder = 2
-    end
-    object SuffixCheckBox: TCheckBox
-      Left = 240
-      Top = 66
-      Width = 37
-      Height = 17
-      Caption = 'On'
-      TabOrder = 4
-    end
-  end
   object OkButton: TButton
-    Left = 208
-    Top = 336
+    Left = 206
+    Top = 272
     Width = 75
     Height = 25
     Caption = 'OK'
-    TabOrder = 2
+    TabOrder = 0
     OnClick = OkButtonClick
   end
   object RunPluginCheckBox: TCheckBox
     Left = 12
-    Top = 340
+    Top = 278
     Width = 93
-    Height = 17
+    Height = 14
     Caption = 'W'#322#261'cz wtyczk'#281
-    TabOrder = 3
+    TabOrder = 1
     OnClick = RunPluginCheckBoxClick
+  end
+  object PageControl: TPageControl
+    Left = 4
+    Top = 4
+    Width = 284
+    Height = 265
+    ActivePage = SettingsTabSheet
+    BiDiMode = bdLeftToRight
+    MultiLine = True
+    ParentBiDiMode = False
+    ParentShowHint = False
+    ShowHint = False
+    TabIndex = 1
+    TabOrder = 2
+    object HandlingTabSheet: TTabSheet
+      Caption = 'Obs'#322'uga'
+      object WMP7_11Label: TLabel
+        Left = 30
+        Top = 98
+        Width = 196
+        Height = 13
+        Caption = 'Do obs'#322'ugi potrzebny jest plugin w WMP!'
+        Enabled = False
+        Font.Charset = EASTEUROPE_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object WMP7_11DownRadio: TRadioButton
+        Left = 6
+        Top = 78
+        Width = 233
+        Height = 17
+        Caption = 'Pobieraj dane z Windows Media Player 7-11'
+        TabOrder = 0
+      end
+      object XMPlayDownRadio: TRadioButton
+        Left = 6
+        Top = 166
+        Width = 129
+        Height = 17
+        Caption = 'Pobieraj dane z XMPlay'
+        TabOrder = 1
+      end
+      object WMP64DownRadio: TRadioButton
+        Left = 6
+        Top = 118
+        Width = 226
+        Height = 17
+        Caption = 'Pobieraj dane z Windows Media Player 6.4'
+        TabOrder = 2
+      end
+      object WinampDownRadio: TRadioButton
+        Left = 6
+        Top = 6
+        Width = 217
+        Height = 17
+        Caption = 'Pobieraj dane z Winamp/AIMP2/KMPlayer'
+        Checked = True
+        TabOrder = 3
+        TabStop = True
+      end
+      object VUPlayerDownRadio: TRadioButton
+        Left = 6
+        Top = 142
+        Width = 140
+        Height = 17
+        Caption = 'Pobieraj dane z VUPlayer'
+        TabOrder = 4
+      end
+      object MPCDownRadio: TRadioButton
+        Left = 6
+        Top = 190
+        Width = 193
+        Height = 17
+        Caption = 'Pobieraj dane z Media Player Classic'
+        TabOrder = 5
+      end
+      object LastFMDownRadio: TRadioButton
+        Left = 6
+        Top = 54
+        Width = 169
+        Height = 17
+        Caption = 'Pobieraj dane z Last.fm Player'
+        TabOrder = 6
+      end
+      object FoobarDownRadio: TRadioButton
+        Left = 6
+        Top = 30
+        Width = 158
+        Height = 17
+        Caption = 'Pobieraj dane z Foobar2000'
+        TabOrder = 7
+      end
+      object AutoDownRadio: TRadioButton
+        Left = 6
+        Top = 214
+        Width = 121
+        Height = 17
+        Caption = 'Okre'#347'l automatycznie'
+        TabOrder = 8
+      end
+    end
+    object SettingsTabSheet: TTabSheet
+      Caption = 'Opcje'
+      ImageIndex = 1
+      object SuffixLabel: TLabel
+        Left = 6
+        Top = 58
+        Width = 28
+        Height = 13
+        Caption = 'Suffix'
+      end
+      object PreviewLabel: TLabel
+        Left = 6
+        Top = 10
+        Width = 38
+        Height = 13
+        Caption = 'Podgl'#261'd'
+      end
+      object PrefixLabel: TLabel
+        Left = 6
+        Top = 34
+        Width = 28
+        Height = 13
+        Caption = 'Prefix'
+      end
+      object Label1: TLabel
+        Left = 38
+        Top = 78
+        Width = 202
+        Height = 13
+        Caption = 'Znak | dzia'#322'a jako nowa linia (mi'#281'kki enter)'
+        Enabled = False
+      end
+      object CutSongNumberLabel: TLabel
+        Left = 133
+        Top = 108
+        Width = 129
+        Height = 13
+        Caption = '(np. z: 16. Artysta - Tytu'#322')'
+        Enabled = False
+      end
+      object CutSongNumberCheckBox: TCheckBox
+        Left = 11
+        Top = 106
+        Width = 121
+        Height = 17
+        Caption = 'Ucinaj numer utworu'
+        TabOrder = 0
+      end
+      object SuffixEdit: TEdit
+        Left = 50
+        Top = 54
+        Width = 181
+        Height = 21
+        TabOrder = 1
+      end
+      object SuffixCheckBox: TCheckBox
+        Left = 236
+        Top = 56
+        Width = 37
+        Height = 17
+        Caption = 'On'
+        TabOrder = 2
+      end
+      object SetOnlyInJabberCheckBox: TCheckBox
+        Left = 11
+        Top = 128
+        Width = 222
+        Height = 17
+        Caption = 'Ustawiaj opis tylko na kontach sieci Jabber'
+        TabOrder = 3
+        OnClick = SetOnlyInJabberCheckBoxClick
+      end
+      object Preview: TEdit
+        Left = 50
+        Top = 6
+        Width = 221
+        Height = 21
+        ReadOnly = True
+        TabOrder = 4
+      end
+      object PrefixEdit: TEdit
+        Left = 50
+        Top = 30
+        Width = 181
+        Height = 21
+        TabOrder = 5
+      end
+      object PrefixCheckBox: TCheckBox
+        Left = 236
+        Top = 32
+        Width = 37
+        Height = 17
+        Caption = 'On'
+        TabOrder = 6
+      end
+      object EnablePluginOnStartCheckBox: TCheckBox
+        Left = 11
+        Top = 150
+        Width = 186
+        Height = 17
+        Caption = 'W'#322#261'czaj wtyczk'#281' przy starcie AQQ'
+        TabOrder = 7
+      end
+      object EnableFastOnOffCheckBox: TCheckBox
+        Left = 11
+        Top = 172
+        Width = 254
+        Height = 17
+        BiDiMode = bdLeftToRight
+        Caption = 'Pokazuj przycisk szybkiego w'#322#261'czenia/wy'#322#261'czenia'
+        Color = clBtnFace
+        ParentBiDiMode = False
+        ParentColor = False
+        TabOrder = 8
+        OnClick = EnableFastOnOffCheckBoxClick
+      end
+    end
   end
   object ActionList: TActionList
     Left = 168
-    Top = 336
+    Top = 272
     object aWinampDown: TAction
       Caption = 'aWinampDown'
       OnExecute = aWinampDownExecute
@@ -264,19 +331,36 @@ object MainForm: TMainForm
       Caption = 'aMPCDown'
       OnExecute = aMPCDownExecute
     end
+    object aAutoDown: TAction
+      Caption = 'aAutoDown'
+      OnExecute = aAutoDownExecute
+    end
     object aPreSufFix: TAction
       Caption = 'aPreSufFix'
       OnExecute = aPreSufFixExecute
     end
+    object aCutSongNumber: TAction
+      Caption = 'aCutSongNumber'
+      OnExecute = aCutSongNumberExecute
+    end
+    object aReadSettings: TAction
+      Caption = 'aReadSettings'
+      OnExecute = aReadSettingsExecute
+    end
+    object aSaveSettings: TAction
+      Caption = 'aSaveSettings'
+      OnExecute = aSaveSettingsExecute
+    end
   end
   object Timer: TTimer
     Enabled = False
+    Interval = 3000
     OnTimer = TimerTimer
     Left = 104
-    Top = 336
+    Top = 272
   end
   object XPMan: TXPMan
     Left = 136
-    Top = 336
+    Top = 272
   end
 end
