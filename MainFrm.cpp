@@ -86,7 +86,7 @@ void __fastcall TMainForm::aWinampDownExecute(TObject *Sender)
   if (x>0)
   {
     opis.Delete(x, y + 1);
-    opis.TrimRight();
+    opis=opis.Trim();
   }
 
   x = AnsiPos("*** ", opis);
@@ -126,7 +126,7 @@ void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
   if (x>0)
   {
     opis.Delete(x, y + 1);
-    opis.TrimRight();
+    opis=opis.Trim();
   }
 
   x = AnsiPos("foobar2000", opis);
@@ -151,7 +151,7 @@ void __fastcall TMainForm::aWMP64DownExecute(TObject *Sender)
   if (x>0)
   {
     opis.Delete(x, y + 1);
-    opis.TrimRight();
+    opis=opis.Trim();
   }
 
   if(opis=="Windows Media Player")
@@ -175,7 +175,7 @@ void __fastcall TMainForm::aMPCDownExecute(TObject *Sender)
   if (x>0)
   {
     opis.Delete(x, y + 1);
-    opis.TrimRight();
+    opis=opis.Trim();
   }
 
   aPreSufFix->Execute();
@@ -224,7 +224,7 @@ void __fastcall TMainForm::aWMP7_11DownExecute(TObject *Sender)
   if (x>0)
   {
     opis.Delete(x, y + 1);
-    opis.TrimRight();
+    opis=opis.Trim();
   }
 
   if(opis=="Windows Media Player")
@@ -313,11 +313,12 @@ void __fastcall TMainForm::OkButtonClick(TObject *Sender)
   if(MPCDownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "MPC");
 
-  AnsiString PrefixText = PrefixEdit->Text + ";";
+  char Quote = '=';
+  AnsiString PrefixText = AnsiQuotedStr(PrefixEdit->Text, Quote);
   Ini->WriteString("Settings", "Prefix", PrefixText);
   Ini->WriteInteger("Settings", "PrefixOn", PrefixCheckBox->Checked);
 
-  AnsiString SuffixText = SuffixEdit->Text + ";";
+  AnsiString SuffixText = AnsiQuotedStr(SuffixEdit->Text, Quote);
   Ini->WriteString("Settings", "Suffix", SuffixText);
   Ini->WriteInteger("Settings", "SuffixOn", SuffixCheckBox->Checked);
 
@@ -352,11 +353,13 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
    MPCDownRadio->Checked=true;
 
   AnsiString PrefixText = Ini->ReadString("Settings", "Prefix", ";");
+  PrefixText.Delete(1, 1);
    PrefixEdit->Text=PrefixText.SetLength(PrefixText.Length()-1);
   int PrefixOn = Ini->ReadInteger("Settings", "PrefixOn", 0);
    PrefixCheckBox->Checked=PrefixOn;
 
   AnsiString SuffixText = Ini->ReadString("Settings", "Suffix", ";");
+  SuffixText.Delete(1, 1);
    SuffixEdit->Text=SuffixText.SetLength(SuffixText.Length()-1);
   int SuffixOn = Ini->ReadInteger("Settings", "SuffixOn", 0);
    SuffixCheckBox->Checked=SuffixOn;
@@ -387,12 +390,13 @@ void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
    Ini->WriteString("Settings", "Box", "XMPlay");
   if(MPCDownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "MPC");
-                              
-  AnsiString PrefixText = PrefixEdit->Text + ";";
+
+  char Quote = '=';
+  AnsiString PrefixText = AnsiQuotedStr(PrefixEdit->Text, Quote);
   Ini->WriteString("Settings", "Prefix", PrefixText);
   Ini->WriteInteger("Settings", "PrefixOn", PrefixCheckBox->Checked);
 
-  AnsiString SuffixText = SuffixEdit->Text + ";";
+  AnsiString SuffixText = AnsiQuotedStr(SuffixEdit->Text, Quote);
   Ini->WriteString("Settings", "Suffix", SuffixText);
   Ini->WriteInteger("Settings", "SuffixOn", SuffixCheckBox->Checked); 
 
@@ -414,7 +418,7 @@ void __fastcall TMainForm::aVUPlayerDownExecute(TObject *Sender)
   if (x>0)
   {
     opis.Delete(x, y + 1);
-    opis.TrimRight();
+    opis=opis.Trim();
   }
 
   aPreSufFix->Execute();

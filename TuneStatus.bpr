@@ -59,7 +59,7 @@ AutoIncBuild=0
 MajorVer=1
 MinorVer=0
 Release=2
-Build=0
+Build=1
 Debug=0
 PreRelease=0
 Special=0
@@ -71,13 +71,13 @@ CodePage=1250
 [Version Info Keys]
 CompanyName=Krzysztof Grochocki (Beherit)
 FileDescription=
-FileVersion=1.0.2.0
+FileVersion=1.0.2.1
 InternalName=TuneStatus
 LegalCopyright=Krzysztof Grochocki (Beherit)
 LegalTrademarks=Krzysztof Grochocki (Beherit)
 OriginalFilename=TuneStatus.dll
 ProductName=TuneStatus
-ProductVersion=1.0.2.0
+ProductVersion=1.0.2.1
 Comments=
 
 [Excluded Packages]
