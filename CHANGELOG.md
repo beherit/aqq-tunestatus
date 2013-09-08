@@ -1,3 +1,9 @@
+1.0.5.4
+-----
+* Przy aktywnej opcji nie ustawiania opisu przy stanie niewidoczny po wejściu w ten stan opis początkowy jest automatycznie przywracany.
+* Poprawiono błąd z zawieszaniem AQQ przy wycinaniu linków z pobranego utworu.
+* Poprawiono pobieranie utworu z Screamer Radio.
+
 1.0.5.2
 -----
 * Dodano możliwość ustawienia czy wtyczka ma czy też nie ustawiać opis przy stanie niewidoczny.
