@@ -1,3 +1,18 @@
+2.0.0.0
+-----
+* Przepisanie wtyczki pod kompilator CodeGear C++ Builder 2009.
+* Pełne wsparcie Unicode!
+* Zabezpieczenie przed ustawianiem opisu/wysyłaniu UserTune gdy w pobranym tekście okna znajdzie się .avi, .mpg, .mpeg lub .rmvb.
+* Naprawiono poważny błąd w przywracaniu/pobieraniu opisu.
+* Bitrate jest teraz poprawnie wyświetlane tzn. "wartość kbps".
+* Zwiększono limit znaków w sprawdzaniu ciągu znaków przy ucinaniu numeru utworów.
+* Poprawiono obsługę XEP-0118.
+* Gdy wymusimy działanie UserTune z odtwarzaczami obsługiwanymi przez AQQ to wtyczka wyłączy obsługę UserTune w AQQ.
+* Minimalny czas po, którym ustawiany jest opis/wysyłana informacja o słuchanym utworze to 4 sekundy.
+* Mała poprawki w obsłudze Screamer Radio, aTunes, Songbird, Last.fm Player, iTunes.
+* Zwiększono limit czasowy po, którym są pokazywane chmurki z informacją o aktualnie słuchanych utworach naszych znajomych po włączeniu AQQ.
+* Poprawka w blokowaniu zmiany opisu podczas aktywnego działania wtyczki.
+
 1.0.6.0
 -----
 * Poprawienie linków do wymaganych dodatków.
