@@ -29,12 +29,16 @@ PluginStateChange TPluginStateChange;
 PluginLink TPluginLink;
 PluginInfo TPluginInfo;
 
-TMainForm *handle; //tworzenie uchwytu do formy
+//tworzenie uchwytu do formy
+TMainForm *handle;
+
+//Zmienna opisu
+AnsiString nowy_opis;
 
 //Zmienne do ikonu
 int plugin_icon_idx;
 
-//Serwis
+//Serwis otwarcia formy
 int __stdcall TuneStatusService (WPARAM, LPARAM)
 {
   if (handle==NULL)
@@ -49,12 +53,29 @@ int __stdcall TuneStatusService (WPARAM, LPARAM)
   return 0;
 }
 
+//Notyfikacja zmiany statusu
+int __stdcall OnSetNoteClose (WPARAM wParam, LPARAM lParam)
+{
+  if (handle!=NULL)
+  {
+    TPluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&TPluginStateChange),0);
+    AnsiString nowy_opis = TPluginStateChange.Status;
+    if((nowy_opis!=handle->opis_pocz)&&(nowy_opis!=handle->opisTMP))
+    {
+      handle->opis_pocz=nowy_opis;
+      handle->opisTMP=nowy_opis;
+    }
+  }
+
+  return 0;
+}
+
 //Program
 extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQVersion)
 {
   TPluginInfo.cbSize = sizeof(PluginInfo);
   TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,1,0);
+  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,2,0);
   TPluginInfo.Description = (wchar_t *)L"";
   TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -118,14 +139,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
   //Przyspisanie przycisku
   PrzypiszSkrot();
 
-  return 0;
-}
-
-extern "C" int __declspec(dllexport) __stdcall Unload()
-{
-  TPluginLink.DestroyServiceFunction(TuneStatusService);
-  TPluginLink.CallService(AQQ_CONTROLS_DESTROYPOPUPMENUITEM,0,(LPARAM)(&TPluginAction));
-  TPluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx));
+  TPluginLink.HookEvent(AQQ_WINDOW_SETNOTE_CLOSE, OnSetNoteClose);
 
   return 0;
 }
@@ -169,6 +183,20 @@ void UstawOpis(AnsiString opis)
   TPluginStateChange.Force = true;
 
   TPluginLink.CallService(AQQ_SYSTEM_SETSHOWANDSTATUS,0,(LPARAM)(&TPluginStateChange));
+}
+
+extern "C" int __declspec(dllexport) __stdcall Unload()
+{
+  if (handle!=NULL)
+  {
+     UstawOpis(handle->opis_pocz);
+  }
+  TPluginLink.UnhookEvent(OnSetNoteClose);
+  TPluginLink.DestroyServiceFunction(TuneStatusService);
+  TPluginLink.CallService(AQQ_CONTROLS_DESTROYPOPUPMENUITEM,0,(LPARAM)(&TPluginAction));
+  TPluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx));
+
+  return 0;
 }
 
 

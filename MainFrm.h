@@ -63,6 +63,8 @@ __published:	// IDE-managed Components
         void __fastcall aXMPlayDownExecute(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
+        AnsiString opis_pocz;
+        AnsiString opisTMP;
         __fastcall TMainForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------

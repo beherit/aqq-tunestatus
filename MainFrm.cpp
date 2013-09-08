@@ -15,8 +15,6 @@ __declspec(dllimport)AnsiString PobierzOpis(AnsiString opis);
 //---------------------------------------------------------------------------
 AnsiString ePluginDirectory;
 AnsiString opis;
-AnsiString opisTMP;
-AnsiString opis_pocz;
 //---------------------------------------------------------------------------
 __fastcall TMainForm::TMainForm(TComponent* Owner)
         : TForm(Owner)
@@ -95,8 +93,16 @@ void __fastcall TMainForm::aWinampDownExecute(TObject *Sender)
   if (x>0)
    opis.Delete(1, x + 3);
 
-  if(opis=="Winamp")
+  x = AnsiPos("Winamp", opis);
+  if (x>0)
    opis = "";
+
+  if (hwndWinamp!=NULL)
+  {
+    int res = SendMessage(hwndWinamp,WM_USER,0,104);
+    if(res==0)
+     opis = "";
+  }
 
   aPreSufFix->Execute();        
 }
@@ -122,6 +128,10 @@ void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
     opis.Delete(x, y + 1);
     opis.TrimRight();
   }
+
+  x = AnsiPos("foobar2000", opis);
+  if (x>0)
+   opis = "";
 
   aPreSufFix->Execute();
 }
@@ -254,7 +264,7 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
   }
   else
   {
-    if(opis_pocz!=opis)
+    if(opis_pocz!=opisTMP)
     {
       opisTMP=opis_pocz;
       UstawOpis(opis_pocz);
@@ -296,13 +306,19 @@ void __fastcall TMainForm::OkButtonClick(TObject *Sender)
    Ini->WriteString("Settings", "Box", "WMP7-11");
   if(WMP64DownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "WMP6");
+  if(VUPlayerDownRadio->Checked==true)
+   Ini->WriteString("Settings", "Box", "VUPlayer");
+  if(XMPlayDownRadio->Checked==true)
+   Ini->WriteString("Settings", "Box", "XMPlay");
   if(MPCDownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "MPC");
 
-  Ini->WriteString("Settings", "Prefix", PrefixEdit->Text);
+  AnsiString PrefixText = PrefixEdit->Text + ";";
+  Ini->WriteString("Settings", "Prefix", PrefixText);
   Ini->WriteInteger("Settings", "PrefixOn", PrefixCheckBox->Checked);
 
-  Ini->WriteString("Settings", "Suffix", SuffixEdit->Text);
+  AnsiString SuffixText = SuffixEdit->Text + ";";
+  Ini->WriteString("Settings", "Suffix", SuffixText);
   Ini->WriteInteger("Settings", "SuffixOn", SuffixCheckBox->Checked);
 
   delete Ini;
@@ -328,16 +344,20 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
    WMP7_11DownRadio->Checked=true;
   else if(Boxy=="WMP6")
    WMP64DownRadio->Checked=true;
+  else if(Boxy=="VUPlayer")
+   VUPlayerDownRadio->Checked=true;
+  else if(Boxy=="XMPlay")
+   XMPlayDownRadio->Checked=true;
   else if(Boxy=="MPC")
    MPCDownRadio->Checked=true;
 
-  AnsiString PrefixText = Ini->ReadString("Settings", "Prefix", "");
-   PrefixEdit->Text=PrefixText;
+  AnsiString PrefixText = Ini->ReadString("Settings", "Prefix", ";");
+   PrefixEdit->Text=PrefixText.SetLength(PrefixText.Length()-1);
   int PrefixOn = Ini->ReadInteger("Settings", "PrefixOn", 0);
    PrefixCheckBox->Checked=PrefixOn;
 
-  AnsiString SuffixText = Ini->ReadString("Settings", "Suffix", "");
-   SuffixEdit->Text=SuffixText;
+  AnsiString SuffixText = Ini->ReadString("Settings", "Suffix", ";");
+   SuffixEdit->Text=SuffixText.SetLength(SuffixText.Length()-1);
   int SuffixOn = Ini->ReadInteger("Settings", "SuffixOn", 0);
    SuffixCheckBox->Checked=SuffixOn;
 
@@ -361,13 +381,19 @@ void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
    Ini->WriteString("Settings", "Box", "WMP7-11");
   if(WMP64DownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "WMP6");
+  if(VUPlayerDownRadio->Checked==true)
+   Ini->WriteString("Settings", "Box", "VUPlayer");
+  if(XMPlayDownRadio->Checked==true)
+   Ini->WriteString("Settings", "Box", "XMPlay");
   if(MPCDownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "MPC");
-
-  Ini->WriteString("Settings", "Prefix", PrefixEdit->Text);
+                              
+  AnsiString PrefixText = PrefixEdit->Text + ";";
+  Ini->WriteString("Settings", "Prefix", PrefixText);
   Ini->WriteInteger("Settings", "PrefixOn", PrefixCheckBox->Checked);
 
-  Ini->WriteString("Settings", "Suffix", SuffixEdit->Text);
+  AnsiString SuffixText = SuffixEdit->Text + ";";
+  Ini->WriteString("Settings", "Suffix", SuffixText);
   Ini->WriteInteger("Settings", "SuffixOn", SuffixCheckBox->Checked); 
 
   delete Ini;
@@ -376,10 +402,10 @@ void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
 
 void __fastcall TMainForm::aVUPlayerDownExecute(TObject *Sender)
 {
-  HWND hwndMPC = FindWindow("VUPlayerClass",NULL);
+  HWND hwndVUPlayer = FindWindow("VUPlayerClass",NULL);
 
   char this_title[2048];
-  GetWindowText(hwndMPC,this_title,sizeof(this_title));
+  GetWindowText(hwndVUPlayer,this_title,sizeof(this_title));
 
   opis = this_title;
 
@@ -397,14 +423,26 @@ void __fastcall TMainForm::aVUPlayerDownExecute(TObject *Sender)
 
 void __fastcall TMainForm::aXMPlayDownExecute(TObject *Sender)
 {
-  HWND hwndMPC = FindWindow("XMPLAY-MAIN",NULL);
+  HWND hwndXMPlay = FindWindow("XMPLAY-MAIN",NULL);
 
   char this_title[2048];
-  GetWindowText(hwndMPC,this_title,sizeof(this_title));
+  GetWindowText(hwndXMPlay,this_title,sizeof(this_title));
 
   opis = this_title;
+
+  int x = AnsiPos("XMPlay", opis);
+  if (x>0)
+   opis = "";
+
+  if (hwndXMPlay!=NULL)
+  {
+    int res = SendMessage(hwndXMPlay,WM_USER,0,104);
+    if(res==0)
+     opis = "";
+  }
 
   aPreSufFix->Execute();
 }
 //---------------------------------------------------------------------------
+
 
