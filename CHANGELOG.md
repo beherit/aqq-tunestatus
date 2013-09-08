@@ -1,3 +1,8 @@
+1.0.2.1
+-----
+* Poprawka ustawiania opisu przy wyładowywaniu wtyczki
+* Poprawka w ucinaniu spacji w pobranym tytule.
+
 1.0.2.0
 -----
 * Po wyłączeniu odtwarzacza opis zostaje przywrócony i można go zmieniać a co najważniejsze po ponownym włączeniu i wyłączeniu odtwarzacza zostanie przywrócony już opis ten, który ustawiliśmy sobie ostatnio a nie ten przy pierwszym włączeniu wtyczki.

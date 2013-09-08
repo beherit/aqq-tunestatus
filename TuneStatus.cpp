@@ -75,7 +75,7 @@ extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
 {
   TPluginInfo.cbSize = sizeof(PluginInfo);
   TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,2,0);
+  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,2,1);
   TPluginInfo.Description = (wchar_t *)L"";
   TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -189,6 +189,7 @@ extern "C" int __declspec(dllexport) __stdcall Unload()
 {
   if (handle!=NULL)
   {
+    if(handle->opis_pocz!="")
      UstawOpis(handle->opis_pocz);
   }
   TPluginLink.UnhookEvent(OnSetNoteClose);
