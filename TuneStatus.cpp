@@ -57,7 +57,7 @@ AnsiString AQQRadioSong;
 PPluginSong Song;
 
 //Pobieranie aktualnego opisu
-AnsiString PobierzOpis(AnsiString opis)
+AnsiString GetStatus(AnsiString opis)
 {
   PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),0);
 
@@ -68,7 +68,7 @@ AnsiString PobierzOpis(AnsiString opis)
 //---------------------------------------------------------------------------
 
 //Ustawianie opisu
-void UstawOpis(AnsiString opis, bool force)
+void SetStatus(AnsiString opis, bool force)
 {
   PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),0);
 
@@ -113,7 +113,7 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
     Application->Handle = MainForm;
     handle = new TMainForm(Application);
     handle->aReadSettings->Execute();
-    handle->opis_pocz = PobierzOpis(handle->opis_pocz);
+    handle->opis_pocz = GetStatus(handle->opis_pocz);
     handle->SongTimer->Interval=1000;
     handle->JustEnabled=1;
     handle->Timer->Enabled=true;
@@ -126,7 +126,7 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
   {
     if(handle->Timer->Enabled==false)
     {
-      handle->opis_pocz = PobierzOpis(handle->opis_pocz);
+      handle->opis_pocz = GetStatus(handle->opis_pocz);
       handle->SongTimer->Interval=1000;
       handle->JustEnabled=1;
       handle->Timer->Enabled=true;
@@ -138,10 +138,10 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
     {
       handle->SongTimer->Enabled=false;
       handle->Timer->Enabled=false;
-      handle->opisTMP=PobierzOpis(handle->opisTMP);
+      handle->opisTMP=GetStatus(handle->opisTMP);
       if(handle->opis_pocz!=handle->opisTMP)
       {
-        UstawOpis(handle->opis_pocz,!handle->SetOnlyInJabberCheck);
+        SetStatus(handle->opis_pocz,!handle->SetOnlyInJabberCheck);
         handle->opisTMP="";
       }
       //Update buttonu
@@ -209,6 +209,32 @@ int __stdcall OnSetNote(WPARAM wParam, LPARAM lParam)
 }
 //---------------------------------------------------------------------------
 
+//Notyfikacja zmiany stanu
+int __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
+{
+  if((handle!=NULL)&&(handle->Timer->Enabled==true))
+  {
+    if(AllowChangeStatus(handle->BlockInvisibleCheck)==0)
+    {
+      handle->SongTimer->Enabled=false;
+      handle->Timer->Enabled=false;
+      
+      handle->opisTMP=GetStatus(handle->opisTMP);
+      if(handle->opis_pocz!=handle->opisTMP)
+      {
+        SetStatus(handle->opis_pocz,!handle->SetOnlyInJabberCheck);
+        handle->opisTMP="";
+      }
+
+      handle->SongTimer->Enabled=true;
+      handle->Timer->Enabled=true;
+    }
+  }
+
+  return 0;
+}
+//---------------------------------------------------------------------------
+
 //Program
 extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVersion)
 {
@@ -224,7 +250,7 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
   }*/
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,5,2);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,5,4);
   PluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   PluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   PluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -345,6 +371,8 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
   PluginLink.HookEvent(AQQ_SYSTEM_SETNOTE,OnSetNote);
   //Hook dla AQQ Radio
   PluginLink.HookEvent(AQQ_SYSTEM_CURRENTSONG,OnCurrentSong);
+  //Hook dla zmiany stanu
+  PluginLink.HookEvent(AQQ_SYSTEM_STATECHANGE,OnStateChange);
 
   //Odczyt ustawien
   TIniFile *Ini = new TIniFile(eDir + "\\\\TuneStatus\\\\\TuneStatus.ini");
@@ -357,7 +385,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
   {
     Application->Handle = MainForm;
     handle = new TMainForm(Application);
-    handle->opis_pocz = PobierzOpis(handle->opis_pocz);
+    handle->opis_pocz = GetStatus(handle->opis_pocz);
     handle->aReadSettings->Execute();
     handle->JustEnabled=1;
     handle->Timer->Enabled=true;
@@ -410,12 +438,13 @@ extern "C" int __declspec(dllexport) __stdcall Unload()
 {
   if((handle!=NULL)&&(handle->Timer->Enabled==true))
   {
-    handle->opisTMP=PobierzOpis(handle->opisTMP);
+    handle->opisTMP=GetStatus(handle->opisTMP);
     if(handle->opis_pocz!=handle->opisTMP)
-     UstawOpis(handle->opis_pocz,!handle->SetOnlyInJabberCheck);
+     SetStatus(handle->opis_pocz,!handle->SetOnlyInJabberCheck);
   }
   PluginLink.UnhookEvent(OnSetNote);
   PluginLink.UnhookEvent(OnCurrentSong);
+  PluginLink.UnhookEvent(OnStateChange);
   PluginLink.DestroyServiceFunction(TuneStatusService);
   PluginLink.CallService(AQQ_CONTROLS_DESTROYPOPUPMENUITEM,0,(LPARAM)(&PluginAction));
   PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx));

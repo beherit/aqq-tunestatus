@@ -32,10 +32,10 @@
 #pragma resource "*.dfm"
 TMainForm *MainForm;
 //---------------------------------------------------------------------------
-__declspec(dllimport)void UstawOpis(AnsiString opis, bool force);
+__declspec(dllimport)void SetStatus(AnsiString opis, bool force);
 __declspec(dllimport)AnsiString GetPluginUserDir(AnsiString Dir);
 __declspec(dllimport)AnsiString GetPluginDir(AnsiString Dir);
-__declspec(dllimport)AnsiString PobierzOpis(AnsiString opis);
+__declspec(dllimport)AnsiString GetStatus(AnsiString opis);
 __declspec(dllimport)AnsiString GetAQQRadioSong(AnsiString Song);
 __declspec(dllimport)void PrzypiszButton();
 __declspec(dllimport)void UsunButton();
@@ -46,7 +46,6 @@ AnsiString ePluginDirectory=""; //Zmiena sciezki
 AnsiString opis=""; //Zmienna opisu
 AnsiString opis_TMP=""; //Zmienna opisu (tymczasowa)
 AnsiString opis2=""; //j.w.
-bool BlockInvisibleCheck=1;
 
 int res=0; //Do pobierania nizej wymienionych danych
 AnsiString Samplerate=""; //Samplerate piosenki
@@ -73,6 +72,7 @@ bool TimeTurnOffCheck=0; //Do wylaczania dziala wtyczki gdy utwor nie zmienia si
 HWND WindowHwnd=NULL; //Zmienna uchwytu do okien
 HWND LastfmWindowHwnd=NULL; //j.w.
 HWND SongbirdWindowHwnd=NULL; //j.w.
+HWND ScreamerRadioWindowHwnd=NULL; //j.w.
 char this_title[2048]=""; //Do pobierania tekstu okna
 char WindowName[2048]="", ClassName[2048]=""; //j.w. ale dla Lastfm/Songbird
 
@@ -93,6 +93,24 @@ bool BlockStatus=0,BlockAuto=0;
 __fastcall TMainForm::TMainForm(TComponent* Owner)
         : TForm(Owner)
 {
+}
+//---------------------------------------------------------------------------
+
+//Pobieranie uchwytu okna przez PID
+HWND HwndPID(DWORD dwPID)
+{
+  HWND Hwnd = GetTopWindow(0);
+  HWND hWnd = 0;;
+  DWORD pid;
+
+  while(Hwnd)
+  {
+    GetWindowThreadProcessId(Hwnd, &pid);
+    if(pid == dwPID) hWnd = Hwnd;
+    Hwnd = GetNextWindow(Hwnd, GW_HWNDNEXT);
+  }
+
+   return hWnd;
 }
 //---------------------------------------------------------------------------
 
@@ -468,7 +486,7 @@ void __fastcall TMainForm::aLastFMDownExecute(TObject *Sender)
     else
      opis="";
   }
-  else
+  if(LastfmWindowHwnd!=NULL)
   {
     GetWindowText(LastfmWindowHwnd,this_title,sizeof(this_title));
     opis = this_title;
@@ -539,7 +557,7 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
     if(opis_pocz!=opisTMP)
     {
       opisTMP=opis_pocz;
-      UstawOpis(opis_pocz,!SetOnlyInJabberCheck);
+      SetStatus(opis_pocz,!SetOnlyInJabberCheck);
       //Symulacja pierwszego uruchomienia SongTimer
       SongTimer->Enabled=false;
       SongTimer->Interval=1000;
@@ -788,21 +806,21 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
         if(opis_pocz!=opisTMP)
         {
           opisTMP=opis_pocz;
-          UstawOpis(opis_pocz,SetOnlyInJabberCheck);
+          SetStatus(opis_pocz,SetOnlyInJabberCheck);
         }
         if(opis!="")
         {
           if(opis!=opisTMP)
           {
             opisTMP=opis;
-            UstawOpis(opis,!SetOnlyInJabberCheck);
+            SetStatus(opis,!SetOnlyInJabberCheck);
           }
         }
       }
       else //wszystkie
       {
         opisTMP=opis;
-        UstawOpis(opis,!SetOnlyInJabberCheck);
+        SetStatus(opis,!SetOnlyInJabberCheck);
       }
     }
   }
@@ -889,7 +907,7 @@ void __fastcall TMainForm::RunPluginCheckBoxChange(TObject *Sender)
 {
   if(RunPluginCheckBox->Checked==true)
   {
-    opis_pocz = PobierzOpis(opis_pocz);
+    opis_pocz = GetStatus(opis_pocz);
     SongTimer->Interval=1000;
     JustEnabled=1;
     Timer->Enabled=true;
@@ -902,10 +920,10 @@ void __fastcall TMainForm::RunPluginCheckBoxChange(TObject *Sender)
     Timer->Enabled=false;
     if(EnableFastOnOffCheckBox->Checked==true)
      UpdateButton(false);
-    opisTMP=PobierzOpis(opisTMP);
+    opisTMP=GetStatus(opisTMP);
     if(opis_pocz!=opisTMP)
     {
-      UstawOpis(opis_pocz,!SetOnlyInJabberCheck);
+      SetStatus(opis_pocz,!SetOnlyInJabberCheck);
       opisTMP="";
     }
   }        
@@ -1041,7 +1059,7 @@ void __fastcall TMainForm::SongTimerTimer(TObject *Sender)
     TurnOffTimer->Enabled=false;
     if(AllowChangeStatus(BlockInvisibleCheck)==true)
     {
-      UstawOpis(opis,!SetOnlyInJabberCheck);
+      SetStatus(opis,!SetOnlyInJabberCheck);
       if(TimeTurnOffCheck==true)
        TurnOffTimer->Enabled=true;
     }
@@ -1172,7 +1190,8 @@ void __fastcall TMainForm::aSongbirdDownExecute(TObject *Sender)
     else
      opis="";
   }
-  else
+
+  if(SongbirdWindowHwnd!=NULL)
   {
     GetWindowText(SongbirdWindowHwnd,this_title,sizeof(this_title));
     opis = this_title;
@@ -1302,7 +1321,7 @@ void __fastcall TMainForm::aCutWWWExecute(TObject *Sender)
 
     opis2.Delete(1,IsThere-1);
     IsThere = AnsiPos(" ",opis2);
-    opis2.Delete(IsThere+1,opis2.Length());
+    opis2.Delete(IsThere,opis2.Length());
 
     IsThere = AnsiPos(opis2,opis);
     opis.Delete(IsThere,opis2.Length());
@@ -1327,7 +1346,7 @@ void __fastcall TMainForm::aCutWWWExecute(TObject *Sender)
 
     opis2.Delete(1,IsThere-1);
     IsThere = AnsiPos(" ",opis2);
-    opis2.Delete(IsThere+1,opis2.Length());
+    opis2.Delete(IsThere,opis2.Length());
 
     IsThere = AnsiPos(opis2,opis);
     opis.Delete(IsThere,opis2.Length());
@@ -1496,16 +1515,65 @@ void __fastcall TMainForm::aCutWWWExecute(TObject *Sender)
     opis = StringReplace(opis, "  ", " ", TReplaceFlags() << rfReplaceAll);
     opis=opis.Trim();
   }
+
+  while(AnsiPos(".net", opis)>0)
+  {
+    IsThere = AnsiPos(".net", opis);
+    opis2=opis;
+
+    opis2.Delete(1,IsThere+3);
+    opis2.Delete(2,opis2.Length());
+    if(opis2!=" ")
+     IsThere++;
+
+    opis2=opis;
+
+    opis2.Delete(IsThere+4,opis2.Length());
+    opis2=opis2.Trim();
+
+    while(AnsiPos(" ",opis2)>0)
+    {
+      IsThere = AnsiPos(" ",opis2);
+      opis2.Delete(1,IsThere);
+    }
+
+    IsThere = AnsiPos(opis2,opis);
+    opis.Delete(IsThere,opis2.Length());
+    opis = StringReplace(opis, "  ", " ", TReplaceFlags() << rfReplaceAll);
+    opis=opis.Trim();
+  }
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::aScreamerRadioDownExecute(TObject *Sender)
 {
-  WindowHwnd = FindWindow("#32770",NULL);
-
-  if(WindowHwnd!=NULL)
+  if(ScreamerRadioWindowHwnd==NULL)
   {
-    GetWindowText(WindowHwnd,this_title,sizeof(this_title));
+    void *Snap;
+    PROCESSENTRY32 proces;
+
+    Snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS , 0);
+    proces.dwSize = sizeof(PROCESSENTRY32);
+
+    if(Process32First(Snap , &proces))
+    {
+      do
+      {
+        if(proces.szExeFile[ 0 ] != '[')
+        {
+          ExeName=proces.szExeFile;
+          if(ExeName=="screamer.exe")
+           ScreamerRadioWindowHwnd = HwndPID(proces.th32ProcessID);
+        }
+      }
+      while(Process32Next(Snap , &proces));
+    }
+    CloseHandle(Snap);
+  }
+
+  if(ScreamerRadioWindowHwnd!=NULL)
+  {
+    GetWindowText(ScreamerRadioWindowHwnd,this_title,sizeof(this_title));
 
     opis = this_title;
 
@@ -1515,7 +1583,7 @@ void __fastcall TMainForm::aScreamerRadioDownExecute(TObject *Sender)
      opis = "";
   }
   else
-   opis = "";        
+   opis = "";
 }
 //---------------------------------------------------------------------------
 
@@ -1526,10 +1594,10 @@ void __fastcall TMainForm::TurnOffTimerTimer(TObject *Sender)
   Timer->Enabled=false;
   if(EnableFastOnOffCheckBox->Checked==true)
    UpdateButton(false);
-  opisTMP=PobierzOpis(opisTMP);
+  opisTMP=GetStatus(opisTMP);
   if(opis_pocz!=opisTMP)
   {
-    UstawOpis(opis_pocz,!SetOnlyInJabberCheck);
+    SetStatus(opis_pocz,!SetOnlyInJabberCheck);
     opisTMP="";
   }
 }

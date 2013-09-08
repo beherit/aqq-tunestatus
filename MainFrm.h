@@ -149,6 +149,7 @@ public:		// User declarations
         AnsiString opis_pocz;
         AnsiString opisTMP;
         bool SetOnlyInJabberCheck;
+        bool BlockInvisibleCheck;
         __fastcall TMainForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
