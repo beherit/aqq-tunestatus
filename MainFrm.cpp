@@ -33,13 +33,13 @@ __declspec(dllimport)void UstawOpis(AnsiString opis, bool force);
 __declspec(dllimport)AnsiString GetPluginUserDir(AnsiString Dir);
 __declspec(dllimport)AnsiString GetPluginDir(AnsiString Dir);
 __declspec(dllimport)AnsiString PobierzOpis(AnsiString opis);
+__declspec(dllimport)AnsiString GetAQQRadioSong(AnsiString Song);
 __declspec(dllimport)void PrzypiszButton();
 __declspec(dllimport)void UsunButton();
 __declspec(dllimport)void UpdateButton(bool OnOff);
 //---------------------------------------------------------------------------
 AnsiString ePluginDirectory; //Zmiena sciezki
 AnsiString opis; //Zmienna opisu
-bool FormShowed=0; //Czy forma zosta³a ju¿ pokazana?
 AnsiString Samplerate; //Samplerate piosenki
 AnsiString Bitrate; //Bitrate piosenki
 AnsiString Channels; //Liczba kana³ów (mono/stereo)
@@ -54,6 +54,7 @@ bool IsPlayerName=0; //Czy w opisie jest tag CC_PLAYERNAME
 bool JustEnabled=0; //Do pierwszego uruchomienia SongTimer
 AnsiString iTunesStatusPath; //Do sciezki iTunes (TuneStatus.txt)
 AnsiString iTunesPlayerPath; //Do sciezka iTunes
+bool EnableFastOnOffCheck; //Do pokazywania/ukrywania szybkiego przycisku
 //---------------------------------------------------------------------------
 
 __fastcall TMainForm::TMainForm(TComponent* Owner)
@@ -198,7 +199,13 @@ bool CALLBACK EnumWindowsProc(HWND hWnd)
          &&(WindowNameAnsi!="Last.fm")
          &&(WindowNameAnsi!="Diagnostyka")
          &&(WindowNameAnsi!="Poleæ")
+         &&(WindowNameAnsi!="Zaloguj")
          &&(WindowNameAnsi!="Kreator automatycznej aktualizacji")
+         &&(WindowNameAnsi!="Kreator ustawieñ")
+         &&(WindowNameAnsi!="Opcje programu Last.fm")
+         &&(WindowNameAnsi!="Dodaj u¿ytkownika")
+         &&(WindowNameAnsi!="Aktualne")
+         &&(WindowNameAnsi!="Last.fm — Informacje")
          &&(WindowNameAnsi!="")
         )
       {
@@ -534,6 +541,10 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
    aMPCDown->Execute();
   else if(iTunesDownRadio->Checked==true)
    aiTunesDown->Execute();
+  else if(ALSongDownRadio->Checked==true)
+   aALSongDown->Execute();
+  else if(PluginAQQRadioDownRadio->Checked==true)
+   aPluginAQQRadioDown->Execute();
   else if(AutoDownRadio->Checked==true)
    aAutoDown->Execute();
 
@@ -571,7 +582,7 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::OkButtonClick(TObject *Sender)
+void __fastcall TMainForm::SaveButtonClick(TObject *Sender)
 {
   //Zapis ustawien
   aSaveSettings->Execute();
@@ -592,8 +603,6 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
 {
   //Odczyt ustawien
   aReadSettings->Execute();
-  //Forma pokazana - zmiana wartosci zmiennej
-  FormShowed=1;
   //Dodanie tekstu do TagsBox i ustawienie go jako element pokazywany
   TagsBox->Items->Add("Wybierz tag do wstawienia");
   TagsBox->ItemIndex = 9;
@@ -735,6 +744,10 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
    MPCDownRadio->Checked=true;
   else if(Boxy=="iTunes")
    iTunesDownRadio->Checked=true;
+  else if(Boxy=="ALSong")
+   ALSongDownRadio->Checked=true;
+  else if(Boxy=="AQQRadio")
+   PluginAQQRadioDownRadio->Checked=true;
   else if(Boxy=="Auto")
    AutoDownRadio->Checked=true;
 
@@ -746,7 +759,9 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
   SetOnlyInJabberCheck = Ini->ReadInteger("Settings", "SetOnlyInJabber", 0);
 
   EnablePluginOnStartCheckBox->Checked = Ini->ReadInteger("Settings", "EnablePluginOnStart", 0);
+  
   EnableFastOnOffCheckBox->Checked = Ini->ReadInteger("Settings", "EnableFastOnOff", 1);
+  EnableFastOnOffCheck = Ini->ReadInteger("Settings", "EnableFastOnOff", 1);
 
   SongTimer->Interval = 1000*(Ini->ReadInteger("Settings", "SongTimerInterval", 5));
   IntervalValue = SongTimer->Interval;
@@ -783,7 +798,11 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
   if(MPCDownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "MPC");
   if(iTunesDownRadio->Checked==true)
-   Ini->WriteString("Settings", "Box", "iTunes"); 
+   Ini->WriteString("Settings", "Box", "iTunes");
+  if(ALSongDownRadio->Checked==true)
+   Ini->WriteString("Settings", "Box", "ALSong");
+  if(PluginAQQRadioDownRadio->Checked==true)
+   Ini->WriteString("Settings", "Box", "AQQRadio");
   if(AutoDownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "Auto");
 
@@ -822,6 +841,18 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
   Ini->WriteInteger("Settings", "EnablePluginOnStart", EnablePluginOnStartCheckBox->Checked);
 
   Ini->WriteInteger("Settings", "EnableFastOnOff", EnableFastOnOffCheckBox->Checked);
+  if(EnableFastOnOffCheck!=EnableFastOnOffCheckBox->Checked)
+  {
+    if(EnableFastOnOffCheckBox->Checked==true)
+    {
+      PrzypiszButton();
+      UpdateButton(Timer->Enabled);
+    }
+    else
+    {
+      UsunButton();
+    }
+  }
 
   Ini->WriteInteger("Settings", "SongTimerInterval", SongTimerSpin->Value);
 
@@ -847,24 +878,11 @@ void __fastcall TMainForm::aAutoDownExecute(TObject *Sender)
   if(opis=="")
    aiTunesDown->Execute();
   if(opis=="")
+   aALSongDown->Execute();
+  if(opis=="")
+   aPluginAQQRadioDown->Execute();
+  if(opis=="")
    aLastFMDown->Execute();
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TMainForm::EnableFastOnOffCheckBoxChange(TObject *Sender)
-{
-  if(FormShowed==1)
-  {
-    if(EnableFastOnOffCheckBox->Checked==true)
-    {
-      PrzypiszButton();
-      UpdateButton(Timer->Enabled);
-    }
-    else
-    {
-      UsunButton();
-    }
-  }        
 }
 //---------------------------------------------------------------------------
 
@@ -1008,9 +1026,9 @@ void __fastcall TMainForm::PreviewStatusMemoChange(TObject *Sender)
 {
   int x = AnsiPos("CC_TUNESTATUS", PreviewStatusMemo->Text);
   if(x!=0)
-   OkButton->Enabled=true;
+   SaveButton->Enabled=true;
   else
-   OkButton->Enabled=false;
+   SaveButton->Enabled=false;
 }
 //---------------------------------------------------------------------------
 
@@ -1067,6 +1085,57 @@ void __fastcall TMainForm::aiTunesDownExecute(TObject *Sender)
     }
     catch(...) { opis = SongFromFile->Text; }
   }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::aALSongDownExecute(TObject *Sender)
+{
+  HWND hwndALSong = FindWindow("ALSongKernelWindow",NULL);
+
+  if(hwndALSong!=NULL)
+  {
+    //Informacje o Playerze
+    if(IsPlayerName==1)
+    {
+      DWORD procesID;
+      GetWindowThreadProcessId(hwndALSong, &procesID);
+      AnsiString PlayerPath = GetPathOfProces(procesID);
+      PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+
+      PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
+      if(PlayerName=="") PlayerName = PlayerName_TMP;
+      else PlayerName_TMP = PlayerName;
+    } 
+
+    char this_title[2048];
+    GetWindowText(hwndALSong,this_title,sizeof(this_title));
+
+    opis = this_title;
+
+    //Usuwanie "ALSong"
+    int x = AnsiPos("ALSong", opis);
+    if(x>0)
+     opis = "";
+
+  }
+  else
+   opis = "";        
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::aPluginAQQRadioDownExecute(TObject *Sender)
+{
+  opis=GetAQQRadioSong(opis);
+
+  //Usuwanie "Wtyczka AQQ Radio:"
+  int x = AnsiPos("Wtyczka AQQ Radio:", opis);
+  if (x>0)
+  {
+    opis.Delete(1, 18);
+    opis=opis.Trim();
+  }
+  else
+   opis = "";
 }
 //---------------------------------------------------------------------------
 

@@ -1,10 +1,10 @@
 object MainForm: TMainForm
-  Left = 664
-  Top = 109
+  Left = 618
+  Top = 62
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus by Beherit'
-  ClientHeight = 344
+  ClientHeight = 360
   ClientWidth = 290
   Color = clBtnFace
   Font.Charset = EASTEUROPE_CHARSET
@@ -55,21 +55,21 @@ object MainForm: TMainForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object OkButton: TButton
+  object SaveButton: TButton
     Left = 206
-    Top = 315
+    Top = 330
     Width = 75
     Height = 25
-    Caption = 'OK'
+    Caption = 'Zapisz'
     Enabled = False
     TabOrder = 0
-    OnClick = OkButtonClick
+    OnClick = SaveButtonClick
   end
   object LMDPageControl: TLMDPageControl
     Left = 4
     Top = 4
     Width = 284
-    Height = 309
+    Height = 324
     TabOrder = 1
     Options = [toNoTabIfEmpty, toShowBorder, toShowFocusRect, toShowAccelChar]
     RaggedRight = False
@@ -80,39 +80,9 @@ object MainForm: TMainForm
       Left = 4
       Top = 27
       Width = 276
-      Height = 278
+      Height = 293
       Bevel.Mode = bmCustom
       Caption = 'Obs'#322'uga'
-      object WMP7_11Label: TLabel
-        Left = 30
-        Top = 98
-        Width = 196
-        Height = 13
-        Caption = 'Do obs'#322'ugi potrzebny jest plugin w WMP!'
-        Enabled = False
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        Transparent = True
-      end
-      object iTunesLabel: TLabel
-        Left = 30
-        Top = 234
-        Width = 203
-        Height = 13
-        Caption = 'Do obs'#322'ugi potrzebny jest plugin w iTunes!'
-        Enabled = False
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        Transparent = True
-      end
       object WinampDownRadio: TLMDRadioButton
         Left = 6
         Top = 6
@@ -157,17 +127,21 @@ object MainForm: TMainForm
         Top = 78
         Width = 232
         Height = 18
+        Cursor = crHelp
+        Hint = 'Do obs'#322'ugi potrzebny jest plugin w WMP!'
         Caption = 'Pobieraj dane z Windows Media Player 7-11'
         Alignment.Alignment = agTopLeft
         Alignment.Spacing = 4
         AutoSize = True
         Checked = False
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 3
         Transparent = True
       end
       object WMP64DownRadio: TLMDRadioButton
         Left = 6
-        Top = 118
+        Top = 102
         Width = 226
         Height = 18
         Caption = 'Pobieraj dane z Windows Media Player 6.4'
@@ -180,7 +154,7 @@ object MainForm: TMainForm
       end
       object VUPlayerDownRadio: TLMDRadioButton
         Left = 6
-        Top = 142
+        Top = 126
         Width = 143
         Height = 18
         Caption = 'Pobieraj dane z VUPlayer'
@@ -193,7 +167,7 @@ object MainForm: TMainForm
       end
       object XMPlayDownRadio: TLMDRadioButton
         Left = 6
-        Top = 166
+        Top = 150
         Width = 134
         Height = 18
         Caption = 'Pobieraj dane z XMPlay'
@@ -206,7 +180,7 @@ object MainForm: TMainForm
       end
       object MPCDownRadio: TLMDRadioButton
         Left = 6
-        Top = 190
+        Top = 174
         Width = 196
         Height = 18
         Caption = 'Pobieraj dane z Media Player Classic'
@@ -219,7 +193,7 @@ object MainForm: TMainForm
       end
       object AutoDownRadio: TLMDRadioButton
         Left = 6
-        Top = 254
+        Top = 270
         Width = 126
         Height = 18
         Caption = 'Okre'#347'l automatycznie'
@@ -232,15 +206,45 @@ object MainForm: TMainForm
       end
       object iTunesDownRadio: TLMDRadioButton
         Left = 6
-        Top = 214
+        Top = 198
         Width = 131
         Height = 18
+        Cursor = crHelp
+        Hint = 'Do obs'#322'ugi potrzebny jest plugin w iTunes!'
         Caption = 'Pobieraj dane z iTunes'
         Alignment.Alignment = agTopLeft
         Alignment.Spacing = 4
         AutoSize = True
         Checked = False
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 9
+        Transparent = True
+      end
+      object ALSongDownRadio: TLMDRadioButton
+        Left = 6
+        Top = 222
+        Width = 136
+        Height = 18
+        Caption = 'Pobieraj dane z ALSong'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        Checked = False
+        TabOrder = 10
+        Transparent = True
+      end
+      object PluginAQQRadioDownRadio: TLMDRadioButton
+        Left = 6
+        Top = 246
+        Width = 191
+        Height = 18
+        Caption = 'Pobieraj dane z wtyczki AQQ Radio'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        Checked = False
+        TabOrder = 11
         Transparent = True
       end
     end
@@ -248,7 +252,7 @@ object MainForm: TMainForm
       Left = 4
       Top = 27
       Width = 276
-      Height = 278
+      Height = 293
       Bevel.Mode = bmCustom
       Caption = 'Wygl'#261'd opisu'
       object TagRequestLabel: TLabel
@@ -266,12 +270,12 @@ object MainForm: TMainForm
         ParentFont = False
         Transparent = True
       end
-      object TagInfoLabel: TLabel
-        Left = 27
-        Top = 258
-        Width = 219
+      object TagInfoLabel1: TLabel
+        Left = 67
+        Top = 257
+        Width = 130
         Height = 13
-        Caption = 'Dany tag mo'#380'e powtarza'#263' si'#281' tylko jeden raz.'
+        Caption = 'Przyk'#322'adowy wygl'#261'd opisu:'
         Enabled = False
         Font.Charset = EASTEUROPE_CHARSET
         Font.Color = clWindowText
@@ -281,11 +285,26 @@ object MainForm: TMainForm
         ParentFont = False
         Transparent = True
       end
+      object TagInfoLabel2: TLabel
+        Left = 47
+        Top = 271
+        Width = 172
+        Height = 13
+        Caption = 'Obecnie s'#322'ucham: CC_TUNESTATUS'
+        Enabled = False
+        Font.Charset = EASTEUROPE_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsItalic]
+        ParentFont = False
+        Transparent = True
+      end
       object StatusMemo: TMemo
         Left = 8
         Top = 32
         Width = 258
-        Height = 170
+        Height = 137
         Lines.Strings = (
           'TuneStatus CC_PLUGINVERSION'
           'http://www.beherit.za.pl/?page_id=118'
@@ -294,16 +313,6 @@ object MainForm: TMainForm
         MaxLength = 512
         ScrollBars = ssVertical
         TabOrder = 1
-      end
-      object PreviewStatusMemo: TMemo
-        Left = 8
-        Top = 32
-        Width = 258
-        Height = 193
-        MaxLength = 512
-        ScrollBars = ssVertical
-        TabOrder = 2
-        OnChange = PreviewStatusMemoChange
       end
       object TagsBox: TComboBox
         Left = 8
@@ -327,14 +336,38 @@ object MainForm: TMainForm
           'CC_CHANNELS             (ilo'#347#263' kana'#322#243'w)'
           'CC_SONGLENGTH       (d'#322'ugo'#347#263' utworu [mm:ss])')
       end
+      object SongFromFile: TMemo
+        Left = 8
+        Top = 184
+        Width = 257
+        Height = 25
+        TabStop = False
+        ReadOnly = True
+        TabOrder = 3
+        Visible = False
+        WordWrap = False
+      end
+      object PreviewStatusMemo: TMemo
+        Left = 8
+        Top = 32
+        Width = 258
+        Height = 193
+        MaxLength = 512
+        ScrollBars = ssVertical
+        TabOrder = 2
+        OnChange = PreviewStatusMemoChange
+      end
     end
     object SettingsLMDTabSheet: TLMDTabSheet
       Left = 4
       Top = 27
       Width = 276
-      Height = 278
+      Height = 293
       Bevel.Mode = bmCustom
       Caption = 'Inne opcje'
+      DesignSize = (
+        276
+        293)
       object SongTimerIntervalLabel1: TLabel
         Left = 10
         Top = 80
@@ -351,6 +384,14 @@ object MainForm: TMainForm
         Caption = 'od rozpocz'#281'cia utworu'
         Transparent = True
       end
+      object Bevel: TBevel
+        Left = 8
+        Top = 108
+        Width = 258
+        Height = 4
+        Anchors = [akLeft, akTop, akRight]
+        Shape = bsTopLine
+      end
       object EnableFastOnOffCheckBox: TLMDCheckBox
         Left = 6
         Top = 54
@@ -362,7 +403,6 @@ object MainForm: TMainForm
         AutoSize = True
         TabOrder = 0
         Transparent = True
-        OnChange = EnableFastOnOffCheckBoxChange
         Checked = True
         State = cbChecked
       end
@@ -408,22 +448,11 @@ object MainForm: TMainForm
         Value = 5
         Value = 5
       end
-      object SongFromFile: TMemo
-        Left = 8
-        Top = 240
-        Width = 257
-        Height = 25
-        TabStop = False
-        ReadOnly = True
-        TabOrder = 4
-        Visible = False
-        WordWrap = False
-      end
     end
   end
   object RunPluginCheckBox: TLMDCheckBox
     Left = 12
-    Top = 320
+    Top = 335
     Width = 94
     Height = 18
     Caption = 'W'#322#261'cz wtyczk'#281
@@ -436,61 +465,85 @@ object MainForm: TMainForm
   end
   object ActionList: TActionList
     Left = 176
-    Top = 312
+    Top = 328
     object aWinampDown: TAction
+      Category = 'Players'
       Caption = 'aWinampDown'
       OnExecute = aWinampDownExecute
     end
     object aFoobarDown: TAction
+      Category = 'Players'
       Caption = 'aFoobarDown'
       OnExecute = aFoobarDownExecute
     end
     object aLastFMDown: TAction
+      Category = 'Players'
       Caption = 'aLastFMDown'
       OnExecute = aLastFMDownExecute
     end
     object aWMP7_11Down: TAction
+      Category = 'Players'
       Caption = 'aWMP7_11Down'
       OnExecute = aWMP7_11DownExecute
     end
     object aWMP64Down: TAction
+      Category = 'Players'
       Caption = 'aWMP64Down'
       Visible = False
       OnExecute = aWMP64DownExecute
     end
     object aVUPlayerDown: TAction
+      Category = 'Players'
       Caption = 'aVUPlayerDown'
       OnExecute = aVUPlayerDownExecute
     end
     object aXMPlayDown: TAction
+      Category = 'Players'
       Caption = 'aXMPlayDown'
       OnExecute = aXMPlayDownExecute
     end
     object aMPCDown: TAction
+      Category = 'Players'
       Caption = 'aMPCDown'
       OnExecute = aMPCDownExecute
     end
     object aiTunesDown: TAction
+      Category = 'Players'
       Caption = 'aiTunesDown'
       OnExecute = aiTunesDownExecute
     end
+    object aALSongDown: TAction
+      Category = 'Players'
+      Caption = 'aALSongDown'
+      OnExecute = aALSongDownExecute
+    end
+    object aPluginAQQRadioDown: TAction
+      Category = 'Players'
+      Caption = 'aPluginAQQRadioDown'
+      OnExecute = aPluginAQQRadioDownExecute
+    end
     object aAutoDown: TAction
+      Category = 'Players'
       Caption = 'aAutoDown'
       OnExecute = aAutoDownExecute
     end
     object aCutSongNumber: TAction
+      Category = 'Status'
       Caption = 'aCutSongNumber'
       OnExecute = aCutSongNumberExecute
     end
     object aSetStatusLooks: TAction
+      Category = 'Status'
       Caption = 'aSetStatusLooks'
       OnExecute = aSetStatusLooksExecute
     end
     object aReadSettings: TAction
+      Category = 'Settings'
       Caption = 'aReadSettings'
       OnExecute = aReadSettingsExecute
     end
     object aSaveSettings: TAction
+      Category = 'Settings'
       Caption = 'aSaveSettings'
       OnExecute = aSaveSettingsExecute
     end
@@ -499,17 +552,17 @@ object MainForm: TMainForm
     Enabled = False
     OnTimer = TimerTimer
     Left = 112
-    Top = 312
+    Top = 328
   end
   object XPMan: TXPMan
     Left = 144
-    Top = 312
+    Top = 328
   end
   object SongTimer: TTimer
     Enabled = False
     Interval = 5000
     OnTimer = SongTimerTimer
     Left = 80
-    Top = 312
+    Top = 328
   end
 end

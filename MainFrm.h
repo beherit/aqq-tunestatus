@@ -33,7 +33,7 @@
 class TMainForm : public TForm
 {
 __published:	// IDE-managed Components
-        TButton *OkButton;
+        TButton *SaveButton;
         TActionList *ActionList;
         TAction *aWinampDown;
         TAction *aFoobarDown;
@@ -42,7 +42,6 @@ __published:	// IDE-managed Components
         TTimer *Timer;
         TAction *aLastFMDown;
         TAction *aWMP7_11Down;
-        TLabel *WMP7_11Label;
         TXPMan *XPMan;
         TAction *aVUPlayerDown;
         TAction *aXMPlayDown;
@@ -77,10 +76,15 @@ __published:	// IDE-managed Components
         TTimer *SongTimer;
         TLabel *SongTimerIntervalLabel2;
         TLMDRadioButton *iTunesDownRadio;
-        TLabel *iTunesLabel;
-        TLabel *TagInfoLabel;
+        TLabel *TagInfoLabel1;
         TAction *aiTunesDown;
         TMemo *SongFromFile;
+        TLMDRadioButton *ALSongDownRadio;
+        TAction *aALSongDown;
+        TLabel *TagInfoLabel2;
+        TBevel *Bevel;
+        TLMDRadioButton *PluginAQQRadioDownRadio;
+        TAction *aPluginAQQRadioDown;
         void __fastcall aWinampDownExecute(TObject *Sender);
         void __fastcall aFoobarDownExecute(TObject *Sender);
         void __fastcall aWMP64DownExecute(TObject *Sender);
@@ -88,7 +92,7 @@ __published:	// IDE-managed Components
         void __fastcall aLastFMDownExecute(TObject *Sender);
         void __fastcall aWMP7_11DownExecute(TObject *Sender);
         void __fastcall TimerTimer(TObject *Sender);
-        void __fastcall OkButtonClick(TObject *Sender);
+        void __fastcall SaveButtonClick(TObject *Sender);
         void __fastcall FormShow(TObject *Sender);
         void __fastcall aVUPlayerDownExecute(TObject *Sender);
         void __fastcall aXMPlayDownExecute(TObject *Sender);
@@ -96,7 +100,6 @@ __published:	// IDE-managed Components
         void __fastcall aReadSettingsExecute(TObject *Sender);
         void __fastcall aSaveSettingsExecute(TObject *Sender);
         void __fastcall aAutoDownExecute(TObject *Sender);
-        void __fastcall EnableFastOnOffCheckBoxChange(TObject *Sender);
         void __fastcall RunPluginCheckBoxChange(TObject *Sender);
         void __fastcall aSetStatusLooksExecute(TObject *Sender);
         void __fastcall TagsBoxSelect(TObject *Sender);
@@ -106,6 +109,8 @@ __published:	// IDE-managed Components
         void __fastcall PreviewStatusMemoChange(TObject *Sender);
         void __fastcall SongTimerTimer(TObject *Sender);
         void __fastcall aiTunesDownExecute(TObject *Sender);
+        void __fastcall aALSongDownExecute(TObject *Sender);
+        void __fastcall aPluginAQQRadioDownExecute(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         bool JustEnabled;
