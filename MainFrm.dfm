@@ -1,6 +1,6 @@
 object MainForm: TMainForm
-  Left = 508
-  Top = 44
+  Left = 432
+  Top = 116
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus by Beherit'
@@ -75,7 +75,7 @@ object MainForm: TMainForm
     RaggedRight = False
     DockOrientation = doNoOrient
     DefaultPage = HandlingLMDTabSheet
-    ActivePage = SettingsLMDTabSheet
+    ActivePage = HandlingLMDTabSheet
     object HandlingLMDTabSheet: TLMDTabSheet
       Left = 4
       Top = 27
@@ -292,6 +292,22 @@ object MainForm: TMainForm
       Height = 234
       Bevel.Mode = bmCustom
       Caption = 'Inne opcje'
+      object SongTimerIntervalLabel1: TLabel
+        Left = 10
+        Top = 80
+        Width = 78
+        Height = 13
+        Caption = 'Ustawiaj opis po'
+        Transparent = True
+      end
+      object SongTimerIntervalLabel2: TLabel
+        Left = 144
+        Top = 80
+        Width = 108
+        Height = 13
+        Caption = 'od rozpocz'#281'cia utworu'
+        Transparent = True
+      end
       object EnableFastOnOffCheckBox: TLMDCheckBox
         Left = 6
         Top = 54
@@ -331,6 +347,24 @@ object MainForm: TMainForm
         TabOrder = 2
         Transparent = True
       end
+      object SongTimerSpin: TLMDSpinEdit
+        Left = 92
+        Top = 77
+        Width = 45
+        Height = 21
+        Bevel.Mode = bmWindows
+        Caret.BlinkRate = 530
+        TabOrder = 3
+        Transparent = True
+        AutoSelect = True
+        Alignment = taRightJustify
+        CustomButtons = <>
+        Suffix = ' s'
+        MinValue = 1
+        MaxValue = 30
+        Value = 5
+        Value = 5
+      end
     end
   end
   object RunPluginCheckBox: TLMDCheckBox
@@ -347,7 +381,7 @@ object MainForm: TMainForm
     OnChange = RunPluginCheckBoxChange
   end
   object ActionList: TActionList
-    Left = 168
+    Left = 176
     Top = 272
     object aWinampDown: TAction
       Caption = 'aWinampDown'
@@ -405,13 +439,19 @@ object MainForm: TMainForm
   end
   object Timer: TTimer
     Enabled = False
-    Interval = 3000
     OnTimer = TimerTimer
-    Left = 104
+    Left = 112
     Top = 272
   end
   object XPMan: TXPMan
-    Left = 136
+    Left = 144
+    Top = 272
+  end
+  object SongTimer: TTimer
+    Enabled = False
+    Interval = 5000
+    OnTimer = SongTimerTimer
+    Left = 80
     Top = 272
   end
 end

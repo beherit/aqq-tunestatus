@@ -1,3 +1,9 @@
+1.0.4.4
+-----
+* Poprawki w przywracaniu opisu podczas wyładowywania wtyczki.
+* Mała poprawka przy pobieraniu opisu z Last.fm.
+* Dodano funkcję po jakim czasie od rozpoczęcia utworu ma zmieniać się opis (przydatne przy wyszukiwaniu utworu w odtwarzaczu, domyślna wartość ustawiona na 5 sekund).
+
 1.0.4.2
 -----
 * Usunięto tag CC_PLAYERVERSION - jednak jakoś taki nie potrzebny był ;)

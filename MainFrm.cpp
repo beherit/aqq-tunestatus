@@ -20,6 +20,12 @@
 #pragma link "LMDCheckBox"
 #pragma link "LMDCustomCheckBox"
 #pragma link "LMDRadioButton"
+#pragma link "LMDBaseEdit"
+#pragma link "LMDCustomEdit"
+#pragma link "LMDCustomExtSpinEdit"
+#pragma link "LMDCustomMaskEdit"
+#pragma link "LMDExtSpinEdit"
+#pragma link "LMDSpinEdit"
 #pragma resource "*.dfm"
 TMainForm *MainForm;
 //---------------------------------------------------------------------------
@@ -31,23 +37,28 @@ __declspec(dllimport)void PrzypiszButton();
 __declspec(dllimport)void UsunButton();
 __declspec(dllimport)void UpdateButton(bool OnOff);
 //---------------------------------------------------------------------------
-AnsiString ePluginDirectory;
-AnsiString opis;
-bool FormShowed=0;
-AnsiString Samplerate;
-AnsiString Bitrate;
-AnsiString Channels;
-AnsiString SongLength;
-AnsiString PlayerName;
-AnsiString PlayerName_TMP;
-bool IsPlayerName=0;
+AnsiString ePluginDirectory; //Zmiena sciezki
+AnsiString opis; //Zmienna opisu
+bool FormShowed=0; //Czy forma zosta³a ju¿ pokazana?
+AnsiString Samplerate; //Samplerate piosenki
+AnsiString Bitrate; //Bitrate piosenki
+AnsiString Channels; //Liczba kana³ów (mono/stereo)
+AnsiString SongLength; //Dlugosc piosenki
+AnsiString PlayerName; //Zmienna nazwy playera (tag CC_PLAYERNAME)
+AnsiString PlayerName_TMP; //Do porównania nazwy playera z nowa pobranym
+bool IsPlayerName=0; //Czy w opisie jest tag CC_PLAYERNAME
+AnsiString opisTMP2;
+bool SongTimerEnabled=0; //Czy w³¹czono SongTimer?
+bool JustEnabled=0; //Do pierwszego uruchomienia SongTimer
 //---------------------------------------------------------------------------
+
 __fastcall TMainForm::TMainForm(TComponent* Owner)
         : TForm(Owner)
 {
 }
 //---------------------------------------------------------------------------
 
+//Pobieranie informacji o pliku (wersja itp)
 String GetFileVersionInfo(char *ModulePath, String KeyName)
 {
  LPVOID lpStr1 = NULL, lpStr2 = NULL;
@@ -81,6 +92,7 @@ String GetFileVersionInfo(char *ModulePath, String KeyName)
 }
 //---------------------------------------------------------------------------
 
+//Zapis zawartosci TMemo do pliku INI
 AnsiString StrToIniStr(const AnsiString Str)
 {
  char Buffer[512];
@@ -113,6 +125,7 @@ AnsiString StrToIniStr(const AnsiString Str)
 }
 //---------------------------------------------------------------------------
 
+//Odczyt zawartosci pliku INI do TMemo
 String IniStrToStr(const String Str)
 {
  char Buffer[512];
@@ -143,6 +156,7 @@ String IniStrToStr(const String Str)
 }
 //---------------------------------------------------------------------------
 
+//Pobieranie sciezki procesu po PID
 AnsiString GetPathOfProces(DWORD PID)
 {
   HANDLE hSnapshot=CreateToolhelp32Snapshot(TH32CS_SNAPMODULE,PID);
@@ -155,6 +169,7 @@ AnsiString GetPathOfProces(DWORD PID)
 }
 //---------------------------------------------------------------------------
 
+//Szukanie okna Last.fm
 bool CALLBACK EnumWindowsProc(HWND hWnd)
 {
   char WindowName[2048], ClassName[2048];
@@ -183,6 +198,7 @@ bool CALLBACK EnumWindowsProc(HWND hWnd)
          &&(WindowNameAnsi!="Last.fm")
          &&(WindowNameAnsi!="Diagnostyka")
          &&(WindowNameAnsi!="Poleæ")
+         &&(WindowNameAnsi!="Kreator automatycznej aktualizacji")
          &&(WindowNameAnsi!="")
         )
       {
@@ -468,12 +484,14 @@ void __fastcall TMainForm::aWMP7_11DownExecute(TObject *Sender)
 
 void __fastcall TMainForm::TimerTimer(TObject *Sender)
 {
+  //Reset zmiennych - POTRZEBNE!
   Samplerate="";
   Bitrate="";
   Channels="";
   SongLength="";
   PlayerName="";
 
+  //Pobieranie tekstu okien
   if(WinampDownRadio->Checked==true)
    aWinampDown->Execute();
   else if(FoobarDownRadio->Checked==true)
@@ -493,25 +511,44 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
   else if(AutoDownRadio->Checked==true)
    aAutoDown->Execute();
 
+  //Ucinanie numeru utworu
   aCutSongNumber->Execute();
+  //Odtagowywanie opisu na opis w³asciwy
   aSetStatusLooks->Execute();
 
+  //Uciannie spacji z lewej i prawej strony
   opis=opis.Trim();
 
+  //Jezeli opis cos zawiera
   if(opis!="")
   {
     if(opis!=opisTMP)
     {
-      opisTMP=opis;
-      UstawOpis(opis,!SetOnlyInJabberCheck);
+      if(opis!=opisTMP2)
+      {
+        SongTimerEnabled=0;
+        SongTimer->Enabled=false;
+      }
+      if(SongTimerEnabled==0)
+      {
+        SongTimer->Enabled=false;
+        SongTimer->Enabled=true;
+        SongTimerEnabled=1;
+        opisTMP2=opis;
+      }
     }
   }
+  //Jak opis jest pusty
   else
   {
     if(opis_pocz!=opisTMP)
     {
       opisTMP=opis_pocz;
       UstawOpis(opis_pocz,!SetOnlyInJabberCheck);
+      //Symulacja pierwszego uruchomienia SongTimer
+      IntervalValue = SongTimer->Interval;
+      SongTimer->Interval=1000;
+      JustEnabled=1;
     }
   }
 }
@@ -519,17 +556,28 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
 
 void __fastcall TMainForm::OkButtonClick(TObject *Sender)
 {
+  //Zapis ustawien
   aSaveSettings->Execute();
+  //Ustawianie Timer'a
+  SongTimer->Interval=(1000*(SongTimerSpin->Value));
+  IntervalValue = (1000*(SongTimerSpin->Value));
+  //Wymuszenie natychmiastowego ustawienienia w opisie dokonanych zmian
+  SongTimer->Interval=1000;
+  JustEnabled=1;
+  //Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
   TagsBox->Items->Delete(9);
-
+  //Ukrywanie formy
   Visible=false;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::FormShow(TObject *Sender)
 {
+  //Odczyt ustawien
   aReadSettings->Execute();
+  //Forma pokazana - zmiana wartosci zmiennej
   FormShowed=1;
+  //Dodanie tekstu do TagsBox i ustawienie go jako element pokazywany
   TagsBox->Items->Add("Wybierz tag do wstawienia");
   TagsBox->ItemIndex = 9;
 }
@@ -614,6 +662,7 @@ void __fastcall TMainForm::aXMPlayDownExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+//Sprawdzanie czy w danym tekscie s¹ tylko liczby
 BOOL TestDigit(AnsiString Text)
 {
    int digit[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -678,8 +727,11 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
   SetOnlyInJabberCheck = Ini->ReadInteger("Settings", "SetOnlyInJabber", 0);
 
   EnablePluginOnStartCheckBox->Checked = Ini->ReadInteger("Settings", "EnablePluginOnStart", 0);
-
   EnableFastOnOffCheckBox->Checked = Ini->ReadInteger("Settings", "EnableFastOnOff", 1);
+
+  SongTimer->Interval = 1000*(Ini->ReadInteger("Settings", "SongTimerInterval", 5));
+  IntervalValue = SongTimer->Interval;
+  SongTimerSpin->Value = Ini->ReadInteger("Settings", "SongTimerInterval", 5);
 
   delete Ini;
 
@@ -750,6 +802,8 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 
   Ini->WriteInteger("Settings", "EnableFastOnOff", EnableFastOnOffCheckBox->Checked);
 
+  Ini->WriteInteger("Settings", "SongTimerInterval", SongTimerSpin->Value);
+
   delete Ini;
 }
 //---------------------------------------------------------------------------
@@ -796,6 +850,9 @@ void __fastcall TMainForm::RunPluginCheckBoxChange(TObject *Sender)
   if(RunPluginCheckBox->Checked==true)
   {
     opis_pocz = PobierzOpis(opis_pocz);
+    IntervalValue = SongTimer->Interval;
+    SongTimer->Interval=1000;
+    JustEnabled=1;
     Timer->Enabled=true;
     if(EnableFastOnOffCheckBox->Checked==true)
      UpdateButton(true);
@@ -914,4 +971,20 @@ void __fastcall TMainForm::PreviewStatusMemoChange(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TMainForm::SongTimerTimer(TObject *Sender)
+{
+  SongTimerEnabled=0;
+  SongTimer->Enabled=false;
+  opisTMP=opis;
+  opis = opis;
+  UstawOpis(opis,!SetOnlyInJabberCheck);
+  //Sprawdzenie czy to by³o pierwsze uruchomienie Timer'a
+  if(JustEnabled==1)
+  {
+    //Przywrócenie zapisanych ustawieñ
+    SongTimer->Interval = IntervalValue;
+    JustEnabled=0;
+  }
+}
+//---------------------------------------------------------------------------
 
