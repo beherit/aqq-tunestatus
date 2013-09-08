@@ -1,3 +1,5 @@
 #include "ikonka.rh"
 
-ID_PNG RCDATA "TuneStatus.png"
+ID_PNG1 RCDATA "TuneStatus.png"
+ID_PNG2 RCDATA "TuneStatusOff.png"
+ID_PNG3 RCDATA "TuneStatusOn.png"

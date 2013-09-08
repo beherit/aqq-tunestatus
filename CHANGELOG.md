@@ -1,6 +1,19 @@
+1.0.3.0
+-----
+* Przebudowa wyglądu wtyczki.
+* Poprawiono błąd gdy nie mieliśmy włączonej muzyki a wtyczka została włączona to i tak zmieniała opis we wszystkich sieciach względem głównego jabbera - teraz wtyczka nie zmiania w takiej sytuacji w ogóle opisu.
+* Dodano informację o obsłudze KMPlayer (btw. jak komuś pokazuje w opisie np "[4/60] Artysta - tytuł" to niech ustawi w opcjach sobie wyświetlanie i będzie miał bez numeru - to samo tyczy się innych odtwarzaczy).
+* Zwiększono sprawdzanie tytułu w odtwarzaczach z 1 sekundy do 3 ze względu na KMPlayer.
+* Dodano opcje ucinania numerów piosenki (np. z: 16. Artysta - Tytuł) - jako opcja bo nie wszystkie odtwarzacze mają numer piosenki w utworze i niekiedy wystarczy tylko to ustawić a tak to mogło by usuwać  nazwę utworu gdzie znalazły by się znaki ". " ;).
+* Dodano opcje ustawiania opisu tylko na kontach sieci Jabber (na ustawianie w poszczególnych kontach wtyczkowych musimy poczekać :( ).
+* Dodano opcje włączania wtyczki przy starcie AQQ.
+* Optymalizacja pobierania tytułu z Last.fm.
+* Dodanie nowej opcji w obsłudze - określanie automatyczne odtwarzacza!
+* Dodanie ikonki szybkiego włączania/wyłączania wtyczki (domyślnie ikonka jest wyłączona, jej grafika zmienia się w zależności czy uruchomiono czy też nie wtyczkę).
+
 1.0.2.1
 -----
-* Poprawka ustawiania opisu przy wyładowywaniu wtyczki
+* Poprawka ustawiania opisu przy wyładowywaniu wtyczki.
 * Poprawka w ucinaniu spacji w pobranym tytule.
 
 1.0.2.0
