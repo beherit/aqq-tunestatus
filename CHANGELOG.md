@@ -1,3 +1,11 @@
+1.0.4.8
+-----
+* Dodanie zabezpieczenia przed wpisywaniem tych samych tagów.
+* Mała poprawka przy pobieraniu opisu z Foobar2000 gdy używana jest wtyczka fooAvA.
+* Dodanie obługi iTunes (wymagany plugin do działania)!
+* Dodanie dodatkowego sposobu pobierania informacji o utworze z Foobar2000 (który jest przydatny przy chowaniu Foobar'a do tray'a) - aby z niego skorzystać należy zainstalować wtyczkę do Foobar2000 autostwa MentosX i odpowiednio ją skonfigurować.
+* Optymalizacja kodu.
+
 1.0.4.6
 -----
 * Poprawienie działania funkcji po jakim czasie od rozpoczęcia utworu ma zmieniać się opis.

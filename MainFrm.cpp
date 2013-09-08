@@ -46,8 +46,14 @@ AnsiString Channels; //Liczba kana³ów (mono/stereo)
 AnsiString SongLength; //Dlugosc piosenki
 AnsiString PlayerName; //Zmienna nazwy playera (tag CC_PLAYERNAME)
 AnsiString PlayerName_TMP; //Do porównania nazwy playera z nowa pobranym
+bool IsSamplerate=0; //Czy w opisie jest tag CC_SAMPLERATE
+bool IsBitrate=0; //Czy w opisie jest tag CC_BITRATE
+bool IsChannels=0; //Czy w opisie jest tag CC_CHANNELS
+bool IsSongLength=0; //Czy w opisie jest tag CC_SONGLENGTH
 bool IsPlayerName=0; //Czy w opisie jest tag CC_PLAYERNAME
 bool JustEnabled=0; //Do pierwszego uruchomienia SongTimer
+AnsiString iTunesStatusPath; //Do sciezki iTunes (TuneStatus.txt)
+AnsiString iTunesPlayerPath; //Do sciezka iTunes
 //---------------------------------------------------------------------------
 
 __fastcall TMainForm::TMainForm(TComponent* Owner)
@@ -183,11 +189,7 @@ bool CALLBACK EnumWindowsProc(HWND hWnd)
   
   if(ExtractFileName(PlayerPath)=="LastFM.exe")
   {
-    PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-    
-    PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
-    if(PlayerName=="") PlayerName = PlayerName_TMP;
-    else PlayerName_TMP = PlayerName;
+    PlayerName="Last.fm";
 
     if(ClassNameAnsi=="QWidget")
     {
@@ -214,21 +216,21 @@ void __fastcall TMainForm::aWinampDownExecute(TObject *Sender)
   if(!hwndWinamp)
    hwndWinamp = FindWindow("Studio",NULL);
 
-  //Informacje o Playerze
-  if((hwndWinamp!=NULL)&&(IsPlayerName==1))
-  {
-    DWORD procesID;
-    GetWindowThreadProcessId(hwndWinamp, &procesID);
-    AnsiString PlayerPath = GetPathOfProces(procesID);
-    PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
-    if(PlayerName=="") PlayerName = PlayerName_TMP;
-    else PlayerName_TMP = PlayerName;
-  }
-
   if(hwndWinamp!=NULL)
   {
+    //Informacje o Playerze
+    if(IsPlayerName==1)
+    {
+      DWORD procesID;
+      GetWindowThreadProcessId(hwndWinamp, &procesID);
+      AnsiString PlayerPath = GetPathOfProces(procesID);
+      PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+
+      PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
+      if(PlayerName=="") PlayerName = PlayerName_TMP;
+      else PlayerName_TMP = PlayerName;
+    }
+
     char this_title[2048];
     GetWindowText(hwndWinamp,this_title,sizeof(this_title));
 
@@ -262,37 +264,49 @@ void __fastcall TMainForm::aWinampDownExecute(TObject *Sender)
      opis = "";
 
     //Samplerate
-    res = SendMessage(hwndWinamp, WM_USER, 0, 126);
-    Samplerate = IntToStr(res);
-    if(Samplerate.Length()<=2)
-     Samplerate = Samplerate + "KHz";
-    else if(Samplerate.Length()>2)
-     Samplerate = Samplerate + "Hz";
+    if(IsSamplerate==1)
+    {
+      res = SendMessage(hwndWinamp, WM_USER, 0, 126);
+      Samplerate = IntToStr(res);
+      if(Samplerate.Length()<=2)
+       Samplerate = Samplerate + "KHz";
+      else if(Samplerate.Length()>2)
+       Samplerate = Samplerate + "Hz";
+    }
 
     //Bitrate
-    res = SendMessage(hwndWinamp, WM_USER, 1, 126);
-    Bitrate = IntToStr(res) + "kbps";
+    if(IsBitrate==1)
+    {
+      res = SendMessage(hwndWinamp, WM_USER, 1, 126);
+      Bitrate = IntToStr(res) + "kbps";
+    }
 
     //Channels
-    res = SendMessage(hwndWinamp, WM_USER, 2, 126);
-    if(res==1)
-     Channels = "Mono";
-    else if(res==2)
-     Channels = "Stereo";
-    else
-     Channels = res;
+    if(IsChannels==1)
+    {
+      res = SendMessage(hwndWinamp, WM_USER, 2, 126);
+      if(res==1)
+       Channels = "Mono";
+      else if(res==2)
+       Channels = "Stereo";
+      else
+       Channels = res;
+    }
 
     //SongLength
-    res = SendMessage(hwndWinamp,WM_USER,1,105);
-    if(res!=-1)
+    if(IsSongLength==1)
     {
-      int sekundy = res % 60;
-      res = res - sekundy;
-      int minuty = res / 60;
-      if(sekundy<10)
-       SongLength = IntToStr(minuty) + ":0" + IntToStr(sekundy);
-      else
-       SongLength = IntToStr(minuty) + ":" + IntToStr(sekundy);
+     res = SendMessage(hwndWinamp,WM_USER,1,105);
+      if(res!=-1)
+      {
+        int sekundy = res % 60;
+        res = res - sekundy;
+        int minuty = res / 60;
+        if(sekundy<10)
+         SongLength = IntToStr(minuty) + ":0" + IntToStr(sekundy);
+        else
+         SongLength = IntToStr(minuty) + ":" + IntToStr(sekundy);
+      }
     }
   }
   else
@@ -302,28 +316,29 @@ void __fastcall TMainForm::aWinampDownExecute(TObject *Sender)
 
 void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
 {
-  HWND hwndFoobar = FindWindow("{DA7CD0DE-1602-45e6-89A1-C2CA151E008E}/1",NULL);
+  HWND hwndFoobar = FindWindow("Foobar_TuneStatus",NULL);
+  if(!hwndFoobar) hwndFoobar = FindWindow("PanelsUI",NULL);
+  if(!hwndFoobar) hwndFoobar = FindWindow("{DA7CD0DE-1602-45e6-89A1-C2CA151E008E}/1",NULL);
   if(!hwndFoobar) hwndFoobar = FindWindow("{DA7CD0DE-1602-45e6-89A1-C2CA151E008E}",NULL);
   if(!hwndFoobar) hwndFoobar = FindWindow("{DA7CD0DE-1602-45e6-89A1-C2CA151E008E}",NULL);
   if(!hwndFoobar) hwndFoobar = FindWindow("{97E27FAA-C0B3-4b8e-A693-ED7881E99FC1}",NULL);
   if(!hwndFoobar) hwndFoobar = FindWindow("{E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8}",NULL);
-  if(!hwndFoobar) hwndFoobar = FindWindow("PanelsUI",NULL);
-
-  //Informacje o Playerze
-  if((hwndFoobar!=NULL)&&(IsPlayerName==1))
-  {
-    DWORD procesID;
-    GetWindowThreadProcessId(hwndFoobar, &procesID);
-    AnsiString PlayerPath = GetPathOfProces(procesID);
-    PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
-    if(PlayerName=="") PlayerName = PlayerName_TMP;
-    else PlayerName_TMP = PlayerName;
-  }
-
+                                                           
   if(hwndFoobar!=NULL)
   {
+    //Informacje o Playerze
+    if(IsPlayerName==1)
+    {
+      DWORD procesID;
+      GetWindowThreadProcessId(hwndFoobar, &procesID);
+      AnsiString PlayerPath = GetPathOfProces(procesID);
+      PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+
+      PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
+      if(PlayerName=="") PlayerName = PlayerName_TMP;
+      else PlayerName_TMP = PlayerName;
+    } 
+
     char this_title[2048];
     GetWindowText(hwndFoobar,this_title,sizeof(this_title));
 
@@ -348,8 +363,12 @@ void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
     }
 
     //Usuwanie "fooAvA"
-    y = opis.Length();
     x = AnsiPos("fooAvA", opis);
+    if(x>0)
+     opis = "";
+
+    //"Foo AvA" - Stopped
+    x = AnsiPos("Foo AvA", opis);
     if(x>0)
      opis = "";
   }
@@ -362,21 +381,21 @@ void __fastcall TMainForm::aWMP64DownExecute(TObject *Sender)
 {
   HWND hwndWMP64 = FindWindow("Media Player 2",NULL);
 
-  //Informacje o Playerze
-  if((hwndWMP64!=NULL)&&(IsPlayerName==1))
-  {
-    DWORD procesID;
-    GetWindowThreadProcessId(hwndWMP64, &procesID);
-    AnsiString PlayerPath = GetPathOfProces(procesID);
-    PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
-    if(PlayerName=="") PlayerName = PlayerName_TMP;
-    else PlayerName_TMP = PlayerName;
-  }
-
   if(hwndWMP64!=NULL)
   {
+    //Informacje o Playerze
+    if(IsPlayerName==1)
+    {
+      DWORD procesID;
+      GetWindowThreadProcessId(hwndWMP64, &procesID);
+      AnsiString PlayerPath = GetPathOfProces(procesID);
+      PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+
+      PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
+      if(PlayerName=="") PlayerName = PlayerName_TMP;
+      else PlayerName_TMP = PlayerName;
+    }
+
     char this_title[2048];
     GetWindowText(hwndWMP64,this_title,sizeof(this_title));
 
@@ -404,21 +423,21 @@ void __fastcall TMainForm::aMPCDownExecute(TObject *Sender)
 {
   HWND hwndMPC = FindWindow("MediaPlayerClassicW",NULL);
 
-  //Informacje o Playerze
-  if((hwndMPC!=NULL)&&(IsPlayerName==1))
-  {
-    DWORD procesID;
-    GetWindowThreadProcessId(hwndMPC, &procesID);
-    AnsiString PlayerPath = GetPathOfProces(procesID);
-    PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
-    if(PlayerName=="") PlayerName = PlayerName_TMP;
-    else PlayerName_TMP = PlayerName;
-  }
-
   if(hwndMPC!=NULL)
   {
+    //Informacje o Playerze
+    if(IsPlayerName==1)
+    {
+      DWORD procesID;
+      GetWindowThreadProcessId(hwndMPC, &procesID);
+      AnsiString PlayerPath = GetPathOfProces(procesID);
+      PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+
+      PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
+      if(PlayerName=="") PlayerName = PlayerName_TMP;
+      else PlayerName_TMP = PlayerName;
+    }
+
     char this_title[2048];
     GetWindowText(hwndMPC,this_title,sizeof(this_title));
 
@@ -449,21 +468,21 @@ void __fastcall TMainForm::aWMP7_11DownExecute(TObject *Sender)
 {
   HWND hwndWMP7_11 = FindWindow("WMPlayerApp",NULL);
 
-  //Informacje o Playerze
-  if((hwndWMP7_11!=NULL)&&(IsPlayerName==1))
-  {
-    DWORD procesID;
-    GetWindowThreadProcessId(hwndWMP7_11, &procesID);
-    AnsiString PlayerPath = GetPathOfProces(procesID);
-    PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
-    if(PlayerName=="") PlayerName = PlayerName_TMP;
-    else PlayerName_TMP = PlayerName;
-  }
-
   if(hwndWMP7_11!=NULL)
   {
+    //Informacje o Playerze
+    if(IsPlayerName==1)
+    {
+      DWORD procesID;
+      GetWindowThreadProcessId(hwndWMP7_11, &procesID);
+      AnsiString PlayerPath = GetPathOfProces(procesID);
+      PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+
+      PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
+      if(PlayerName=="") PlayerName = PlayerName_TMP;
+      else PlayerName_TMP = PlayerName;
+    }
+
     char this_title[2048];
     GetWindowText(hwndWMP7_11,this_title,sizeof(this_title));
 
@@ -513,6 +532,8 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
    aXMPlayDown->Execute();
   else if(MPCDownRadio->Checked==true)
    aMPCDown->Execute();
+  else if(iTunesDownRadio->Checked==true)
+   aiTunesDown->Execute();
   else if(AutoDownRadio->Checked==true)
    aAutoDown->Execute();
 
@@ -583,21 +604,21 @@ void __fastcall TMainForm::aVUPlayerDownExecute(TObject *Sender)
 {
   HWND hwndVUPlayer = FindWindow("VUPlayerClass",NULL);
 
-  //Informacje o Playerze
-  if((hwndVUPlayer!=NULL)&&(IsPlayerName==1))
-  {
-    DWORD procesID;
-    GetWindowThreadProcessId(hwndVUPlayer, &procesID);
-    AnsiString PlayerPath = GetPathOfProces(procesID);
-    PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
-    if(PlayerName=="") PlayerName = PlayerName_TMP;
-    else PlayerName_TMP = PlayerName;
-  }
-
   if(hwndVUPlayer!=NULL)
   {
+    //Informacje o Playerze
+    if(IsPlayerName==1)
+    {
+      DWORD procesID;
+      GetWindowThreadProcessId(hwndVUPlayer, &procesID);
+      AnsiString PlayerPath = GetPathOfProces(procesID);
+      PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+
+      PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
+      if(PlayerName=="") PlayerName = PlayerName_TMP;
+      else PlayerName_TMP = PlayerName;
+    }
+
     char this_title[2048];
     GetWindowText(hwndVUPlayer,this_title,sizeof(this_title));
 
@@ -621,21 +642,21 @@ void __fastcall TMainForm::aXMPlayDownExecute(TObject *Sender)
 {
   HWND hwndXMPlay = FindWindow("XMPLAY-MAIN",NULL);
 
-  //Informacje o Playerze
-  if((hwndXMPlay!=NULL)&&(IsPlayerName==1))
-  {
-    DWORD procesID;
-    GetWindowThreadProcessId(hwndXMPlay, &procesID);
-    AnsiString PlayerPath = GetPathOfProces(procesID);
-    PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-    PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
-    if(PlayerName=="") PlayerName = PlayerName_TMP;
-    else PlayerName_TMP = PlayerName;
-  }
-
   if(hwndXMPlay!=NULL)
   {
+    //Informacje o Playerze
+    if(IsPlayerName==1)
+    {
+      DWORD procesID;
+      GetWindowThreadProcessId(hwndXMPlay, &procesID);
+      AnsiString PlayerPath = GetPathOfProces(procesID);
+      PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+
+      PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
+      if(PlayerName=="") PlayerName = PlayerName_TMP;
+      else PlayerName_TMP = PlayerName;
+    }
+
     char this_title[2048];
     GetWindowText(hwndXMPlay,this_title,sizeof(this_title));
 
@@ -712,6 +733,8 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
    XMPlayDownRadio->Checked=true;
   else if(Boxy=="MPC")
    MPCDownRadio->Checked=true;
+  else if(Boxy=="iTunes")
+   iTunesDownRadio->Checked=true;
   else if(Boxy=="Auto")
    AutoDownRadio->Checked=true;
 
@@ -759,6 +782,8 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
    Ini->WriteString("Settings", "Box", "XMPlay");
   if(MPCDownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "MPC");
+  if(iTunesDownRadio->Checked==true)
+   Ini->WriteString("Settings", "Box", "iTunes"); 
   if(AutoDownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "Auto");
 
@@ -819,6 +844,8 @@ void __fastcall TMainForm::aAutoDownExecute(TObject *Sender)
    aXMPlayDown->Execute();
   if(opis=="")
    aMPCDown->Execute();
+  if(opis=="")
+   aiTunesDown->Execute();
   if(opis=="")
    aLastFMDown->Execute();
 }
@@ -899,20 +926,36 @@ void __fastcall TMainForm::aSetStatusLooksExecute(TObject *Sender)
     else IsPlayerName=0;
     //Samplerate
     x = AnsiPos("CC_SAMPLERATE", opis);
-    if(x!=0)                    
-     opis = StringReplace(opis, "CC_SAMPLERATE", Samplerate, TReplaceFlags() << rfReplaceAll);
+    if(x!=0)
+    {
+      opis = StringReplace(opis, "CC_SAMPLERATE", Samplerate, TReplaceFlags() << rfReplaceAll);
+      IsSamplerate=1;
+    }
+    else IsSamplerate=0;
     //Bitrate
     x = AnsiPos("CC_BITRATE", opis);
     if(x!=0)
-     opis = StringReplace(opis, "CC_BITRATE", Bitrate, TReplaceFlags() << rfReplaceAll);
+    {
+      opis = StringReplace(opis, "CC_BITRATE", Bitrate, TReplaceFlags() << rfReplaceAll);
+      IsBitrate=1;
+    }
+    else IsBitrate=0;
     //Channels
     x = AnsiPos("CC_CHANNELS", opis);
     if(x!=0)
-     opis = StringReplace(opis, "CC_CHANNELS", Channels, TReplaceFlags() << rfReplaceAll);
+    {
+      opis = StringReplace(opis, "CC_CHANNELS", Channels, TReplaceFlags() << rfReplaceAll);
+      IsChannels=1;
+    }
+    else IsChannels=0;
     //SongLength
     x = AnsiPos("CC_SONGLENGTH", opis);
     if(x!=0)
-     opis = StringReplace(opis, "CC_SONGLENGTH", SongLength, TReplaceFlags() << rfReplaceAll);
+    {
+      opis = StringReplace(opis, "CC_SONGLENGTH", SongLength, TReplaceFlags() << rfReplaceAll);
+      IsSongLength=1;
+    }
+    else IsSongLength=0;
   }
 }
 //---------------------------------------------------------------------------
@@ -923,13 +966,17 @@ void __fastcall TMainForm::TagsBoxSelect(TObject *Sender)
   Tag.Delete(AnsiPos("(", Tag), Tag.Length() + 1);
   Tag=Tag.Trim();
 
-  AnsiString Before,Fore;
+  int x = AnsiPos(Tag, PreviewStatusMemo->Text);
+  if(x==0)
+  {
+    AnsiString Before,Fore;
 
-  Before=PreviewStatusMemo->Text.SubString(0,PreviewStatusMemo->SelStart);
-  Fore=PreviewStatusMemo->Text.SubString(PreviewStatusMemo->SelStart+1,(PreviewStatusMemo->Text).Length());
-  PreviewStatusMemo->Clear();
+    Before=PreviewStatusMemo->Text.SubString(0,PreviewStatusMemo->SelStart);
+    Fore=PreviewStatusMemo->Text.SubString(PreviewStatusMemo->SelStart+1,(PreviewStatusMemo->Text).Length());
+    PreviewStatusMemo->Clear();
 
-  PreviewStatusMemo->Text=Before+Tag+Fore;
+    PreviewStatusMemo->Text=Before+Tag+Fore;
+  }
 }
 //---------------------------------------------------------------------------
 
@@ -978,6 +1025,47 @@ void __fastcall TMainForm::SongTimerTimer(TObject *Sender)
     //Przywrócenie zapisanych ustawieñ
     SongTimer->Interval = IntervalValue;
     JustEnabled=0;
+  }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::aiTunesDownExecute(TObject *Sender)
+{
+  HWND hwndiTunes = FindWindow("iTunes",NULL);
+
+  if(hwndiTunes!=NULL)
+  {
+    //Ustalanie sciezki iTunes
+    if(iTunesStatusPath=="")
+    {
+      DWORD procesID;
+      GetWindowThreadProcessId(hwndiTunes, &procesID);
+      iTunesStatusPath = GetPathOfProces(procesID);
+      iTunesStatusPath = StringReplace(iTunesStatusPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+      iTunesStatusPath = ExtractFilePath(iTunesStatusPath) + "TuneStatus.txt";
+    }
+    if(IsPlayerName==1)
+    {
+      //Ustalanie sciezki iTunes
+      if(iTunesPlayerPath=="")
+      {
+        DWORD procesID;
+        GetWindowThreadProcessId(hwndiTunes, &procesID);
+        iTunesPlayerPath = GetPathOfProces(procesID);
+        iTunesPlayerPath = StringReplace(iTunesPlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+      }
+      //Pobieranie iformacji o playerze
+      PlayerName = GetFileVersionInfo(iTunesPlayerPath.c_str(),"ProductName");
+      if(PlayerName=="") PlayerName = PlayerName_TMP;
+      else PlayerName_TMP = PlayerName;
+    }
+    //Pobieranie opisu z pliku
+    try
+    {
+      SongFromFile->Lines->LoadFromFile(iTunesStatusPath);
+      opis = SongFromFile->Text;
+    }
+    catch(...) { opis = SongFromFile->Text; }
   }
 }
 //---------------------------------------------------------------------------
