@@ -28,6 +28,7 @@
 #include <ExtCtrls.hpp>
 #include <StdCtrls.hpp>
 #include <Menus.hpp>
+#include <ComCtrls.hpp>
 //---------------------------------------------------------------------------
 class TMainForm : public TForm
 {
@@ -98,6 +99,23 @@ __published:	// IDE-managed Components
         TPopupMenu *SongbirdPopupMenu;
         TMenuItem *SongbirdDownload;
         TLMDCheckBox *BlockInvisibleCheckBox;
+        TLMDTabSheet *UserTuneTabSheet;
+        TLMDSpinEdit *UserTuneNSpin;
+        TLMDCheckBox *EnableUserTuneNCheckBox;
+        TLabel *UserTuneTimeNLabel;
+        TBevel *Bevel4;
+        TLMDCheckBox *EnableUserTuneSCheckBox;
+        TTimer *UserTuneTimer;
+        TTimer *UserTuneSongTimer;
+        TLabel *UserTuneLabel;
+        TLabel *UserTuneSLabel;
+        TBevel *Bevel5;
+        TLabel *UserTuneTimeSLabel1;
+        TLMDSpinEdit *UserTuneSSpin;
+        TLabel *UserTuneTimeSLabel2;
+        TAction *aCutWWWUserTune;
+        TLMDCheckBox *EnableAQQUserTuneSCheckBox;
+        TTimer *AllowUserTuneNTimer;
         void __fastcall aWinampDownExecute(TObject *Sender);
         void __fastcall aFoobarDownExecute(TObject *Sender);
         void __fastcall aMPCDownExecute(TObject *Sender);
@@ -142,6 +160,12 @@ __published:	// IDE-managed Components
         void __fastcall aResetSettingsExecute(TObject *Sender);
         void __fastcall AutoDownCheckListBoxPreviewMouseMove(
           TObject *Sender, TShiftState Shift, int X, int Y);
+        void __fastcall EnableUserTuneNCheckBoxChange(TObject *Sender);
+        void __fastcall UserTuneTimerTimer(TObject *Sender);
+        void __fastcall UserTuneSongTimerTimer(TObject *Sender);
+        void __fastcall EnableUserTuneSCheckBoxChange(TObject *Sender);
+        void __fastcall aCutWWWUserTuneExecute(TObject *Sender);
+        void __fastcall AllowUserTuneNTimerTimer(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         bool JustEnabled;

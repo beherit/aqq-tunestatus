@@ -1,6 +1,6 @@
 object MainForm: TMainForm
-  Left = 565
-  Top = 111
+  Left = 369
+  Top = 118
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus by Beherit'
@@ -120,9 +120,9 @@ object MainForm: TMainForm
           'Media Player Classic'
           'iTunes'
           'ALSong'
-          'aTunes'
           'Screamer Radio'
           'AQQ Radio'
+          'aTunes'
           'Songbird'
           'Last.fm Player')
         BtnGap = 4
@@ -160,9 +160,9 @@ object MainForm: TMainForm
           'Media Player Classic'
           'iTunes'
           'ALSong'
-          'aTunes'
           'Screamer Radio'
           'AQQ Radio'
+          'aTunes'
           'Songbird'
           'Last.fm Player')
         BtnGap = 4
@@ -228,9 +228,6 @@ object MainForm: TMainForm
         Width = 258
         Height = 137
         Lines.Strings = (
-          'TuneStatus CC_PLUGINVERSION'
-          'http://www.beherit.za.pl/?page_id=118'
-          ''
           '~ CC_TUNESTATUS ~')
         MaxLength = 512
         ScrollBars = ssVertical
@@ -324,7 +321,7 @@ object MainForm: TMainForm
       end
       object Bevel2: TBevel
         Left = 9
-        Top = 104
+        Top = 56
         Width = 258
         Height = 4
         Anchors = [akLeft, akTop, akRight]
@@ -332,7 +329,7 @@ object MainForm: TMainForm
       end
       object EnableFastOnOffCheckBox: TLMDCheckBox
         Left = 6
-        Top = 78
+        Top = 30
         Width = 258
         Height = 18
         Caption = 'Pokazuj przycisk szybkiego w'#322#261'czenia/wy'#322#261'czenia'
@@ -346,7 +343,7 @@ object MainForm: TMainForm
       end
       object EnablePluginOnStartCheckBox: TLMDCheckBox
         Left = 6
-        Top = 54
+        Top = 6
         Width = 188
         Height = 18
         Caption = 'W'#322#261'czaj wtyczk'#281' przy starcie AQQ'
@@ -358,7 +355,7 @@ object MainForm: TMainForm
       end
       object SetOnlyInJabberCheckBox: TLMDCheckBox
         Left = 6
-        Top = 6
+        Top = 64
         Width = 227
         Height = 18
         Caption = 'Ustawiaj opis tylko na kontach sieci Jabber'
@@ -464,7 +461,7 @@ object MainForm: TMainForm
       end
       object BlockInvisibleCheckBox: TLMDCheckBox
         Left = 6
-        Top = 30
+        Top = 88
         Width = 226
         Height = 18
         Caption = 'Nie ustawiaj opisu przy stanie niewidoczny'
@@ -475,6 +472,162 @@ object MainForm: TMainForm
         Transparent = True
         Checked = True
         State = cbChecked
+      end
+    end
+    object UserTuneTabSheet: TLMDTabSheet
+      Left = 4
+      Top = 27
+      Width = 276
+      Height = 305
+      Bevel.Mode = bmCustom
+      Caption = 'User Tune'
+      DesignSize = (
+        276
+        305)
+      object Bevel4: TBevel
+        Left = 9
+        Top = 72
+        Width = 258
+        Height = 4
+        Anchors = [akLeft, akTop, akRight]
+        Shape = bsTopLine
+      end
+      object UserTuneLabel: TLabel
+        Left = 17
+        Top = 268
+        Width = 242
+        Height = 26
+        Alignment = taCenter
+        Caption = 
+          'Obs'#322'uga User Tune (XEP-0118) jest przeznaczona wy'#322#261'cznie dla sie' +
+          'ci Jabber!'
+        Enabled = False
+        Transparent = True
+        WordWrap = True
+      end
+      object UserTuneSLabel: TLabel
+        Left = 15
+        Top = 118
+        Width = 247
+        Height = 39
+        Alignment = taCenter
+        Caption = 
+          'Funkcja nie dzia'#322'a z odtwarzaczami Winamp, AIMP, The KMPlayer or' +
+          'az Foobar2000, gdy'#380' s'#261' one domy'#347'lnie obs'#322'ugiwane przez samo AQQ'
+        Enabled = False
+        Transparent = True
+        WordWrap = True
+      end
+      object Bevel5: TBevel
+        Left = 9
+        Top = 256
+        Width = 258
+        Height = 4
+        Anchors = [akLeft, akTop, akRight]
+        Shape = bsTopLine
+      end
+      object UserTuneTimeSLabel1: TLabel
+        Left = 4
+        Top = 173
+        Width = 107
+        Height = 13
+        Caption = 'Wysy'#322'aj informacj'#281' po'
+        Transparent = True
+      end
+      object UserTuneTimeSLabel2: TLabel
+        Left = 163
+        Top = 173
+        Width = 108
+        Height = 13
+        Caption = 'od rozpocz'#281'cia utworu'
+        Transparent = True
+      end
+      object UserTuneTimeNLabel: TLabel
+        Left = 42
+        Top = 42
+        Width = 139
+        Height = 13
+        Caption = 'Czas wy'#347'wietlania notyfikacji'
+        Transparent = True
+      end
+      object EnableUserTuneNCheckBox: TLMDCheckBox
+        Left = 6
+        Top = 6
+        Width = 228
+        Height = 31
+        Caption = 
+          'Pokazuj informacj'#281' o aktualnie s'#322'uchanych utworach moich znajomy' +
+          'ch'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        TabOrder = 1
+        Transparent = True
+        OnChange = EnableUserTuneNCheckBoxChange
+      end
+      object UserTuneNSpin: TLMDSpinEdit
+        Left = 188
+        Top = 38
+        Width = 45
+        Height = 21
+        Bevel.Mode = bmWindows
+        Caret.BlinkRate = 530
+        TabOrder = 0
+        Transparent = True
+        AutoSelect = True
+        Alignment = taRightJustify
+        CustomButtons = <>
+        Suffix = ' s'
+        MinValue = 1
+        MaxValue = 30
+        Value = 4
+        Value = 4
+      end
+      object EnableUserTuneSCheckBox: TLMDCheckBox
+        Left = 6
+        Top = 86
+        Width = 230
+        Height = 31
+        Caption = 'Informuj znajomych o aktualnie s'#322'uchanym utworze muzycznym'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        TabOrder = 2
+        Transparent = True
+        OnChange = EnableUserTuneSCheckBoxChange
+      end
+      object UserTuneSSpin: TLMDSpinEdit
+        Left = 113
+        Top = 170
+        Width = 45
+        Height = 21
+        Bevel.Mode = bmWindows
+        Caret.BlinkRate = 530
+        TabOrder = 3
+        Transparent = True
+        AutoSelect = True
+        Alignment = taRightJustify
+        CustomButtons = <>
+        Suffix = ' s'
+        MinValue = 1
+        MaxValue = 30
+        Value = 5
+        Value = 5
+      end
+      object EnableAQQUserTuneSCheckBox: TLMDCheckBox
+        Left = 14
+        Top = 198
+        Width = 240
+        Height = 44
+        Caption = 
+          'Wymuszaj dzia'#322'anie wtyczki z odtwarzaczami obs'#322'ugiwanymi przez A' +
+          'QQ oraz z wtyczk'#261' AQQ Radio'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        TabOrder = 4
+        Transparent = True
+        OnChange = EnableUserTuneSCheckBoxChange
       end
     end
   end
@@ -499,15 +652,20 @@ object MainForm: TMainForm
       Caption = 'aCutSongNumber'
       OnExecute = aCutSongNumberExecute
     end
+    object aCutWWW: TAction
+      Category = 'Status'
+      Caption = 'aCutWWW'
+      OnExecute = aCutWWWExecute
+    end
     object aWinampDown: TAction
       Category = 'Players'
       Caption = 'aWinampDown'
       OnExecute = aWinampDownExecute
     end
-    object aCutWWW: TAction
+    object aCutWWWUserTune: TAction
       Category = 'Status'
-      Caption = 'aCutWWW'
-      OnExecute = aCutWWWExecute
+      Caption = 'aCutWWWUserTune'
+      OnExecute = aCutWWWUserTuneExecute
     end
     object aFoobarDown: TAction
       Category = 'Players'
@@ -598,8 +756,8 @@ object MainForm: TMainForm
   object Timer: TTimer
     Enabled = False
     OnTimer = TimerTimer
-    Left = 115
-    Top = 336
+    Left = 75
+    Top = 304
   end
   object XPMan: TXPMan
     Left = 147
@@ -609,19 +767,19 @@ object MainForm: TMainForm
     Enabled = False
     Interval = 5000
     OnTimer = SongTimerTimer
-    Left = 83
-    Top = 336
+    Left = 43
+    Top = 304
   end
   object TurnOffTimer: TTimer
     Enabled = False
     Interval = 900000
     OnTimer = TurnOffTimerTimer
-    Left = 48
-    Top = 336
+    Left = 11
+    Top = 304
   end
   object FoobarPopupMenu: TPopupMenu
     Left = 248
-    Top = 136
+    Top = 208
     object FoobarDownload: TMenuItem
       Caption = 'Pobierz wtyczk'#281
       OnClick = FoobarDownloadClick
@@ -629,7 +787,7 @@ object MainForm: TMainForm
   end
   object WMPPopupMenu: TPopupMenu
     Left = 248
-    Top = 168
+    Top = 240
     object WMPDownload: TMenuItem
       Caption = 'Pobierz plugin'
       OnClick = WMPDownloadClick
@@ -637,7 +795,7 @@ object MainForm: TMainForm
   end
   object iTunesPopupMenu: TPopupMenu
     Left = 248
-    Top = 200
+    Top = 272
     object iTunesDownload: TMenuItem
       Caption = 'Pobierz plugin'
       OnClick = iTunesDownloadClick
@@ -645,10 +803,30 @@ object MainForm: TMainForm
   end
   object SongbirdPopupMenu: TPopupMenu
     Left = 248
-    Top = 232
+    Top = 304
     object SongbirdDownload: TMenuItem
       Caption = 'Pobierz rozszerzenie'
       OnClick = SongbirdDownloadClick
     end
+  end
+  object UserTuneTimer: TTimer
+    Enabled = False
+    OnTimer = UserTuneTimerTimer
+    Left = 75
+    Top = 272
+  end
+  object UserTuneSongTimer: TTimer
+    Enabled = False
+    Interval = 5000
+    OnTimer = UserTuneSongTimerTimer
+    Left = 43
+    Top = 272
+  end
+  object AllowUserTuneNTimer: TTimer
+    Enabled = False
+    Interval = 5000
+    OnTimer = AllowUserTuneNTimerTimer
+    Left = 11
+    Top = 272
   end
 end
