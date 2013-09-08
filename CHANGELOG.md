@@ -1,3 +1,12 @@
+1.0.4.2
+-----
+* Usunięto tag CC_PLAYERVERSION - jednak jakoś taki nie potrzebny był ;)
+* Drobne poprawki w kodzie przy CC_PLAYERNAME.
+* Zmiana opisu w ustawieniach jest brana pod uwagę dopiero po zapisie - opis nie jest już zmieniany "na żywo" podczas edycji.
+* Gdy w opisie nie ma tagu CC_TUNESTATUS to przycisk OK jest wyłączony. 
+* Drobne poprawki w ustawianiu opisu (m.in. ucinanie spacji gdy opis początkowy był pusty a w ustawianym opisie był tag CC_STARTSTATUS).
+* Poprawienie opcji ustawiaj opisu tylko na kontach sieci Jabber - jak się zaznaczy i zapisze zmiany to w innych kontach jest przywracany opis początkowy.
+
 1.0.4.0
 -----
 * Poprawiono sposób pobierania tytułu z LastFM - od teraz nie ma szans, żeby jakieś inne okno się wdrało do opisu ;)
