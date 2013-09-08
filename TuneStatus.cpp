@@ -137,7 +137,7 @@ extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
 {
   TPluginInfo.cbSize = sizeof(PluginInfo);
   TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,3,0);
+  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,3,2);
   TPluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -224,15 +224,23 @@ extern "C" int __declspec(dllexport) __stdcall Load(PluginLink *Link)
   //Usuniecie ikony
   DeleteFile("TuneStatus.png");
 
-  ExtractExe(ID_PNG2,eDir + "\\TuneStatusOff.png");
+  //Wypakowanie ikon
+  if(!FileExists(eDir + "\\TuneStatusOff.png"))
+   ExtractExe(ID_PNG2,eDir + "\\TuneStatusOff.png");
+  //Przypisanie ikony
   plugin_icon_path = AnsiTowchar_t(eDir +"\\TuneStatusOff.png");
   plugin_icon_idx_off=TPluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(plugin_icon_path));
-  DeleteFile("TuneStatusOff.png");
+  //Usuniecie ikony
+  //DeleteFile("TuneStatusOff.png");
 
-  ExtractExe(ID_PNG3,eDir + "\\TuneStatusOn.png");
+  //Wypakowanie ikon
+  if(!FileExists(eDir + "\\TuneStatusOn.png"))
+   ExtractExe(ID_PNG3,eDir + "\\TuneStatusOn.png");
+  //Przypisanie ikony
   plugin_icon_path = AnsiTowchar_t(eDir +"\\TuneStatusOn.png");
   plugin_icon_idx_on=TPluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(plugin_icon_path));
-  DeleteFile("TuneStatusOn.png");
+  //Usuniecie ikony
+  //DeleteFile("TuneStatusOn.png");
 
   //Przyspisanie przycisku
   PrzypiszSkrot();
