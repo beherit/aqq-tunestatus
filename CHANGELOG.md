@@ -1,3 +1,9 @@
+1.0.3.4
+-----
+* Poprawiono błąd ze wstawianiem do opisu "Nokia PC Suite" i "PCSuite".
+* Poprawiono błąd z odczytywaniem ustawień, który niekiedy występował.
+* Pliki wtyczki tworzone są w katalogu TuneStatus w profilu prywatnym - bo bałagan się robił ;)
+
 1.0.3.2
 -----
 * Poprawiono błąd z niepokazywaniem grafiki ikonki szybkie włączania/wyłączania wtyczki.

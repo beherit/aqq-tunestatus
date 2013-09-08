@@ -38,7 +38,7 @@ bool CALLBACK EnumWindowsProc(HWND hWnd)
 
  if(ClassNameAnsi=="QWidget")
  {
-   if((WindowNameAnsi!="LastFM")&&(WindowNameAnsi!="Last.fm")&&(WindowNameAnsi!="Diagnostyka")&&(WindowNameAnsi!="Poleæ"))
+   if((WindowNameAnsi!="LastFM")&&(WindowNameAnsi!="Last.fm")&&(WindowNameAnsi!="Diagnostyka")&&(WindowNameAnsi!="Poleæ")&&(WindowNameAnsi!="Nokia PC Suite")&&(WindowNameAnsi!="PCSuite"))
    {
      opis = WindowNameAnsi;
    }
@@ -365,7 +365,7 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
 {
   ePluginDirectory = GetPluginPath(ePluginDirectory);
 
-  TIniFile *Ini = new TIniFile(ePluginDirectory + "\\\\TuneStatus.dat");
+  TIniFile *Ini = new TIniFile(ePluginDirectory + "\\\\TuneStatus\\\\TuneStatus.ini");
 
   AnsiString Boxy = Ini->ReadString("Settings", "Box", "Winamp");
   if(Boxy=="Winamp")
@@ -415,7 +415,7 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 {
   ePluginDirectory = GetPluginPath(ePluginDirectory);
 
-  TIniFile *Ini = new TIniFile(ePluginDirectory + "\\\\TuneStatus.dat");
+  TIniFile *Ini = new TIniFile(ePluginDirectory + "\\\\TuneStatus\\\\TuneStatus.ini");
 
   if(WinampDownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "Winamp");
@@ -477,6 +477,7 @@ void __fastcall TMainForm::EnableFastOnOffCheckBoxClick(TObject *Sender)
 void __fastcall TMainForm::aAutoDownExecute(TObject *Sender)
 {
   aWinampDown->Execute();
+
   if(opis=="")
    aFoobarDown->Execute();
   if(opis=="")

@@ -1,6 +1,6 @@
 object MainForm: TMainForm
-  Left = 412
-  Top = 113
+  Left = 594
+  Top = 73
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus by Beherit'
@@ -78,13 +78,13 @@ object MainForm: TMainForm
     Top = 4
     Width = 284
     Height = 265
-    ActivePage = SettingsTabSheet
+    ActivePage = HandlingTabSheet
     BiDiMode = bdLeftToRight
     MultiLine = True
     ParentBiDiMode = False
     ParentShowHint = False
     ShowHint = False
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 2
     object HandlingTabSheet: TTabSheet
       Caption = 'Obs'#322'uga'
