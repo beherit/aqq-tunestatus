@@ -53,6 +53,9 @@ bool AllowUserTuneN=false;
 int UserTuneTimeOut;
 bool UserTuneEnableN;
 bool UserTuneEnableS;
+UnicodeString ExceptionJID[50];
+int ExceptionCount;
+bool AllowException;
 
 //do blokowania zmiany opisu
 UnicodeString nowy_opis;
@@ -70,12 +73,12 @@ UnicodeString GetStatus()
 //Ustawianie opisu
 void SetStatus(UnicodeString opis, bool force)
 {
-  opis = opis.w_str();
+  //opis = opis.w_str();
 
   PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),0);
 
   PluginStateChange.cbSize = sizeof(TPluginStateChange);
-  PluginStateChange.Status = opis.w_str();
+  PluginStateChange.Status = opis.c_str();
   PluginStateChange.Force = force;
 
   PluginLink.CallService(AQQ_SYSTEM_SETSHOWANDSTATUS,0,(LPARAM)(&PluginStateChange));
@@ -124,9 +127,9 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
 {
   if(handle==NULL)
   {
-    Application->Handle = MainForm;
+	Application->Handle = (HWND__*)MainForm;
     handle = new TMainForm(Application);
-    handle->aReadSettings->Execute();
+	handle->aReadSettings->Execute();
   }
 
   if(handle->Timer->Enabled==false)
@@ -164,7 +167,7 @@ int __stdcall TuneStatusService (WPARAM, LPARAM)
 {
   if(handle==NULL)
   {
-	Application->Handle = MainForm;
+	Application->Handle = (HWND__*)MainForm;
 	handle = new TMainForm(Application);
   }
 
@@ -238,89 +241,107 @@ int __stdcall OnXMLDebug (WPARAM wParam, LPARAM lParam)
              UserTuneTo.Delete(IsThereUserTune,UserTuneTo.Length());
             UserTuneTo=UserTuneTo.Trim();
 
-            if(UserTuneFrom!=UserTuneTo)
-            {
-              IsThereUserTune = AnsiPos("<artist>", UserTuneSong);
-              if(IsThereUserTune>0) //poprawne kodowanie
-              {
-                UserTuneSongTMP=UserTuneSong;
-                IsThereUserTune = AnsiPos("<artist>", UserTuneSongTMP);
-                UserTuneSongTMP.Delete(1,IsThereUserTune+7);
-                IsThereUserTune = AnsiPos("</artist>", UserTuneSongTMP);
-                UserTuneSongTMP.Delete(IsThereUserTune, UserTuneSongTMP.Length());
-                UserTuneSongTMP=UserTuneSongTMP.Trim();
+			if(UserTuneFrom!=UserTuneTo)
+			{
+			  AllowException=true;
 
-                IsThereUserTune = AnsiPos("<title>", UserTuneSong);
-                UserTuneSong.Delete(1,IsThereUserTune+6);
-                IsThereUserTune = AnsiPos("</title>", UserTuneSong);
-                UserTuneSong.Delete(IsThereUserTune, UserTuneSong.Length());
-                UserTuneSong=UserTuneSong.Trim();
-
-                UserTuneSong = UserTuneSongTMP + " - " + UserTuneSong;
-              }
-              else //kodowanie w AQQ
-              {
-                IsThereUserTune = AnsiPos("<title>", UserTuneSong);
-                UserTuneSong.Delete(1,IsThereUserTune+6);
-                IsThereUserTune = AnsiPos("</title>", UserTuneSong);
-                UserTuneSong.Delete(IsThereUserTune, UserTuneSong.Length());
-                UserTuneSong=UserTuneSong.Trim();
-			  }
-
-			  //poprawa kodowania
-			  UserTuneSong = UTF8ToUnicodeString(UserTuneSong.c_str());
-			  UserTuneSong = StringReplace(UserTuneSong, "&apos;", "'", TReplaceFlags() << rfReplaceAll);
-			  UserTuneSong = StringReplace(UserTuneSong, "&amp;", "&", TReplaceFlags() << rfReplaceAll);
-
-              //Usuwanie "*** "
-              if(AnsiPos("*** ", UserTuneSong)>0)
-              {
-                UserTuneSong.Delete(1, AnsiPos("*** ", UserTuneSong) + 3);
-                UserTuneSong=UserTuneSong.Trim();
-              }
-
-			  //Usuwanie numeru piosenki
-			  if((AnsiPos(". ", UserTuneSong)>0)&&(AnsiPos(". ", UserTuneSong)<7))
-              {
-                UserTuneSongTMP=UserTuneSong;
-                UserTuneSongTMP.Delete(AnsiPos(". ", UserTuneSong), UserTuneSongTMP.Length());
-				if(TestDigit(UserTuneSongTMP)==true)
+			  if(ExceptionCount!=0)
+			  {
+				for(int Count=0;Count<ExceptionCount;Count++)
                 {
-                  UserTuneSong.Delete(1, AnsiPos(". ", UserTuneSong));
-                  UserTuneSong=UserTuneSong.Trim();
+				  if(UserTuneFrom==ExceptionJID[Count])
+				   AllowException=false;
                 }
               }
 
-              //Usuwanie "Wtyczka AQQ Radio: "
-              if(AnsiPos("Wtyczka AQQ Radio: ", UserTuneSong)>0)
-               UserTuneSong.Delete(1,AnsiPos("Wtyczka AQQ Radio: ", UserTuneSong)+18);
+			  if(AllowException==true)
+			  {
+				IsThereUserTune = AnsiPos("<artist>", UserTuneSong);
+				if(IsThereUserTune>0) //poprawne kodowanie
+				{
+				  UserTuneSongTMP=UserTuneSong;
+				  IsThereUserTune = AnsiPos("<artist>", UserTuneSongTMP);
+				  UserTuneSongTMP.Delete(1,IsThereUserTune+7);
+				  IsThereUserTune = AnsiPos("</artist>", UserTuneSongTMP);
+				  UserTuneSongTMP.Delete(IsThereUserTune, UserTuneSongTMP.Length());
+				  UserTuneSongTMP=UserTuneSongTMP.Trim();
 
-              //Pobieranie nick'a z JID
-              UserTuneFromTMP = UserTuneFrom;
-              PluginContactSimpleInfo.cbSize = sizeof(TPluginContactSimpleInfo);
-			  PluginContactSimpleInfo.JID = UserTuneFrom.w_str();
-              PluginLink.CallService(AQQ_CONTACTS_FILLSIMPLEINFO,0,(LPARAM)(&PluginContactSimpleInfo));
-              UserTuneFrom = (wchar_t*)(PluginContactSimpleInfo.Nick);
-              if(UserTuneFrom=="")
-               UserTuneFrom = UserTuneFromTMP;
+				  IsThereUserTune = AnsiPos("<title>", UserTuneSong);
+				  UserTuneSong.Delete(1,IsThereUserTune+6);
+				  IsThereUserTune = AnsiPos("</title>", UserTuneSong);
+				  UserTuneSong.Delete(IsThereUserTune, UserTuneSong.Length());
+				  UserTuneSong=UserTuneSong.Trim();
 
-              UserTuneIconPath = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPNG_FILEPATH,76,0));
+				  UserTuneSong = UserTuneSongTMP + " - " + UserTuneSong;
+				}
+				else //kodowanie w AQQ
+				{
+				  IsThereUserTune = AnsiPos("<title>", UserTuneSong);
+				  UserTuneSong.Delete(1,IsThereUserTune+6);
+				  IsThereUserTune = AnsiPos("</title>", UserTuneSong);
+				  UserTuneSong.Delete(IsThereUserTune, UserTuneSong.Length());
+				  UserTuneSong=UserTuneSong.Trim();
+				}
 
-              //Chmurka "kto slucha"
-              PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
-              PluginShowInfo.Event = tmeInfo;
-			  PluginShowInfo.Text = (UserTuneFrom + " s³ucha:").w_str();
-			  PluginShowInfo.ImagePath = UserTuneIconPath.w_str();
-              PluginShowInfo.TimeOut = 1000 * UserTuneTimeOut;
-              PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)(&PluginShowInfo));
-              //Chmurka "co slucha"
-              PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
-              PluginShowInfo.Event = tmeInfo;
-			  PluginShowInfo.Text = UserTuneSong.w_str();
-              PluginShowInfo.ImagePath = L"";
-              PluginShowInfo.TimeOut = 1000 * UserTuneTimeOut;
-              PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)(&PluginShowInfo));
-            }
+				//poprawa kodowania
+				UserTuneSong = UTF8ToUnicodeString(UserTuneSong.t_str());
+				//UserTuneSong = UTF8ToUnicodeString((const char *)UserTuneSong.t_str());
+				UserTuneSong = StringReplace(UserTuneSong, "&apos;", "'", TReplaceFlags() << rfReplaceAll);
+				UserTuneSong = StringReplace(UserTuneSong, "&quot;", "\"", TReplaceFlags() << rfReplaceAll);
+				UserTuneSong = StringReplace(UserTuneSong, "&amp;", "&", TReplaceFlags() << rfReplaceAll);
+				UserTuneSong = StringReplace(UserTuneSong, "&gt;", ">", TReplaceFlags() << rfReplaceAll);
+				UserTuneSong = StringReplace(UserTuneSong, "&lt;", "<", TReplaceFlags() << rfReplaceAll);
+
+				//Usuwanie "*** "
+				if(AnsiPos("*** ", UserTuneSong)>0)
+				{
+				  UserTuneSong.Delete(1, AnsiPos("*** ", UserTuneSong) + 3);
+				  UserTuneSong=UserTuneSong.Trim();
+				}
+
+				//Usuwanie numeru piosenki
+				if((AnsiPos(". ", UserTuneSong)>0)&&(AnsiPos(". ", UserTuneSong)<7))
+				{
+				  UserTuneSongTMP=UserTuneSong;
+				  UserTuneSongTMP.Delete(AnsiPos(". ", UserTuneSong), UserTuneSongTMP.Length());
+				  if(TestDigit(UserTuneSongTMP)==true)
+				  {
+					UserTuneSong.Delete(1, AnsiPos(". ", UserTuneSong));
+					UserTuneSong=UserTuneSong.Trim();
+				  }
+				}
+
+				//Usuwanie "Wtyczka AQQ Radio: "
+				if(AnsiPos("Wtyczka AQQ Radio: ", UserTuneSong)>0)
+				 UserTuneSong.Delete(1,AnsiPos("Wtyczka AQQ Radio: ", UserTuneSong)+18);
+
+				//Pobieranie nick'a z JID
+				UserTuneFromTMP = UserTuneFrom;
+				PluginContactSimpleInfo.cbSize = sizeof(TPluginContactSimpleInfo);
+				PluginContactSimpleInfo.JID = UserTuneFrom.w_str();
+				PluginLink.CallService(AQQ_CONTACTS_FILLSIMPLEINFO,0,(LPARAM)(&PluginContactSimpleInfo));
+				UserTuneFrom = (wchar_t*)(PluginContactSimpleInfo.Nick);
+				if(UserTuneFrom=="")
+				 UserTuneFrom = UserTuneFromTMP;
+
+				UserTuneIconPath = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPNG_FILEPATH,76,0));
+
+				//Chmurka "kto slucha"
+				PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
+				PluginShowInfo.Event = tmeInfo;
+				PluginShowInfo.Text = (UserTuneFrom + " s³ucha:").w_str();
+				PluginShowInfo.ImagePath = UserTuneIconPath.w_str();
+				PluginShowInfo.TimeOut = 1000 * UserTuneTimeOut;
+				PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)(&PluginShowInfo));
+				//Chmurka "co slucha"
+				PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
+				PluginShowInfo.Event = tmeInfo;
+				PluginShowInfo.Text = UserTuneSong.w_str();
+				PluginShowInfo.ImagePath = L"";
+				PluginShowInfo.TimeOut = 1000 * UserTuneTimeOut;
+				PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)(&PluginShowInfo));
+			  }
+			}
           }
         }
       }
@@ -343,7 +364,7 @@ int __stdcall OnModulesLoaded(WPARAM, LPARAM)
 {
   if(handle==NULL)
   {
-    Application->Handle = MainForm;
+	Application->Handle = (HWND__*)MainForm;
     handle = new TMainForm(Application);
   }
 
@@ -416,7 +437,6 @@ int __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
 }
 //---------------------------------------------------------------------------
 
-//Program
 extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVersion)
 {
   //Sprawdzanie wersji AQQ
@@ -431,10 +451,10 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
   }
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,0,0,0);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,0,1,0);
   PluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   PluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
-  PluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
+  PluginInfo.AuthorMail = (wchar_t *)L"sirbeherit@gmail.com";
   PluginInfo.Copyright = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   PluginInfo.Homepage = (wchar_t *)L"http://beherit.pl";
 
@@ -514,7 +534,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
    CreateDir(Dir + "\\\\TuneStatus");
 
   //Wypakowanie ikon
-  SaveResourceToFile((Dir + "\\\\TuneStatus\\\\TuneStatus.png").c_str(),"ID_PNG1");
+  SaveResourceToFile((Dir + "\\\\TuneStatus\\\\TuneStatus.png").t_str(),"ID_PNG1");
   //Przypisanie ikony
   plugin_icon_idx=PluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(Dir + "\\\\TuneStatus\\\\TuneStatus.png").w_str());
   //Usuniecie ikony
@@ -522,13 +542,14 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
 
   //Wypakowanie ikon
   if(!FileExists(Dir + "\\\\TuneStatus\\\\TuneStatusOff.png"))
-   SaveResourceToFile((Dir + "\\\\TuneStatus\\\\TuneStatusOff.png").c_str(),"ID_PNG2");
+   SaveResourceToFile((Dir + "\\\\TuneStatus\\\\TuneStatusOff.png").t_str(),"ID_PNG2");
   //Przypisanie ikony
   plugin_icon_idx_off=PluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(Dir +"\\\\TuneStatus\\\\TuneStatusOff.png").w_str());
 
   //Wypakowanie ikon
   if(!FileExists(Dir + "\\\\TuneStatus\\\\TuneStatusOn.png"))
-   SaveResourceToFile((Dir + "\\\\TuneStatus\\\\TuneStatusOn.png").c_str(),"ID_PNG3");
+
+   SaveResourceToFile((Dir + "\\\\TuneStatus\\\\TuneStatusOn.png").t_str(),"ID_PNG3");
   //Przypisanie ikony
   plugin_icon_idx_on=PluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(Dir +"\\\\TuneStatus\\\\TuneStatusOn.png").w_str());
 
@@ -554,13 +575,17 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
   UserTuneEnableN = Ini->ReadBool("UserTune", "EnableN", 0);
   UserTuneEnableS = Ini->ReadBool("UserTune", "EnableS", 0);
   UserTuneTimeOut = Ini->ReadInteger("UserTune", "TimeOutN", 4);
+  ExceptionCount = Ini->ReadInteger("UserTune", "ExceptionCount", 0);
+  if(ExceptionCount!=0)
+   for(int Count=0;Count<ExceptionCount;Count++)
+	ExceptionJID[Count] = Ini->ReadString("UserTuneEx" + IntToStr(Count+1), "JID", "");
   delete Ini;
 
   if(UserTuneEnableS==1)
   {
 	if(handle==NULL)
 	{
-	  Application->Handle = MainForm;
+	  Application->Handle = (HWND__*)MainForm;
 	  handle = new TMainForm(Application);
 	}
 	handle->aReadSettings->Execute();
@@ -572,7 +597,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
   {
 	if(handle==NULL)
 	{
-	  Application->Handle = MainForm;
+	  Application->Handle = (HWND__*)MainForm;
 	  handle = new TMainForm(Application);
 	}
 	handle->aReadSettings->Execute();
@@ -594,7 +619,7 @@ extern "C" int __declspec(dllexport)__stdcall Settings()
 {
   if(handle==NULL)
   {
-	Application->Handle = MainForm;
+	Application->Handle = (HWND__*)MainForm;
 	handle = new TMainForm(Application);
   }
   handle->Show();
@@ -724,5 +749,19 @@ void SetAQQUserTuneOff()
 
   PluginLink.CallService(AQQ_FUNCTION_SAVESETUP,1,(LPARAM)(&SaveSetup));
   PluginLink.CallService(AQQ_FUNCTION_REFRESHSETUP,0,0);
+}
+//---------------------------------------------------------------------------
+
+void RefreshUserTuneException()
+{
+  UnicodeString Dir = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,(WPARAM)(HInstance),0));
+  Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+
+  TIniFile *Ini = new TIniFile(Dir + "\\\\TuneStatus\\\\TuneStatus.ini");
+  ExceptionCount = Ini->ReadInteger("UserTune", "ExceptionCount", 0);
+  if(ExceptionCount!=0)
+   for(int Count=0;Count<ExceptionCount;Count++)
+	ExceptionJID[Count] = Ini->ReadString("UserTuneEx" + IntToStr(Count+1), "JID", "");
+  delete Ini;
 }
 //---------------------------------------------------------------------------

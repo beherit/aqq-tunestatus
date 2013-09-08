@@ -1,3 +1,16 @@
+2.0.1.0
+-----
+* Przepisanie wtyczki pod kompilator Embarcadero C++ Builder 2010.
+* Poprawki kosmetyczne wyglądu formy.
+* Optymalizacja kodu.
+* Prawie całkowite rozdzielenie w kodzie obsługi User Tune z ustawianiem opisu.
+* Poprawa w notyfikacji UserTune.
+* Możliwość dodania osób do listy wyjątków, które będą wyłączone z notyfikacji o aktualnie odtwarzanym przez nich utworu muzycznego.
+* Usuwanie z pobranego utworu ".mp3", ".wma", ".avi", ".mpg", ".mpeg", ".rmvb".
+* Możliwość wyłączenia zabezpieczenia przed pobieraniem aktualnie odtwarzanych filmów wideo.
+* Naprawa pobierania aktualnie odtwarzanego utworu w aTunes.
+* Poprawka w wycinaniu adresów stron WWW z pobranego utworu.
+
 2.0.0.0
 -----
 * Przepisanie wtyczki pod kompilator CodeGear C++ Builder 2009.

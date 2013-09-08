@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 161
-  Top = 110
+  Left = 0
+  Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = 'TuneStatus by Beherit'
-  ClientHeight = 354
-  ClientWidth = 309
+  Caption = 'TuneStatus - ustawienia'
+  ClientHeight = 355
+  ClientWidth = 312
   Color = clBtnFace
   Font.Charset = EASTEUROPE_CHARSET
   Font.Color = clWindowText
@@ -13,71 +13,179 @@ object MainForm: TMainForm
   Font.Name = 'Tahoma'
   Font.Style = []
   Icon.Data = {
-    0000010001001010000001002000680400001600000028000000100000002000
-    000001002000000000000000000000000000000000000000000000000000FFFF
+    0000010001002020000001002000A81000001600000028000000200000004000
+    000001002000000000008010000000000000000000000000000000000000FFFF
     FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
     FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-    FF004C4C4C423E3E3ECC363636CD313131992F2F2F1AFFFFFF00FFFFFF00FFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF006868
-    686D727272FF858585FF8A8A8AFF636363FF3B3B3BFF2F2F2F6CFFFFFF00FFFF
-    FF002F2F2F42262626CC202020CD1C1C1C991C1C1C1AFFFFFF00FFFFFF007A7A
-    7A6A919191FFA9A9A9FFAEAEAEFFABABABFF8B8B8BFF4A4A4AFF353535413C3C
-    3C6D535353FF6E6E6EFF767676FF4E4E4EFF262626FF1B1B1B6CFFFFFF00FFFF
-    FF007E7E7E70898989FF9E9E9EFFB0B0B0FFACACACFF757575FF424242A04F4F
-    4F6A737373FF919191FF989898FF969696FF767676FF353535FF1F1F1F41FFFF
-    FF00FFFFFF007F7F7F427A7A7AE3737373FF898989FF9D9D9DFF484848EDFFFF
-    FF005C5C5C706B6B6BFF858585FF9A9A9AFF979797FF5F5F5FFF222222A0FFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00717171FFB1B1B1FF494949FFFFFF
-    FF00FFFFFF005D5D5D42595959E3515151FF6C6C6CFF878787FF272727EDFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00747474FFB8B8B8FF4E4E4EFFFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF004F4F4FFF9A9A9AFF2D2D2DFFFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00797979FFBCBCBCFF545454FFFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00505050FFA1A1A1FF323232FFFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF007F7F7FFFC1C1C1FF595959FFFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00565656FFA5A5A5FF373737FFFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00858585FFC5C5C5FF5D5D5DFFFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF005D5D5DFFAAAAAAFF3B3B3BFFFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF008A8A8AFFCACACAFF5E5E5EFFFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF005B5B5BFFAFAFAFFF404040FFFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00909090FFCDCDCDFF848484FF5959
-    59FF505050FF4D4D4DFF494949FF565656FF7F7F7FFFB4B4B4FF464646FFFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00939393FFD1D1D1FFCECECEFFCBCB
-    CBFFC8C8C8FFC6C6C6FFC2C2C2FFBFBFBFFFBCBCBCFFB9B9B9FF4A4A4AFFFFFF
-    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF009C9C9CFF999999FF959595FF9191
-    91FF8D8D8DFF888888FF848484FF7F7F7FFF7A7A7AFF767676FF666666FFFFFF
+    FF00FFFFFF00FFFFFF0000000001000000010000000100000001000000010000
+    00010000000100000001FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF000000000100000003000000040000000500000006000000050000
+    0004000000030000000200000001000000010000000100000001000000010000
+    0001000000020000000300000004000000050000000600000006000000060000
+    000600000005000000040000000200000001FFFFFF00FFFFFF00FFFFFF000000
+    00010000000300000009000000120000001D000000260000002A000000270000
+    002000000017000000100000000A0000000900000009000000090000000A0000
+    000B0000000C0000000E00000011000000140000001600000018000000170000
+    0015000000110000000D000000080000000400000001FFFFFF00FFFFFF000000
+    00020000000B0000001D0000003503090955020A076B00050270000000680000
+    0058000000430000002F000000200000001B000000190000001A0000001B0000
+    001D0000001F00000022000000270000002B0000002E0000002F0000002E0000
+    002A000000220000001A00000011000000090000000400000001FFFFFF000000
+    0004000000100C302C40156255CE16665AFC16675AFC166659FF166659FE1766
+    59F914594EC00D352D650000002A000000200000001E00000020000000210000
+    0023000000240000002A0000002E000000320000003500000037000000350000
+    0030000000290000001F000000150000000C0000000600000002FFFFFF000000
+    00020000000817695CD6238B7CFD28AD9AFF2FB2A0FF32B3A1FF30B29FFF27A8
+    95FF1F8C7CFD186C5FF517685CE114584D5A0000001100000012000000130F45
+    3B34166659AC17695CE717695CE616695BE516695CE4166458BC10473F5D0000
+    00210000001C000000150000000E000000070000000400000001FFFFFF00FFFF
+    FF000000000117695BF343B3A4FF38B5A4FF6DC9BCFF92D7CDFF84D1C7FF5CC2
+    B4FF2FB29FFF29B09DFF249B8AFF176B5EF517645863000000050D5143131769
+    5CEB238E7EFC2AA492FF2CA695FF2AA493FF25A290FF219080FE186F61F41769
+    5CE61360526000000009000000050000000300000001FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00186B5C8D197264F431A796FFB2E3DCFFB3E3DCFFA8DFD7FF8ED5
+    CBFF68C7BAFF43BAA9FF2BB19EFF259F8DFF186A5DE3FFFFFF001768572C1B6F
+    62F370CABEFF72CABEFF9BDAD2FF8CD5CAFF63C5B7FF33B4A2FF29B09DFF249E
+    8CFF176A5DF51562553C0000000100000001FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0016685B76176A5CEA3F897CF483C1B7FEADDED7FFA3DD
+    D5FF90D6CCFF7BCDC2FF46B6A6FF28AC99FF17685BF7FFFFFF0000555503186A
+    5DE62B9384FCA5DED6FFC3E9E4FFB7E4DEFF9EDBD3FF7BCEC2FF5BC3B4FF38B5
+    A4FF239B89FF17695CEC00808002FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF000000000117645942186A5DAD1A6B5DF42773
+    67FB2D786CF6267264F916685BFB28AB98FF17675AF9FFFFFF00FFFFFF001264
+    5B1C166A5CE3237A6DF25DAFA3FE90D1C7FFA9DDD5FF9CD6CEFF8BCEC5FF5BBB
+    AEFF2BB09DFF16685AFB1C715509FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF002B55
+    550614665C190055550316675AFB2DAD9AFF166759FBFFFFFF00FFFFFF00FFFF
+    FF00246D490717655B4C176B5DA717695CEB186B5EED196B5EE7186B5DE31869
+    5BFB2DA998FF16685BFA175D5D0BFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0017685BFB32B09EFF17685BFCFFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF001B6D
+    60E532A998FF17695CFA156A550CFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0017685BFB37B3A1FF17685BFDFFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF001C6D
+    61E537AB9BFF18695CF9126D5B0EFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0018685BFB3CB5A4FF17675AFFFFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF001D6E
+    60E63CAD9DFF196A5DF810606010FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0018685BFB40B7A6FF18675AFF00000001FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF001D6E
+    60E640AF9FFF1A6B5EF70F695A11FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0018685BFB44B8A8FF18675AFE00804004FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF001D6E
+    60E645B1A1FF1B6B5FF71B6B5E13FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0018685BFB48BAAAFF19695CFC246D4907FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF001D6E
+    60E648B2A3FF1C6D5FF618615515FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0018685BFB4BBBABFF1A6A5DFB1C715509FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF001D6E
+    60E64BB4A5FF1C6E60F616645917FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0017685BFB4EBCADFF1B6A5EFA156A550CFFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF001E6F
+    62E64EB5A6FF1D6E62F5156A5518FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0017685BFB50BDADFF1C6C5EF91462581AFFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF001D6E
+    60E650B5A7FF1D6E63F51462581AFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0016675AFB50BDAEFF268274F317675BF917695CEB186B
+    5EC116675B8A16655A5B1664592E2B555506FFFFFF00FFFFFF00FFFFFF001D6E
+    60E651B6A8FF1E7163F412645B1CFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0016675AFB50BDAEFF59C2B3FF63C5B8FF60BDB0FF56B1
+    A4FF4AA296FD3A8E81F3237569F117675BF9186B5DE3186A5EB616665A7F1C6C
+    5FEF51B6A8FF1F7165F31A6A581DFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0016675AFB5AC1B2FF3CB7A5FF3BB7A6FF3FB8A7FF4CBD
+    ADFF60C4B6FF76CDC0FF89D3C9FF7FCFC4FF65BEB2FF4FAC9EFF3B988AFB2E8B
+    7DF553BDAEFF217165F319635A1FFFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0016675AFB76CBC0FF7ED0C4FF88D3C9FF92D7CDFF90D6
+    CCFF84D2C7FF74CCBFFF5FC4B6FF4EBEAEFF45BAAAFF49BCACFF4FBEAEFF51BF
+    AFFF53BFB0FF227265F317645D21FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0017685AF84B9E91FC6DB8AEFF93D0C8FFB9E4DEFFD0EE
+    E9FFDBF1EEFFE2F4F2FFE5F5F3FFDEF3F0FFCEEDE9FFABE0D8FF84D2C7FF66C6
+    B9FF6BC8BCFF1A7062F216665723FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF0017645B3816665976176C5EAE176C5EDC17675AF92F7A
+    70F45BA095F489C1B8FDB2DAD5FFCCE9E5FFD9F1EDFFD3EFEBFFBFE8E2FFA9DF
+    D7FF9ADAD1FF207365F215635C24FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00008080021666
+    57231765584E15665A7A176C5EB1176A5EDF17675AF929786BF2459387F358A6
+    9BFD61B5A9FF1D6F62F514655726FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
     FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
     FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-    0000C7FF000083C7000081830000C0810000E0C00000F8E00000F8F80000F8F8
-    0000F8F80000F8F80000F8F80000F8000000F8000000F8000000FFFF0000}
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00005555031465572616675A521666
+    5A7F186B5DB5176B5EC910606010FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+    FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    000000000000000000000000000000000000000000000000000000000000}
   OldCreateOrder = False
   Position = poScreenCenter
   OnClose = FormClose
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object Bevel: TBevel
+    Left = 0
+    Top = 317
+    Width = 312
+    Height = 38
+    Align = alBottom
+    Shape = bsTopLine
+    ExplicitTop = 316
+    ExplicitWidth = 309
+  end
   object SaveButton: TButton
-    Left = 222
+    Left = 230
     Top = 324
     Width = 75
     Height = 25
     Caption = 'Zapisz'
     Enabled = False
-    TabOrder = 0
+    TabOrder = 2
     TabStop = False
     OnClick = SaveButtonClick
   end
   object PageControl: TPageControl
-    Left = 6
-    Top = 6
+    Left = 8
+    Top = 8
     Width = 297
-    Height = 313
+    Height = 302
     ActivePage = HandlingTabSheet
-    TabOrder = 1
+    TabOrder = 0
     object HandlingTabSheet: TTabSheet
       Caption = 'Obs'#322'uga'
       object AutoDownInfoLabel2: TLabel
-        Left = 45
-        Top = 46
+        Left = 44
+        Top = 38
         Width = 201
         Height = 13
         Caption = '(do zmiany kolejno'#347'ci u'#380'yj Drag and Drop)'
@@ -85,21 +193,21 @@ object MainForm: TMainForm
         Transparent = True
       end
       object AutoDownInfoLabel: TLabel
-        Left = 38
-        Top = 5
-        Width = 214
-        Height = 39
+        Left = 15
+        Top = 6
+        Width = 259
+        Height = 26
         Alignment = taCenter
         Caption = 
           'Wybierz kt'#243're odtwarzacze ma obs'#322'ugiwa'#263' wtyczka oraz okre'#347'l ich ' +
-          'kolejno'#347#263' na li'#347'cie co decyduje o ich priorytecie:'
+          'kolejno'#347#263' co decyduje o ich priorytecie:'
         Transparent = True
         WordWrap = True
       end
       object AutoDownCheckListBox: TCheckListBox
-        Left = 65
-        Top = 68
-        Width = 151
+        Left = 57
+        Top = 57
+        Width = 176
         Height = 174
         ItemHeight = 13
         Items.Strings = (
@@ -116,13 +224,13 @@ object MainForm: TMainForm
           'aTunes'
           'Songbird'
           'Last.fm Player')
-        TabOrder = 0
+        TabOrder = 2
         Visible = False
       end
       object AutoDownCheckListBoxPreview: TCheckListBox
-        Left = 65
-        Top = 68
-        Width = 151
+        Left = 57
+        Top = 57
+        Width = 176
         Height = 174
         DragMode = dmAutomatic
         ItemHeight = 13
@@ -142,76 +250,57 @@ object MainForm: TMainForm
           'Last.fm Player')
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 1
+        TabOrder = 0
         OnClick = AutoDownCheckListBoxPreviewClick
         OnDragDrop = AutoDownCheckListBoxPreviewDragDrop
         OnDragOver = AutoDownCheckListBoxPreviewDragOver
         OnMouseMove = AutoDownCheckListBoxPreviewMouseMove
       end
       object ResetButton: TButton
-        Left = 65
-        Top = 248
+        Left = 57
+        Top = 237
         Width = 75
         Height = 25
         Action = aResetSettings
-        TabOrder = 2
+        TabOrder = 1
       end
     end
-    object StatusLooksTabSheet: TTabSheet
+    object StatusTabSheet: TTabSheet
       Caption = 'Wygl'#261'd opisu'
       ImageIndex = 1
-      object TagInfoLabel2: TLabel
-        Left = 58
-        Top = 263
-        Width = 172
+      DesignSize = (
+        289
+        274)
+      object Bevel1: TBevel
+        Left = 9
+        Top = 144
+        Width = 271
+        Height = 4
+        Anchors = [akLeft, akTop, akRight]
+        Shape = bsTopLine
+      end
+      object SongTimerIntervalLabel1: TLabel
+        Left = 23
+        Top = 161
+        Width = 78
         Height = 13
-        Caption = 'Obecnie s'#322'ucham: CC_TUNESTATUS'
-        Enabled = False
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = [fsItalic]
-        ParentFont = False
+        Caption = 'Ustawiaj opis po'
         Transparent = True
       end
-      object TagInfoLabel1: TLabel
-        Left = 79
-        Top = 244
-        Width = 130
+      object SongTimerIntervalLabel2: TLabel
+        Left = 151
+        Top = 161
+        Width = 116
         Height = 13
-        Caption = 'Przyk'#322'adowy wygl'#261'd opisu:'
-        Enabled = False
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        Transparent = True
-      end
-      object TagRequestLabel: TLabel
-        Left = 19
-        Top = 217
-        Width = 251
-        Height = 13
-        Caption = 'W opisie musi wyst'#261'pi'#263' tag CC_TUNESTATUS!'
-        Enabled = False
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = [fsBold]
-        ParentFont = False
+        Caption = 's od rozpocz'#281'cia utworu'
         Transparent = True
       end
       object TagsBox: TComboBox
-        Left = 16
-        Top = 6
-        Width = 257
+        Left = 17
+        Top = 8
+        Width = 256
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
         TabOrder = 0
         OnCloseUp = TagsBoxCloseUp
         OnDropDown = TagsBoxDropDown
@@ -228,84 +317,104 @@ object MainForm: TMainForm
           'CC_SONGLENGTH       (d'#322'ugo'#347#263' utworu [mm:ss])')
       end
       object SongFromFile: TMemo
-        Left = 16
-        Top = 186
-        Width = 257
+        Left = 18
+        Top = 105
+        Width = 256
         Height = 25
         TabStop = False
         ReadOnly = True
-        TabOrder = 2
+        TabOrder = 6
         Visible = False
         WordWrap = False
       end
       object StatusMemo: TMemo
-        Left = 15
-        Top = 33
-        Width = 258
-        Height = 137
+        Left = 18
+        Top = 35
+        Width = 256
+        Height = 64
         Lines.Strings = (
-          '~ CC_TUNESTATUS ~')
+          'Obecnie s'#322'ucham: CC_TUNESTATUS')
         MaxLength = 512
         ScrollBars = ssVertical
-        TabOrder = 3
+        TabOrder = 7
         Visible = False
       end
       object PreviewStatusMemo: TMemo
-        Left = 16
-        Top = 33
-        Width = 258
-        Height = 177
+        Left = 17
+        Top = 35
+        Width = 256
+        Height = 96
+        Hint = 'W opisie musi wyst'#261'pi'#263' tag CC_TUNESTATUS'
         MaxLength = 512
+        ParentShowHint = False
         ScrollBars = ssVertical
+        ShowHint = True
         TabOrder = 1
         OnChange = PreviewStatusMemoChange
+      end
+      object SetOnlyInJabberCheckBox: TCheckBox
+        Left = 17
+        Top = 248
+        Width = 225
+        Height = 17
+        Caption = 'Ustawiaj opis tylko na kontach sieci Jabber'
+        TabOrder = 5
+      end
+      object BlockInvisibleCheckBox: TCheckBox
+        Left = 17
+        Top = 225
+        Width = 225
+        Height = 17
+        Caption = 'Nie ustawiaj opisu przy stanie niewidoczny'
+        Checked = True
+        State = cbChecked
+        TabOrder = 4
+      end
+      object DisableSongTimerCheckBox: TCheckBox
+        Left = 48
+        Top = 186
+        Width = 193
+        Height = 33
+        Caption = 'Funkcja nieaktywna przy pobieraniu danych z wtyczki AQQ Radio'
+        Checked = True
+        State = cbChecked
+        TabOrder = 3
+        WordWrap = True
+      end
+      object SongTimerSpin: TCSpinEdit
+        Left = 107
+        Top = 158
+        Width = 38
+        Height = 22
+        MaxValue = 30
+        MinValue = 4
+        TabOrder = 2
+        Value = 5
       end
     end
     object SettingsTabSheet: TTabSheet
       Caption = 'Opcje'
       ImageIndex = 2
+      ExplicitLeft = 6
+      ExplicitTop = 29
       DesignSize = (
         289
-        285)
-      object Bevel3: TBevel
-        Left = 9
-        Top = 242
-        Width = 271
-        Height = 4
-        Anchors = [akLeft, akTop, akRight]
-        Shape = bsTopLine
-      end
+        274)
       object Bevel2: TBevel
         Left = 9
-        Top = 53
+        Top = 64
         Width = 271
         Height = 4
         Anchors = [akLeft, akTop, akRight]
         Shape = bsTopLine
       end
-      object Bevel1: TBevel
+      object Bevel3: TBevel
         Left = 9
-        Top = 171
+        Top = 175
         Width = 271
         Height = 4
         Anchors = [akLeft, akTop, akRight]
         Shape = bsTopLine
-      end
-      object SongTimerIntervalLabel2: TLabel
-        Left = 150
-        Top = 113
-        Width = 116
-        Height = 13
-        Caption = 's od rozpocz'#281'cia utworu'
-        Transparent = True
-      end
-      object SongTimerIntervalLabel1: TLabel
-        Left = 22
-        Top = 113
-        Width = 78
-        Height = 13
-        Caption = 'Ustawiaj opis po'
-        Transparent = True
       end
       object EnablePluginOnStartCheckBox: TCheckBox
         Left = 6
@@ -317,56 +426,20 @@ object MainForm: TMainForm
       end
       object EnableFastOnOffCheckBox: TCheckBox
         Left = 6
-        Top = 30
+        Top = 29
         Width = 254
-        Height = 17
-        Caption = 'Pokazuj przycisk szybkiego w'#322#261'czenia/wy'#322#261'czenia'
+        Height = 27
+        Caption = 
+          'Pokazuj przycisk szybkiego w'#322#261'czenia/wy'#322#261'czenia dzia'#322'ania wtyczk' +
+          'i'
         Checked = True
         State = cbChecked
         TabOrder = 1
-      end
-      object SetOnlyInJabberCheckBox: TCheckBox
-        Left = 6
-        Top = 63
-        Width = 225
-        Height = 17
-        Caption = 'Ustawiaj opis tylko na kontach sieci Jabber'
-        TabOrder = 2
-      end
-      object BlockInvisibleCheckBox: TCheckBox
-        Left = 6
-        Top = 87
-        Width = 225
-        Height = 17
-        Caption = 'Nie ustawiaj opisu przy stanie niewidoczny'
-        Checked = True
-        State = cbChecked
-        TabOrder = 3
-      end
-      object SongTimerSpin: TCSpinEdit
-        Left = 106
-        Top = 110
-        Width = 38
-        Height = 22
-        MaxValue = 30
-        MinValue = 4
-        TabOrder = 4
-        Value = 5
-      end
-      object DisableSongTimerCheckBox: TCheckBox
-        Left = 48
-        Top = 132
-        Width = 193
-        Height = 33
-        Caption = 'Funkcja nieaktywna przy pobieraniu danych z wtyczki AQQ Radio'
-        Checked = True
-        State = cbChecked
-        TabOrder = 5
         WordWrap = True
       end
       object CutRadiostationNameCheckBox: TCheckBox
         Left = 6
-        Top = 181
+        Top = 74
         Width = 263
         Height = 26
         Caption = 
@@ -374,37 +447,50 @@ object MainForm: TMainForm
           'dio'
         Checked = True
         State = cbChecked
-        TabOrder = 6
+        TabOrder = 2
         WordWrap = True
       end
       object CutWWWCheckBox: TCheckBox
         Left = 6
-        Top = 213
+        Top = 106
         Width = 261
         Height = 25
         Caption = 'Wycinaj adresy stron WWW z pobranego utworu'
-        TabOrder = 7
+        TabOrder = 3
         WordWrap = True
       end
       object TimeTurnOffCheckBox: TCheckBox
-        Left = 41
-        Top = 252
+        Left = 6
+        Top = 137
         Width = 163
         Height = 26
         Caption = 'Wy'#322#261'cz dzia'#322'anie wtyczki gdy utw'#243'r nie zmienia si'#281' od (min)'
-        TabOrder = 8
+        TabOrder = 4
         WordWrap = True
         OnClick = TimeTurnOffCheckBoxClick
       end
       object TimeTurnOffSpin: TCSpinEdit
-        Left = 210
-        Top = 254
+        Left = 175
+        Top = 139
         Width = 38
         Height = 22
         MaxValue = 60
         MinValue = 5
-        TabOrder = 9
+        TabOrder = 5
         Value = 5
+      end
+      object MovieExceptionCheckBox: TCheckBox
+        Left = 6
+        Top = 185
+        Width = 261
+        Height = 26
+        Caption = 
+          'Nie pobieraj aktualnie odtwarzanych film'#243'w wideo (.avi .mpg .mpe' +
+          'g .rmvb)'
+        Checked = True
+        State = cbChecked
+        TabOrder = 6
+        WordWrap = True
       end
     end
     object UserTuneTabSheet: TTabSheet
@@ -412,7 +498,7 @@ object MainForm: TMainForm
       ImageIndex = 3
       DesignSize = (
         289
-        285)
+        274)
       object UserTuneTimeNLabel: TLabel
         Left = 45
         Top = 43
@@ -422,21 +508,21 @@ object MainForm: TMainForm
         Transparent = True
       end
       object UserTuneSLabel: TLabel
-        Left = 21
+        Left = 57
         Top = 110
-        Width = 247
-        Height = 39
+        Width = 175
+        Height = 26
         Alignment = taCenter
         Caption = 
-          'Funkcja nie dzia'#322'a z odtwarzaczami Winamp, AIMP, The KMPlayer or' +
-          'az Foobar2000, gdy'#380' s'#261' one domy'#347'lnie obs'#322'ugiwane przez samo AQQ'
+          'Funkcja nie dzia'#322'a z odtwarzaczami domy'#347'lnie obs'#322'ugiwanymi przez' +
+          ' AQQ'
         Enabled = False
         Transparent = True
         WordWrap = True
       end
       object UserTuneLabel: TLabel
         Left = 23
-        Top = 242
+        Top = 227
         Width = 242
         Height = 39
         Alignment = taCenter
@@ -450,7 +536,7 @@ object MainForm: TMainForm
       end
       object Bevel5: TBevel
         Left = 9
-        Top = 235
+        Top = 217
         Width = 271
         Height = 4
         Anchors = [akLeft, akTop, akRight]
@@ -466,7 +552,7 @@ object MainForm: TMainForm
       end
       object UserTuneTimeSLabel2: TLabel
         Left = 165
-        Top = 163
+        Top = 145
         Width = 116
         Height = 13
         Caption = 's od rozpocz'#281'cia utworu'
@@ -474,7 +560,7 @@ object MainForm: TMainForm
       end
       object UserTuneTimeSLabel1: TLabel
         Left = 8
-        Top = 163
+        Top = 145
         Width = 107
         Height = 13
         Caption = 'Wysy'#322'aj informacj'#281' po'
@@ -483,9 +569,11 @@ object MainForm: TMainForm
       object EnableUserTuneNCheckBox: TCheckBox
         Left = 6
         Top = 6
-        Width = 280
+        Width = 194
         Height = 26
-        Caption = 'Powiadamiaj o aktualnie s'#322'uchanych utworach moich znajomych'
+        Caption = 
+          'Powiadamiaj o aktualnie s'#322'uchanych przez moich znajomych utworac' +
+          'h'
         TabOrder = 0
         WordWrap = True
         OnClick = EnableUserTuneNCheckBoxClick
@@ -497,54 +585,65 @@ object MainForm: TMainForm
         Height = 22
         MaxValue = 30
         MinValue = 1
-        TabOrder = 1
+        TabOrder = 2
         Value = 4
       end
       object EnableUserTuneSCheckBox: TCheckBox
         Left = 6
         Top = 78
-        Width = 236
+        Width = 254
         Height = 26
-        Caption = 'Informuj znajomych o aktualnie s'#322'uchanym utworze muzycznym'
-        TabOrder = 2
+        Caption = 
+          'Informuj moich znajomych o aktualnie s'#322'uchanym przeze mnie utwor' +
+          'ze muzycznym'
+        TabOrder = 3
         WordWrap = True
         OnClick = EnableUserTuneSCheckBoxClick
       end
       object UserTuneSSpin: TCSpinEdit
         Left = 121
-        Top = 160
+        Top = 142
         Width = 38
         Height = 22
         MaxValue = 30
         MinValue = 4
-        TabOrder = 3
+        TabOrder = 4
         Value = 5
       end
       object EnableAQQUserTuneSCheckBox: TCheckBox
         Left = 27
-        Top = 188
+        Top = 170
         Width = 235
         Height = 41
         Caption = 
           'Wymuszaj dzia'#322'anie wtyczki z odtwarzaczami obs'#322'ugiwanymi przez A' +
           'QQ oraz z wtyczk'#261' AQQ Radio'
-        TabOrder = 4
+        TabOrder = 5
         WordWrap = True
+      end
+      object UserTuneExceptionButton: TButton
+        Left = 206
+        Top = 10
+        Width = 68
+        Height = 20
+        Caption = 'Wyj'#261'tki...'
+        TabOrder = 1
+        OnClick = UserTuneExceptionButtonClick
       end
     end
   end
   object RunPluginCheckBox: TCheckBox
     Left = 14
     Top = 328
-    Width = 115
+    Width = 106
     Height = 17
     Caption = 'Wtyczka aktywna'
-    TabOrder = 2
+    TabOrder = 1
     OnClick = RunPluginCheckBoxClick
   end
   object ActionList: TActionList
     Left = 99
-    Top = 320
+    Top = 328
     object aWinampDown: TAction
       Category = 'Players'
       Caption = 'aWinampDown'
@@ -570,6 +669,11 @@ object MainForm: TMainForm
       Caption = 'aVUPlayerDown'
       OnExecute = aVUPlayerDownExecute
     end
+    object aXMPlayDown: TAction
+      Category = 'Players'
+      Caption = 'aXMPlayDown'
+      OnExecute = aXMPlayDownExecute
+    end
     object aMPCDown: TAction
       Category = 'Players'
       Caption = 'aMPCDown'
@@ -589,11 +693,6 @@ object MainForm: TMainForm
       Category = 'Players'
       Caption = 'aPluginAQQRadioDown'
       OnExecute = aPluginAQQRadioDownExecute
-    end
-    object aXMPlayDown: TAction
-      Category = 'Players'
-      Caption = 'aXMPlayDown'
-      OnExecute = aXMPlayDownExecute
     end
     object aScreamerRadioDown: TAction
       Category = 'Players'
@@ -650,26 +749,36 @@ object MainForm: TMainForm
       Caption = 'Resetuj'
       OnExecute = aResetSettingsExecute
     end
+    object aExit: TAction
+      Caption = 'aExit'
+      ShortCut = 27
+      OnExecute = aExitExecute
+    end
+    object aAutoDownUserTune: TAction
+      Category = 'Players'
+      Caption = 'aAutoDownUserTune'
+      OnExecute = aAutoDownUserTuneExecute
+    end
   end
   object Timer: TTimer
     Enabled = False
     OnTimer = TimerTimer
     Left = 67
-    Top = 320
+    Top = 328
   end
   object SongTimer: TTimer
     Enabled = False
     Interval = 5000
     OnTimer = SongTimerTimer
     Left = 35
-    Top = 320
+    Top = 328
   end
   object TurnOffTimer: TTimer
     Enabled = False
     Interval = 900000
     OnTimer = TurnOffTimerTimer
     Left = 3
-    Top = 320
+    Top = 328
   end
   object FoobarPopupMenu: TPopupMenu
     Left = 272
@@ -707,27 +816,27 @@ object MainForm: TMainForm
     Enabled = False
     OnTimer = UserTuneTimerTimer
     Left = 67
-    Top = 288
+    Top = 296
   end
   object UserTuneSongTimer: TTimer
     Enabled = False
     Interval = 5000
     OnTimer = UserTuneSongTimerTimer
     Left = 35
-    Top = 288
+    Top = 296
   end
   object AllowUserTuneNTimer: TTimer
     Enabled = False
     Interval = 20000
     OnTimer = AllowUserTuneNTimerTimer
     Left = 3
-    Top = 288
+    Top = 296
   end
   object GetStatusTimer: TTimer
     Enabled = False
     Interval = 100
     OnTimer = GetStatusTimerTimer
-    Left = 128
-    Top = 320
+    Left = 99
+    Top = 296
   end
 end
