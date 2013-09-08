@@ -1,6 +1,6 @@
 object MainForm: TMainForm
-  Left = 719
-  Top = 108
+  Left = 551
+  Top = 98
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus by Beherit'
@@ -57,36 +57,30 @@ object MainForm: TMainForm
   TextHeight = 13
   object OkButton: TButton
     Left = 206
-    Top = 272
+    Top = 271
     Width = 75
     Height = 25
     Caption = 'OK'
     TabOrder = 0
     OnClick = OkButtonClick
   end
-  object RunPluginCheckBox: TCheckBox
-    Left = 12
-    Top = 278
-    Width = 93
-    Height = 14
-    Caption = 'W'#322#261'cz wtyczk'#281
-    TabOrder = 1
-    OnClick = RunPluginCheckBoxClick
-  end
-  object PageControl: TPageControl
+  object LMDPageControl: TLMDPageControl
     Left = 4
     Top = 4
     Width = 284
     Height = 265
-    ActivePage = HandlingTabSheet
-    BiDiMode = bdLeftToRight
-    MultiLine = True
-    ParentBiDiMode = False
-    ParentShowHint = False
-    ShowHint = False
-    TabIndex = 0
-    TabOrder = 2
-    object HandlingTabSheet: TTabSheet
+    TabOrder = 1
+    Options = [toNoTabIfEmpty, toShowBorder, toShowFocusRect, toShowAccelChar]
+    RaggedRight = False
+    DockOrientation = doNoOrient
+    DefaultPage = HandlingLMDTabSheet
+    ActivePage = HandlingLMDTabSheet
+    object HandlingLMDTabSheet: TLMDTabSheet
+      Left = 4
+      Top = 27
+      Width = 276
+      Height = 234
+      Bevel.Mode = bmCustom
       Caption = 'Obs'#322'uga'
       object WMP7_11Label: TLabel
         Left = 30
@@ -101,189 +95,246 @@ object MainForm: TMainForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
+        Transparent = True
       end
-      object WMP7_11DownRadio: TRadioButton
-        Left = 6
-        Top = 78
-        Width = 233
-        Height = 17
-        Caption = 'Pobieraj dane z Windows Media Player 7-11'
-        TabOrder = 0
-      end
-      object XMPlayDownRadio: TRadioButton
-        Left = 6
-        Top = 166
-        Width = 129
-        Height = 17
-        Caption = 'Pobieraj dane z XMPlay'
-        TabOrder = 1
-      end
-      object WMP64DownRadio: TRadioButton
-        Left = 6
-        Top = 118
-        Width = 226
-        Height = 17
-        Caption = 'Pobieraj dane z Windows Media Player 6.4'
-        TabOrder = 2
-      end
-      object WinampDownRadio: TRadioButton
+      object WinampDownRadio: TLMDRadioButton
         Left = 6
         Top = 6
-        Width = 217
-        Height = 17
+        Width = 221
+        Height = 18
         Caption = 'Pobieraj dane z Winamp/AIMP2/KMPlayer'
-        TabOrder = 3
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        Checked = False
+        TabOrder = 0
+        Transparent = True
       end
-      object VUPlayerDownRadio: TRadioButton
-        Left = 6
-        Top = 142
-        Width = 140
-        Height = 17
-        Caption = 'Pobieraj dane z VUPlayer'
-        TabOrder = 4
-      end
-      object MPCDownRadio: TRadioButton
-        Left = 6
-        Top = 190
-        Width = 193
-        Height = 17
-        Caption = 'Pobieraj dane z Media Player Classic'
-        TabOrder = 5
-      end
-      object LastFMDownRadio: TRadioButton
-        Left = 6
-        Top = 54
-        Width = 169
-        Height = 17
-        Caption = 'Pobieraj dane z Last.fm Player'
-        TabOrder = 6
-      end
-      object FoobarDownRadio: TRadioButton
+      object FoobarDownRadio: TLMDRadioButton
         Left = 6
         Top = 30
         Width = 158
-        Height = 17
+        Height = 18
         Caption = 'Pobieraj dane z Foobar2000'
-        TabOrder = 7
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        Checked = False
+        TabOrder = 1
+        Transparent = True
       end
-      object AutoDownRadio: TRadioButton
+      object LastFMDownRadio: TLMDRadioButton
+        Left = 6
+        Top = 54
+        Width = 169
+        Height = 18
+        Caption = 'Pobieraj dane z Last.fm Player'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        Checked = False
+        TabOrder = 2
+        Transparent = True
+      end
+      object WMP7_11DownRadio: TLMDRadioButton
+        Left = 6
+        Top = 78
+        Width = 232
+        Height = 18
+        Caption = 'Pobieraj dane z Windows Media Player 7-11'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        Checked = False
+        TabOrder = 3
+        Transparent = True
+      end
+      object WMP64DownRadio: TLMDRadioButton
+        Left = 6
+        Top = 118
+        Width = 226
+        Height = 18
+        Caption = 'Pobieraj dane z Windows Media Player 6.4'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        Checked = False
+        TabOrder = 4
+        Transparent = True
+      end
+      object VUPlayerDownRadio: TLMDRadioButton
+        Left = 6
+        Top = 142
+        Width = 143
+        Height = 18
+        Caption = 'Pobieraj dane z VUPlayer'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        Checked = False
+        TabOrder = 5
+        Transparent = True
+      end
+      object XMPlayDownRadio: TLMDRadioButton
+        Left = 6
+        Top = 166
+        Width = 134
+        Height = 18
+        Caption = 'Pobieraj dane z XMPlay'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        Checked = False
+        TabOrder = 6
+        Transparent = True
+      end
+      object MPCDownRadio: TLMDRadioButton
+        Left = 6
+        Top = 190
+        Width = 196
+        Height = 18
+        Caption = 'Pobieraj dane z Media Player Classic'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        Checked = False
+        TabOrder = 7
+        Transparent = True
+      end
+      object AutoDownRadio: TLMDRadioButton
         Left = 6
         Top = 214
-        Width = 121
-        Height = 17
+        Width = 126
+        Height = 18
         Caption = 'Okre'#347'l automatycznie'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
         Checked = True
         TabOrder = 8
-        TabStop = True
+        Transparent = True
       end
     end
-    object SettingsTabSheet: TTabSheet
-      Caption = 'Opcje'
-      ImageIndex = 1
-      object SuffixLabel: TLabel
-        Left = 6
-        Top = 58
-        Width = 28
+    object StatusLooksLMDTabSheet: TLMDTabSheet
+      Left = 4
+      Top = 27
+      Width = 276
+      Height = 234
+      Bevel.Mode = bmCustom
+      Caption = 'Wygl'#261'd opisu'
+      object TagRequestLabel: TLabel
+        Left = 11
+        Top = 210
+        Width = 251
         Height = 13
-        Caption = 'Suffix'
-      end
-      object PreviewLabel: TLabel
-        Left = 6
-        Top = 10
-        Width = 38
-        Height = 13
-        Caption = 'Podgl'#261'd'
-      end
-      object PrefixLabel: TLabel
-        Left = 6
-        Top = 34
-        Width = 28
-        Height = 13
-        Caption = 'Prefix'
-      end
-      object NewLineLabel: TLabel
-        Left = 16
-        Top = 78
-        Width = 247
-        Height = 13
-        Caption = 'Wstawienie %n dzia'#322'a jako nowa linia (mi'#281'kki enter)'
+        Caption = 'W opisie musi wyst'#261'pi'#263' tag CC_TUNESTATUS!'
         Enabled = False
         Font.Charset = EASTEUROPE_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Style = [fsBold]
         ParentFont = False
+        Transparent = True
       end
-      object SuffixEdit: TEdit
-        Left = 50
-        Top = 54
-        Width = 181
+      object TagsBox: TComboBox
+        Left = 8
+        Top = 4
+        Width = 257
         Height = 21
+        Style = csDropDownList
+        ItemHeight = 13
         TabOrder = 0
+        OnCloseUp = TagsBoxCloseUp
+        OnDropDown = TagsBoxDropDown
+        OnSelect = TagsBoxSelect
+        Items.Strings = (
+          'CC_TUNESTATUS        (pobrany utw'#243'r)'
+          'CC_STARTSTATUS      (opis pocz'#261'tkowy)'
+          'CC_PLUGINVERSION   (wersja TuneStatus)'
+          'CC_AQQVERSION        (wersja AQQ)'
+          'CC_PLAYERNAME        (nazwa odtwarzacza)'
+          'CC_PLAYERVERSION   (wersja odtwarzacza)'
+          'CC_SAMPLERATE        (samplerate)'
+          'CC_BITRATE                (birate)'
+          'CC_CHANNELS             (ilo'#347#263' kana'#322#243'w)'
+          'CC_SONGLENGTH       (d'#322'ugo'#347#263' utworu [mm:ss])')
       end
-      object SuffixCheckBox: TCheckBox
-        Left = 236
-        Top = 56
-        Width = 37
-        Height = 17
-        Caption = 'On'
+      object StatusMemo: TMemo
+        Left = 8
+        Top = 32
+        Width = 258
+        Height = 170
+        Lines.Strings = (
+          'TuneStatus CC_PLUGINVERSION'
+          'http://www.beherit.za.pl/?page_id=118'
+          ''
+          '~ CC_TUNESTATUS ~')
+        MaxLength = 512
+        ScrollBars = ssVertical
         TabOrder = 1
       end
-      object SetOnlyInJabberCheckBox: TCheckBox
-        Left = 11
-        Top = 106
-        Width = 222
-        Height = 17
-        Caption = 'Ustawiaj opis tylko na kontach sieci Jabber'
-        TabOrder = 2
-        OnClick = SetOnlyInJabberCheckBoxClick
-      end
-      object Preview: TEdit
-        Left = 50
-        Top = 6
-        Width = 221
-        Height = 21
-        ReadOnly = True
-        TabOrder = 3
-      end
-      object PrefixEdit: TEdit
-        Left = 50
-        Top = 30
-        Width = 181
-        Height = 21
-        TabOrder = 4
-      end
-      object PrefixCheckBox: TCheckBox
-        Left = 236
-        Top = 32
-        Width = 37
-        Height = 17
-        Caption = 'On'
-        TabOrder = 5
-      end
-      object EnablePluginOnStartCheckBox: TCheckBox
-        Left = 11
-        Top = 128
-        Width = 186
-        Height = 17
-        Caption = 'W'#322#261'czaj wtyczk'#281' przy starcie AQQ'
-        TabOrder = 6
-      end
-      object EnableFastOnOffCheckBox: TCheckBox
-        Left = 11
-        Top = 150
-        Width = 254
-        Height = 17
-        BiDiMode = bdLeftToRight
+    end
+    object SettingsLMDTabSheet: TLMDTabSheet
+      Left = 4
+      Top = 27
+      Width = 276
+      Height = 234
+      Bevel.Mode = bmCustom
+      Caption = 'Inne opcje'
+      object EnableFastOnOffCheckBox: TLMDCheckBox
+        Left = 6
+        Top = 54
+        Width = 258
+        Height = 18
         Caption = 'Pokazuj przycisk szybkiego w'#322#261'czenia/wy'#322#261'czenia'
-        Color = clBtnFace
-        ParentBiDiMode = False
-        ParentColor = False
-        TabOrder = 7
-        OnClick = EnableFastOnOffCheckBoxClick
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        TabOrder = 0
+        Transparent = True
+        OnChange = EnableFastOnOffCheckBoxChange
+        Checked = True
+        State = cbChecked
+      end
+      object EnablePluginOnStartCheckBox: TLMDCheckBox
+        Left = 6
+        Top = 30
+        Width = 188
+        Height = 18
+        Caption = 'W'#322#261'czaj wtyczk'#281' przy starcie AQQ'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        TabOrder = 1
+        Transparent = True
+      end
+      object SetOnlyInJabberCheckBox: TLMDCheckBox
+        Left = 6
+        Top = 6
+        Width = 227
+        Height = 18
+        Caption = 'Ustawiaj opis tylko na kontach sieci Jabber'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        TabOrder = 2
+        Transparent = True
       end
     end
+  end
+  object RunPluginCheckBox: TLMDCheckBox
+    Left = 12
+    Top = 276
+    Width = 94
+    Height = 18
+    Caption = 'W'#322#261'cz wtyczk'#281
+    Alignment.Alignment = agTopLeft
+    Alignment.Spacing = 4
+    AutoSize = True
+    TabOrder = 2
+    Transparent = True
+    OnChange = RunPluginCheckBoxChange
   end
   object ActionList: TActionList
     Left = 168
@@ -325,10 +376,6 @@ object MainForm: TMainForm
       Caption = 'aAutoDown'
       OnExecute = aAutoDownExecute
     end
-    object aPreSufFix: TAction
-      Caption = 'aPreSufFix'
-      OnExecute = aPreSufFixExecute
-    end
     object aCutSongNumber: TAction
       Caption = 'aCutSongNumber'
       OnExecute = aCutSongNumberExecute
@@ -340,6 +387,10 @@ object MainForm: TMainForm
     object aSaveSettings: TAction
       Caption = 'aSaveSettings'
       OnExecute = aSaveSettingsExecute
+    end
+    object aSetStatusLooks: TAction
+      Caption = 'aSetStatusLooks'
+      OnExecute = aSetStatusLooksExecute
     end
   end
   object Timer: TTimer
