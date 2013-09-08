@@ -1,3 +1,7 @@
+1.0.3.2
+-----
+* Poprawiono błąd z niepokazywaniem grafiki ikonki szybkie włączania/wyłączania wtyczki.
+
 1.0.3.0
 -----
 * Przebudowa wyglądu wtyczki.
