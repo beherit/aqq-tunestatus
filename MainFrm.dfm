@@ -1,10 +1,10 @@
 object MainForm: TMainForm
-  Left = 587
-  Top = 81
+  Left = 454
+  Top = 56
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus by Beherit'
-  ClientHeight = 317
+  ClientHeight = 368
   ClientWidth = 295
   Color = clBtnFace
   Font.Charset = EASTEUROPE_CHARSET
@@ -59,7 +59,7 @@ object MainForm: TMainForm
     Left = 6
     Top = 6
     Width = 283
-    Height = 180
+    Height = 230
     Caption = 'Obs'#322'uga'
     TabOrder = 0
     object Label1: TLabel
@@ -104,8 +104,8 @@ object MainForm: TMainForm
     end
     object MPCDownRadio: TRadioButton
       Left = 8
-      Top = 156
-      Width = 196
+      Top = 204
+      Width = 193
       Height = 17
       Caption = 'Pobieraj dane z Media Player Classic'
       TabOrder = 5
@@ -126,10 +126,26 @@ object MainForm: TMainForm
       Caption = 'Pobieraj dane z Windows Media Player 7-11'
       TabOrder = 3
     end
+    object VUPlayerDownRadio: TRadioButton
+      Left = 8
+      Top = 156
+      Width = 140
+      Height = 17
+      Caption = 'Pobieraj dane z VUPlayer'
+      TabOrder = 6
+    end
+    object XMPlayDownRadio: TRadioButton
+      Left = 8
+      Top = 180
+      Width = 129
+      Height = 17
+      Caption = 'Pobieraj dane z XMPlay'
+      TabOrder = 7
+    end
   end
   object SettingsGroupBox: TGroupBox
     Left = 6
-    Top = 190
+    Top = 238
     Width = 283
     Height = 94
     Caption = 'Opcje'
@@ -196,7 +212,7 @@ object MainForm: TMainForm
   end
   object OkButton: TButton
     Left = 208
-    Top = 288
+    Top = 336
     Width = 75
     Height = 25
     Caption = 'OK'
@@ -205,16 +221,16 @@ object MainForm: TMainForm
   end
   object RunPluginCheckBox: TCheckBox
     Left = 12
-    Top = 292
-    Width = 85
+    Top = 340
+    Width = 93
     Height = 17
-    Caption = 'W'#322#261'cz plugin'
+    Caption = 'W'#322#261'cz wtyczk'#281
     TabOrder = 3
     OnClick = RunPluginCheckBoxClick
   end
   object ActionList: TActionList
     Left = 168
-    Top = 288
+    Top = 336
     object aWinampDown: TAction
       Caption = 'aWinampDown'
       OnExecute = aWinampDownExecute
@@ -236,6 +252,14 @@ object MainForm: TMainForm
       Visible = False
       OnExecute = aWMP64DownExecute
     end
+    object aVUPlayerDown: TAction
+      Caption = 'aVUPlayerDown'
+      OnExecute = aVUPlayerDownExecute
+    end
+    object aXMPlayDown: TAction
+      Caption = 'aXMPlayDown'
+      OnExecute = aXMPlayDownExecute
+    end
     object aMPCDown: TAction
       Caption = 'aMPCDown'
       OnExecute = aMPCDownExecute
@@ -249,10 +273,10 @@ object MainForm: TMainForm
     Enabled = False
     OnTimer = TimerTimer
     Left = 104
-    Top = 288
+    Top = 336
   end
-  object XPMan1: TXPMan
+  object XPMan: TXPMan
     Left = 136
-    Top = 288
+    Top = 336
   end
 end

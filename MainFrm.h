@@ -42,7 +42,11 @@ __published:	// IDE-managed Components
         TAction *aWMP7_11Down;
         TRadioButton *WMP7_11DownRadio;
         TLabel *Label1;
-        TXPMan *XPMan1;
+        TXPMan *XPMan;
+        TAction *aVUPlayerDown;
+        TRadioButton *VUPlayerDownRadio;
+        TRadioButton *XMPlayDownRadio;
+        TAction *aXMPlayDown;
         void __fastcall aWinampDownExecute(TObject *Sender);
         void __fastcall aFoobarDownExecute(TObject *Sender);
         void __fastcall aWMP64DownExecute(TObject *Sender);
@@ -55,6 +59,8 @@ __published:	// IDE-managed Components
         void __fastcall OkButtonClick(TObject *Sender);
         void __fastcall FormShow(TObject *Sender);
         void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+        void __fastcall aVUPlayerDownExecute(TObject *Sender);
+        void __fastcall aXMPlayDownExecute(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TMainForm(TComponent* Owner);

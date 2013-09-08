@@ -11,10 +11,12 @@ TMainForm *MainForm;
 //---------------------------------------------------------------------------
 __declspec(dllimport)void UstawOpis(AnsiString opis);
 __declspec(dllimport)AnsiString GetPluginPath(AnsiString Dir);
+__declspec(dllimport)AnsiString PobierzOpis(AnsiString opis);
 //---------------------------------------------------------------------------
 AnsiString ePluginDirectory;
 AnsiString opis;
 AnsiString opisTMP;
+AnsiString opis_pocz;
 //---------------------------------------------------------------------------
 __fastcall TMainForm::TMainForm(TComponent* Owner)
         : TForm(Owner)
@@ -76,19 +78,22 @@ void __fastcall TMainForm::aWinampDownExecute(TObject *Sender)
   HWND hwndWinamp = FindWindow("Winamp v1.x",NULL);
   if(!hwndWinamp) hwndWinamp = FindWindow("Studio",NULL);
 
-  char this_title[2048],*p;
+  char this_title[2048];
   GetWindowText(hwndWinamp,this_title,sizeof(this_title));
-  p = this_title+strlen(this_title)-8;
-  while (p >= this_title)
-  {
-    if (!strnicmp(p,"- Winamp",8)) break;
-    p--;
-  }
-  if (p >= this_title) p--;
-  while (p >= this_title && *p == ' ') p--;
-  *++p=0;
 
   opis = this_title;
+
+  int x = AnsiPos("- Winamp", opis);
+  int y = opis.Length();
+  if (x>0)
+  {
+    opis.Delete(x, y + 1);
+    opis.TrimRight();
+  }
+
+  x = AnsiPos("*** ", opis);
+  if (x>0)
+   opis.Delete(1, x + 3);
 
   if(opis=="Winamp")
    opis = "";
@@ -105,19 +110,18 @@ void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
   if(!hwndFoobar) hwndFoobar = FindWindow("{97E27FAA-C0B3-4b8e-A693-ED7881E99FC1}",NULL);
   if(!hwndFoobar) hwndFoobar = FindWindow("{E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8}",NULL);
 
-  char this_title[2048],*p;
+  char this_title[2048];
   GetWindowText(hwndFoobar,this_title,sizeof(this_title));
-  p = this_title+strlen(this_title)-13;
-  while (p >= this_title)
-  {
-    if (!strnicmp(p,"  [foobar2000",13)) break;
-    p--;
-  }
-  if (p >= this_title) p--;
-  while (p >= this_title && *p == ' ') p--;
-  *++p=0;
 
   opis = this_title;
+
+  int x = AnsiPos("[foobar2000", opis);
+  int y = opis.Length();
+  if (x>0)
+  {
+    opis.Delete(x, y + 1);
+    opis.TrimRight();
+  }
 
   aPreSufFix->Execute();
 }
@@ -127,19 +131,18 @@ void __fastcall TMainForm::aWMP64DownExecute(TObject *Sender)
 {
   HWND hwndWMP64 = FindWindow("Media Player 2",NULL);
 
-  char this_title[2048],*p;
+  char this_title[2048];
   GetWindowText(hwndWMP64,this_title,sizeof(this_title));
-  p = this_title+strlen(this_title)-22;
-  while (p >= this_title)
-  {
-    if (!strnicmp(p,"- Windows Media Player",22)) break;
-    p--;
-  }
-  if (p >= this_title) p--;
-  while (p >= this_title && *p == ' ') p--;
-  *++p=0;
 
   opis = this_title;
+
+  int x = AnsiPos("- Windows Media Player", opis);
+  int y = opis.Length();
+  if (x>0)
+  {
+    opis.Delete(x, y + 1);
+    opis.TrimRight();
+  }
 
   if(opis=="Windows Media Player")
    opis = "";
@@ -152,19 +155,18 @@ void __fastcall TMainForm::aMPCDownExecute(TObject *Sender)
 {
   HWND hwndMPC = FindWindow("MediaPlayerClassicW",NULL);
 
-  char this_title[2048],*p;
+  char this_title[2048];
   GetWindowText(hwndMPC,this_title,sizeof(this_title));
-  p = this_title+strlen(this_title)-22;
-  while (p >= this_title)
-  {
-    if (!strnicmp(p,"- Media Player Classic",22)) break;
-    p--;
-  }
-  if (p >= this_title) p--;
-  while (p >= this_title && *p == ' ') p--;
-  *++p=0;
 
   opis = this_title;
+
+  int x = AnsiPos("- Media Player Classic", opis);
+  int y = opis.Length();
+  if (x>0)
+  {
+    opis.Delete(x, y + 1);
+    opis.TrimRight();
+  }
 
   aPreSufFix->Execute();
 }
@@ -202,24 +204,23 @@ void __fastcall TMainForm::aWMP7_11DownExecute(TObject *Sender)
 {
   HWND hwndMPC = FindWindow("WMPlayerApp",NULL);
 
-  char this_title[2048],*p;
+  char this_title[2048];
   GetWindowText(hwndMPC,this_title,sizeof(this_title));
-  p = this_title+strlen(this_title)-22;
-  while (p >= this_title)
-  {
-    if (!strnicmp(p,"- Windows Media Player",22)) break;
-    p--;
-  }
-  if (p >= this_title) p--;
-  while (p >= this_title && *p == ' ') p--;
-  *++p=0;
 
   opis = this_title;
+
+  int x = AnsiPos("- Windows Media Player", opis);
+  int y = opis.Length();
+  if (x>0)
+  {
+    opis.Delete(x, y + 1);
+    opis.TrimRight();
+  }
 
   if(opis=="Windows Media Player")
    opis = "";
 
-  aPreSufFix->Execute();        
+  aPreSufFix->Execute();
 }
 //---------------------------------------------------------------------------
 
@@ -235,6 +236,10 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
    aWMP7_11Down->Execute();
   else if(WMP64DownRadio->Checked==true)
    aWMP64Down->Execute();
+  else if(VUPlayerDownRadio->Checked==true)
+   aVUPlayerDown->Execute();
+  else if(XMPlayDownRadio->Checked==true)
+   aXMPlayDown->Execute();
   else if(MPCDownRadio->Checked==true)
    aMPCDown->Execute();
 
@@ -247,15 +252,31 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
       UstawOpis(opis);
     }
   }
+  else
+  {
+    if(opis_pocz!=opis)
+    {
+      opisTMP=opis_pocz;
+      UstawOpis(opis_pocz);
+      Preview->Text="";
+    }
+  }
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::RunPluginCheckBoxClick(TObject *Sender)
 {
   if(RunPluginCheckBox->Checked==true)
-   Timer->Enabled=true;
+  {
+    opis_pocz = PobierzOpis(opis_pocz);
+    Timer->Enabled=true;
+  }
   if(RunPluginCheckBox->Checked==false)
-   Timer->Enabled=false;        
+  {
+    Timer->Enabled=false;
+    UstawOpis(opis_pocz);
+    opisTMP="";
+  }
 }
 //---------------------------------------------------------------------------
 
@@ -350,6 +371,40 @@ void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
   Ini->WriteInteger("Settings", "SuffixOn", SuffixCheckBox->Checked); 
 
   delete Ini;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::aVUPlayerDownExecute(TObject *Sender)
+{
+  HWND hwndMPC = FindWindow("VUPlayerClass",NULL);
+
+  char this_title[2048];
+  GetWindowText(hwndMPC,this_title,sizeof(this_title));
+
+  opis = this_title;
+
+  int x = AnsiPos(" [", opis);
+  int y = opis.Length();
+  if (x>0)
+  {
+    opis.Delete(x, y + 1);
+    opis.TrimRight();
+  }
+
+  aPreSufFix->Execute();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::aXMPlayDownExecute(TObject *Sender)
+{
+  HWND hwndMPC = FindWindow("XMPLAY-MAIN",NULL);
+
+  char this_title[2048];
+  GetWindowText(hwndMPC,this_title,sizeof(this_title));
+
+  opis = this_title;
+
+  aPreSufFix->Execute();
 }
 //---------------------------------------------------------------------------
 
