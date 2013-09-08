@@ -82,6 +82,7 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
     handle = new TMainForm(Application);
     handle->aReadSettings->Execute();
     handle->opis_pocz = PobierzOpis(handle->opis_pocz);
+    handle->SongTimer->Interval=1000;
     handle->JustEnabled=1;
     handle->Timer->Enabled=true;
     handle->RunPluginCheckBox->Checked=true;
@@ -94,6 +95,7 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
     if(handle->Timer->Enabled==false)
     {
       handle->opis_pocz = PobierzOpis(handle->opis_pocz);
+      handle->SongTimer->Interval=1000;
       handle->JustEnabled=1;
       handle->Timer->Enabled=true;
       //Update buttonu
@@ -102,6 +104,7 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
     }
     else
     {
+      handle->SongTimer->Enabled=false;
       handle->Timer->Enabled=false;
       handle->opisTMP=PobierzOpis(handle->opisTMP);
       if(handle->opis_pocz!=handle->opisTMP)
@@ -188,7 +191,7 @@ extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
   }
   TPluginInfo.cbSize = sizeof(PluginInfo);
   TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,11);
+  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,4,12);
   TPluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";

@@ -575,7 +575,6 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
       opisTMP=opis_pocz;
       UstawOpis(opis_pocz,!SetOnlyInJabberCheck);
       //Symulacja pierwszego uruchomienia SongTimer
-      IntervalValue = SongTimer->Interval;
       SongTimer->Interval=1000;
       JustEnabled=1;
     }
@@ -589,10 +588,12 @@ void __fastcall TMainForm::SaveButtonClick(TObject *Sender)
   aSaveSettings->Execute();
   //Ustawianie Timer'a
   SongTimer->Interval=(1000*(SongTimerSpin->Value));
-  IntervalValue = (1000*(SongTimerSpin->Value));
+  IntervalValue=(1000*(SongTimerSpin->Value));
   //Wymuszenie natychmiastowego ustawienienia w opisie dokonanych zmian
-  SongTimer->Interval=1000;
+  SongTimer->Enabled=false;
   JustEnabled=1;
+  SongTimer->Interval=1000;
+  SongTimer->Enabled=true;
   //Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
   TagsBox->Items->Delete(9);
   //Ukrywanie formy
@@ -765,7 +766,7 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
   EnableFastOnOffCheck = Ini->ReadInteger("Settings", "EnableFastOnOff", 1);
 
   SongTimer->Interval = 1000*(Ini->ReadInteger("Settings", "SongTimerInterval", 5));
-  IntervalValue = SongTimer->Interval;
+  IntervalValue = 1000*(Ini->ReadInteger("Settings", "SongTimerInterval", 5));
   SongTimerSpin->Value = Ini->ReadInteger("Settings", "SongTimerInterval", 5);
 
   CutRadiostationNameCheckBox->Checked = Ini->ReadInteger("Settings", "CutRadiostationName", 1);
@@ -898,7 +899,6 @@ void __fastcall TMainForm::RunPluginCheckBoxChange(TObject *Sender)
   if(RunPluginCheckBox->Checked==true)
   {
     opis_pocz = PobierzOpis(opis_pocz);
-    IntervalValue = SongTimer->Interval;
     SongTimer->Interval=1000;
     JustEnabled=1;
     Timer->Enabled=true;
@@ -907,6 +907,7 @@ void __fastcall TMainForm::RunPluginCheckBoxChange(TObject *Sender)
   }
   else if(RunPluginCheckBox->Checked==false)
   {
+    SongTimer->Enabled=false;
     Timer->Enabled=false;
     if(EnableFastOnOffCheckBox->Checked==true)
      UpdateButton(false);
