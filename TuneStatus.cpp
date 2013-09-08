@@ -54,7 +54,7 @@ extern "C"  __declspec(dllexport) PluginInfo* __stdcall AQQPluginInfo(DWORD AQQV
 {
   TPluginInfo.cbSize = sizeof(PluginInfo);
   TPluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,0,0);
+  TPluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,1,0);
   TPluginInfo.Description = (wchar_t *)L"";
   TPluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   TPluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
@@ -130,11 +130,34 @@ extern "C" int __declspec(dllexport) __stdcall Unload()
   return 0;
 }
 
+extern "C" int __declspec(dllexport)__stdcall Settings()
+{
+  if (handle==NULL)
+  {
+  Application->Handle = MainForm;
+  handle = new TMainForm(Application);
+  handle->Show();
+  }
+  else
+    handle->Show();
+
+  return 0;
+}
+
 AnsiString GetPluginPath(AnsiString Dir)
 {
   Dir = (wchar_t*)(TPluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,(WPARAM)(hInstance),0));
   Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
   return Dir;
+}
+
+AnsiString PobierzOpis(AnsiString opis)
+{
+  TPluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&TPluginStateChange),0);
+
+  opis = TPluginStateChange.Status;
+
+  return opis;
 }
 
 void UstawOpis(AnsiString opis)
