@@ -1,10 +1,10 @@
 object MainForm: TMainForm
-  Left = 647
-  Top = 80
+  Left = 691
+  Top = 92
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus by Beherit'
-  ClientHeight = 360
+  ClientHeight = 335
   ClientWidth = 290
   Color = clBtnFace
   Font.Charset = EASTEUROPE_CHARSET
@@ -57,7 +57,7 @@ object MainForm: TMainForm
   TextHeight = 13
   object SaveButton: TButton
     Left = 206
-    Top = 330
+    Top = 306
     Width = 75
     Height = 25
     Caption = 'Zapisz'
@@ -69,7 +69,7 @@ object MainForm: TMainForm
     Left = 4
     Top = 4
     Width = 284
-    Height = 324
+    Height = 301
     TabOrder = 1
     Options = [toNoTabIfEmpty, toShowBorder, toShowFocusRect, toShowAccelChar]
     RaggedRight = False
@@ -80,7 +80,7 @@ object MainForm: TMainForm
       Left = 4
       Top = 27
       Width = 276
-      Height = 293
+      Height = 270
       Bevel.Mode = bmCustom
       Caption = 'Obs'#322'uga'
       object WinampDownRadio: TLMDRadioButton
@@ -122,14 +122,14 @@ object MainForm: TMainForm
         TabOrder = 2
         Transparent = True
       end
-      object WMP7_11DownRadio: TLMDRadioButton
+      object WMPDownRadio: TLMDRadioButton
         Left = 6
         Top = 78
-        Width = 232
+        Width = 207
         Height = 18
         Cursor = crHelp
-        Hint = 'Do obs'#322'ugi potrzebny jest plugin w WMP!'
-        Caption = 'Pobieraj dane z Windows Media Player 7-11'
+        Hint = 'Dla wersji WMP powy'#380'ej 7 do ob'#322'sugi potrzebny jest plugin w WMP!'
+        Caption = 'Pobieraj dane z Windows Media Player'
         Alignment.Alignment = agTopLeft
         Alignment.Spacing = 4
         AutoSize = True
@@ -139,22 +139,9 @@ object MainForm: TMainForm
         TabOrder = 3
         Transparent = True
       end
-      object WMP64DownRadio: TLMDRadioButton
-        Left = 6
-        Top = 102
-        Width = 226
-        Height = 18
-        Caption = 'Pobieraj dane z Windows Media Player 6.4'
-        Alignment.Alignment = agTopLeft
-        Alignment.Spacing = 4
-        AutoSize = True
-        Checked = False
-        TabOrder = 4
-        Transparent = True
-      end
       object VUPlayerDownRadio: TLMDRadioButton
         Left = 6
-        Top = 126
+        Top = 102
         Width = 143
         Height = 18
         Caption = 'Pobieraj dane z VUPlayer'
@@ -162,12 +149,12 @@ object MainForm: TMainForm
         Alignment.Spacing = 4
         AutoSize = True
         Checked = False
-        TabOrder = 5
+        TabOrder = 4
         Transparent = True
       end
       object XMPlayDownRadio: TLMDRadioButton
         Left = 6
-        Top = 150
+        Top = 126
         Width = 134
         Height = 18
         Caption = 'Pobieraj dane z XMPlay'
@@ -175,12 +162,12 @@ object MainForm: TMainForm
         Alignment.Spacing = 4
         AutoSize = True
         Checked = False
-        TabOrder = 6
+        TabOrder = 5
         Transparent = True
       end
       object MPCDownRadio: TLMDRadioButton
         Left = 6
-        Top = 174
+        Top = 150
         Width = 196
         Height = 18
         Caption = 'Pobieraj dane z Media Player Classic'
@@ -188,12 +175,12 @@ object MainForm: TMainForm
         Alignment.Spacing = 4
         AutoSize = True
         Checked = False
-        TabOrder = 7
+        TabOrder = 6
         Transparent = True
       end
       object AutoDownRadio: TLMDRadioButton
         Left = 6
-        Top = 270
+        Top = 246
         Width = 126
         Height = 18
         Caption = 'Okre'#347'l automatycznie'
@@ -201,12 +188,12 @@ object MainForm: TMainForm
         Alignment.Spacing = 4
         AutoSize = True
         Checked = True
-        TabOrder = 8
+        TabOrder = 7
         Transparent = True
       end
       object iTunesDownRadio: TLMDRadioButton
         Left = 6
-        Top = 198
+        Top = 174
         Width = 131
         Height = 18
         Cursor = crHelp
@@ -218,12 +205,12 @@ object MainForm: TMainForm
         Checked = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 9
+        TabOrder = 8
         Transparent = True
       end
       object ALSongDownRadio: TLMDRadioButton
         Left = 6
-        Top = 222
+        Top = 198
         Width = 136
         Height = 18
         Caption = 'Pobieraj dane z ALSong'
@@ -231,12 +218,12 @@ object MainForm: TMainForm
         Alignment.Spacing = 4
         AutoSize = True
         Checked = False
-        TabOrder = 10
+        TabOrder = 9
         Transparent = True
       end
       object PluginAQQRadioDownRadio: TLMDRadioButton
         Left = 6
-        Top = 246
+        Top = 222
         Width = 191
         Height = 18
         Caption = 'Pobieraj dane z wtyczki AQQ Radio'
@@ -244,7 +231,7 @@ object MainForm: TMainForm
         Alignment.Spacing = 4
         AutoSize = True
         Checked = False
-        TabOrder = 11
+        TabOrder = 10
         Transparent = True
       end
     end
@@ -252,12 +239,12 @@ object MainForm: TMainForm
       Left = 4
       Top = 27
       Width = 276
-      Height = 293
+      Height = 270
       Bevel.Mode = bmCustom
       Caption = 'Wygl'#261'd opisu'
       object TagRequestLabel: TLabel
         Left = 11
-        Top = 234
+        Top = 216
         Width = 251
         Height = 13
         Caption = 'W opisie musi wyst'#261'pi'#263' tag CC_TUNESTATUS!'
@@ -272,7 +259,7 @@ object MainForm: TMainForm
       end
       object TagInfoLabel1: TLabel
         Left = 67
-        Top = 257
+        Top = 236
         Width = 130
         Height = 13
         Caption = 'Przyk'#322'adowy wygl'#261'd opisu:'
@@ -287,7 +274,7 @@ object MainForm: TMainForm
       end
       object TagInfoLabel2: TLabel
         Left = 47
-        Top = 271
+        Top = 250
         Width = 172
         Height = 13
         Caption = 'Obecnie s'#322'ucham: CC_TUNESTATUS'
@@ -351,7 +338,7 @@ object MainForm: TMainForm
         Left = 8
         Top = 32
         Width = 258
-        Height = 193
+        Height = 177
         MaxLength = 512
         ScrollBars = ssVertical
         TabOrder = 2
@@ -362,31 +349,39 @@ object MainForm: TMainForm
       Left = 4
       Top = 27
       Width = 276
-      Height = 293
+      Height = 270
       Bevel.Mode = bmCustom
       Caption = 'Inne opcje'
       DesignSize = (
         276
-        293)
+        270)
       object SongTimerIntervalLabel1: TLabel
-        Left = 10
-        Top = 80
+        Left = 16
+        Top = 93
         Width = 78
         Height = 13
         Caption = 'Ustawiaj opis po'
         Transparent = True
       end
       object SongTimerIntervalLabel2: TLabel
-        Left = 144
-        Top = 80
+        Left = 150
+        Top = 93
         Width = 108
         Height = 13
         Caption = 'od rozpocz'#281'cia utworu'
         Transparent = True
       end
-      object Bevel: TBevel
+      object Bevel2: TBevel
         Left = 8
-        Top = 108
+        Top = 154
+        Width = 258
+        Height = 4
+        Anchors = [akLeft, akTop, akRight]
+        Shape = bsTopLine
+      end
+      object Bevel1: TBevel
+        Left = 8
+        Top = 82
         Width = 258
         Height = 4
         Anchors = [akLeft, akTop, akRight]
@@ -431,8 +426,8 @@ object MainForm: TMainForm
         Transparent = True
       end
       object SongTimerSpin: TLMDSpinEdit
-        Left = 92
-        Top = 77
+        Left = 98
+        Top = 90
         Width = 45
         Height = 21
         Bevel.Mode = bmWindows
@@ -450,7 +445,7 @@ object MainForm: TMainForm
       end
       object CutRadiostationNameCheckBox: TLMDCheckBox
         Left = 6
-        Top = 118
+        Top = 162
         Width = 263
         Height = 31
         Caption = 
@@ -464,11 +459,25 @@ object MainForm: TMainForm
         Checked = True
         State = cbChecked
       end
+      object DisableSongTimerCheckBox: TLMDCheckBox
+        Left = 34
+        Top = 116
+        Width = 198
+        Height = 31
+        Caption = 'Funkcja nieaktywna przy pobieraniu danych z wtyczki AQQ Radio'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        TabOrder = 5
+        Transparent = True
+        Checked = True
+        State = cbChecked
+      end
     end
   end
   object RunPluginCheckBox: TLMDCheckBox
     Left = 12
-    Top = 335
+    Top = 311
     Width = 94
     Height = 18
     Caption = 'W'#322#261'cz wtyczk'#281
@@ -481,7 +490,7 @@ object MainForm: TMainForm
   end
   object ActionList: TActionList
     Left = 176
-    Top = 328
+    Top = 304
     object aWinampDown: TAction
       Category = 'Players'
       Caption = 'aWinampDown'
@@ -497,16 +506,10 @@ object MainForm: TMainForm
       Caption = 'aLastFMDown'
       OnExecute = aLastFMDownExecute
     end
-    object aWMP7_11Down: TAction
+    object aWMPDown: TAction
       Category = 'Players'
-      Caption = 'aWMP7_11Down'
-      OnExecute = aWMP7_11DownExecute
-    end
-    object aWMP64Down: TAction
-      Category = 'Players'
-      Caption = 'aWMP64Down'
-      Visible = False
-      OnExecute = aWMP64DownExecute
+      Caption = 'aWMPDown'
+      OnExecute = aWMPDownExecute
     end
     object aVUPlayerDown: TAction
       Category = 'Players'
@@ -568,17 +571,17 @@ object MainForm: TMainForm
     Enabled = False
     OnTimer = TimerTimer
     Left = 112
-    Top = 328
+    Top = 304
   end
   object XPMan: TXPMan
     Left = 144
-    Top = 328
+    Top = 304
   end
   object SongTimer: TTimer
     Enabled = False
     Interval = 5000
     OnTimer = SongTimerTimer
     Left = 80
-    Top = 328
+    Top = 304
   end
 end

@@ -55,6 +55,7 @@ bool JustEnabled=0; //Do pierwszego uruchomienia SongTimer
 AnsiString iTunesStatusPath; //Do sciezki iTunes (TuneStatus.txt)
 AnsiString iTunesPlayerPath; //Do sciezka iTunes
 bool EnableFastOnOffCheck; //Do pokazywania/ukrywania szybkiego przycisku
+bool DisableSongTimerCheck; //Do wy³¹czania SongTimer'a dla AQQ Radio
 bool CutRadiostationNameCheck; //Do ucinania nazwy radiostacji z AQQ Radio
 //---------------------------------------------------------------------------
 
@@ -385,48 +386,6 @@ void __fastcall TMainForm::aFoobarDownExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::aWMP64DownExecute(TObject *Sender)
-{
-  HWND hwndWMP64 = FindWindow("Media Player 2",NULL);
-
-  if(hwndWMP64!=NULL)
-  {
-    //Informacje o Playerze
-    if(IsPlayerName==1)
-    {
-      DWORD procesID;
-      GetWindowThreadProcessId(hwndWMP64, &procesID);
-      AnsiString PlayerPath = GetPathOfProces(procesID);
-      PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-      PlayerName = GetFileVersionInfo(PlayerPath.c_str(),"ProductName");
-      if(PlayerName=="") PlayerName = PlayerName_TMP;
-      else PlayerName_TMP = PlayerName;
-    }
-
-    char this_title[2048];
-    GetWindowText(hwndWMP64,this_title,sizeof(this_title));
-
-    opis = this_title;
-
-    //Usuwanie "- Windows Media Player"
-    int x = AnsiPos("- Windows Media Player", opis);
-    int y = opis.Length();
-    if(x>0)
-    {
-      opis.Delete(x, y + 1);
-      opis=opis.Trim();
-    }
-
-    //Usuwanie "Windows Media Player"
-    if(opis=="Windows Media Player")
-     opis = "";
-  }
-  else
-   opis = "";
-}
-//---------------------------------------------------------------------------
-
 void __fastcall TMainForm::aMPCDownExecute(TObject *Sender)
 {
   HWND hwndMPC = FindWindow("MediaPlayerClassicW",NULL);
@@ -472,17 +431,18 @@ void __fastcall TMainForm::aLastFMDownExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::aWMP7_11DownExecute(TObject *Sender)
+void __fastcall TMainForm::aWMPDownExecute(TObject *Sender)
 {
-  HWND hwndWMP7_11 = FindWindow("WMPlayerApp",NULL);
+  HWND hwndWMP = FindWindow("WMPlayerApp",NULL);
+  if(!hwndWMP) hwndWMP = FindWindow("Media Player 2",NULL);
 
-  if(hwndWMP7_11!=NULL)
+  if(hwndWMP!=NULL)
   {
     //Informacje o Playerze
     if(IsPlayerName==1)
     {
       DWORD procesID;
-      GetWindowThreadProcessId(hwndWMP7_11, &procesID);
+      GetWindowThreadProcessId(hwndWMP, &procesID);
       AnsiString PlayerPath = GetPathOfProces(procesID);
       PlayerPath = StringReplace(PlayerPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
 
@@ -492,7 +452,7 @@ void __fastcall TMainForm::aWMP7_11DownExecute(TObject *Sender)
     }
 
     char this_title[2048];
-    GetWindowText(hwndWMP7_11,this_title,sizeof(this_title));
+    GetWindowText(hwndWMP,this_title,sizeof(this_title));
 
     opis = this_title;
 
@@ -530,10 +490,8 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
    aFoobarDown->Execute();
   else if(LastFMDownRadio->Checked==true)
    aLastFMDown->Execute();
-  else if(WMP7_11DownRadio->Checked==true)
-   aWMP7_11Down->Execute();
-  else if(WMP64DownRadio->Checked==true)
-   aWMP64Down->Execute();
+  else if(WMPDownRadio->Checked==true)
+   aWMPDown->Execute();
   else if(VUPlayerDownRadio->Checked==true)
    aVUPlayerDown->Execute();
   else if(XMPlayDownRadio->Checked==true)
@@ -575,8 +533,10 @@ void __fastcall TMainForm::TimerTimer(TObject *Sender)
       opisTMP=opis_pocz;
       UstawOpis(opis_pocz,!SetOnlyInJabberCheck);
       //Symulacja pierwszego uruchomienia SongTimer
+      SongTimer->Enabled=false;
       SongTimer->Interval=1000;
       JustEnabled=1;
+      SongTimer->Enabled=true;
     }
   }
 }
@@ -590,10 +550,13 @@ void __fastcall TMainForm::SaveButtonClick(TObject *Sender)
   SongTimer->Interval=(1000*(SongTimerSpin->Value));
   IntervalValue=(1000*(SongTimerSpin->Value));
   //Wymuszenie natychmiastowego ustawienienia w opisie dokonanych zmian
-  SongTimer->Enabled=false;
-  JustEnabled=1;
-  SongTimer->Interval=1000;
-  SongTimer->Enabled=true;
+  if(Timer->Enabled==true)
+  {
+    SongTimer->Enabled=false;
+    JustEnabled=1;
+    SongTimer->Interval=1000;
+    SongTimer->Enabled=true;
+  }
   //Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
   TagsBox->Items->Delete(9);
   //Ukrywanie formy
@@ -734,10 +697,8 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
    FoobarDownRadio->Checked=true;
   else if(Boxy=="Lastfm")
    LastFMDownRadio->Checked=true;
-  else if(Boxy=="WMP7-11")
-   WMP7_11DownRadio->Checked=true;
-  else if(Boxy=="WMP6")
-   WMP64DownRadio->Checked=true;
+  else if(Boxy=="WMP")
+   WMPDownRadio->Checked=true;
   else if(Boxy=="VUPlayer")
    VUPlayerDownRadio->Checked=true;
   else if(Boxy=="XMPlay")
@@ -757,20 +718,23 @@ void __fastcall TMainForm::aReadSettingsExecute(TObject *Sender)
   if(Status!="")
    StatusMemo->Text = Status;
 
-  SetOnlyInJabberCheckBox->Checked = Ini->ReadInteger("Settings", "SetOnlyInJabber", 0);
-  SetOnlyInJabberCheck = Ini->ReadInteger("Settings", "SetOnlyInJabber", 0);
+  SetOnlyInJabberCheckBox->Checked = Ini->ReadBool("Settings", "SetOnlyInJabber", 0);
+  SetOnlyInJabberCheck = Ini->ReadBool("Settings", "SetOnlyInJabber", 0);
 
-  EnablePluginOnStartCheckBox->Checked = Ini->ReadInteger("Settings", "EnablePluginOnStart", 0);
+  EnablePluginOnStartCheckBox->Checked = Ini->ReadBool("Settings", "EnablePluginOnStart", 0);
   
-  EnableFastOnOffCheckBox->Checked = Ini->ReadInteger("Settings", "EnableFastOnOff", 1);
-  EnableFastOnOffCheck = Ini->ReadInteger("Settings", "EnableFastOnOff", 1);
+  EnableFastOnOffCheckBox->Checked = Ini->ReadBool("Settings", "EnableFastOnOff", 1);
+  EnableFastOnOffCheck = Ini->ReadBool("Settings", "EnableFastOnOff", 1);
 
   SongTimer->Interval = 1000*(Ini->ReadInteger("Settings", "SongTimerInterval", 5));
   IntervalValue = 1000*(Ini->ReadInteger("Settings", "SongTimerInterval", 5));
   SongTimerSpin->Value = Ini->ReadInteger("Settings", "SongTimerInterval", 5);
 
-  CutRadiostationNameCheckBox->Checked = Ini->ReadInteger("Settings", "CutRadiostationName", 1);
-  CutRadiostationNameCheck = Ini->ReadInteger("Settings", "CutRadiostationName", 1);
+  DisableSongTimerCheckBox->Checked = Ini->ReadBool("Settings", "DisableSongTimer", 1);
+  DisableSongTimerCheck = Ini->ReadBool("Settings", "DisableSongTimer", 1);
+
+  CutRadiostationNameCheckBox->Checked = Ini->ReadBool("Settings", "CutRadiostationName", 1);
+  CutRadiostationNameCheck = Ini->ReadBool("Settings", "CutRadiostationName", 1);
 
   delete Ini;
 
@@ -792,10 +756,8 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
    Ini->WriteString("Settings", "Box", "Foobar");
   if(LastFMDownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "Lastfm");
-  if(WMP7_11DownRadio->Checked==true)
-   Ini->WriteString("Settings", "Box", "WMP7-11");
-  if(WMP64DownRadio->Checked==true)
-   Ini->WriteString("Settings", "Box", "WMP6");
+  if(WMPDownRadio->Checked==true)
+   Ini->WriteString("Settings", "Box", "WMP");
   if(VUPlayerDownRadio->Checked==true)
    Ini->WriteString("Settings", "Box", "VUPlayer");
   if(XMPlayDownRadio->Checked==true)
@@ -813,7 +775,7 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 
   Ini->WriteString("Settings", "Status", StrToIniStr(StatusMemo->Text.SubString(0, 2047)).TrimRight());
 
-  Ini->WriteInteger("Settings", "SetOnlyInJabber", SetOnlyInJabberCheckBox->Checked);
+  Ini->WriteBool("Settings", "SetOnlyInJabber", SetOnlyInJabberCheckBox->Checked);
   if(SetOnlyInJabberCheck!=SetOnlyInJabberCheckBox->Checked)
   {
     SetOnlyInJabberCheck = SetOnlyInJabberCheckBox->Checked;
@@ -843,9 +805,9 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
     }
   }
 
-  Ini->WriteInteger("Settings", "EnablePluginOnStart", EnablePluginOnStartCheckBox->Checked);
+  Ini->WriteBool("Settings", "EnablePluginOnStart", EnablePluginOnStartCheckBox->Checked);
 
-  Ini->WriteInteger("Settings", "EnableFastOnOff", EnableFastOnOffCheckBox->Checked);
+  Ini->WriteBool("Settings", "EnableFastOnOff", EnableFastOnOffCheckBox->Checked);
   if(EnableFastOnOffCheck!=EnableFastOnOffCheckBox->Checked)
   {
     if(EnableFastOnOffCheckBox->Checked==true)
@@ -861,7 +823,10 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 
   Ini->WriteInteger("Settings", "SongTimerInterval", SongTimerSpin->Value);
 
-  Ini->WriteInteger("Settings", "CutRadiostationName", CutRadiostationNameCheckBox->Checked);
+  Ini->WriteBool("Settings", "DisableSongTimer", DisableSongTimerCheckBox->Checked);
+  DisableSongTimerCheck = DisableSongTimerCheckBox->Checked;
+
+  Ini->WriteBool("Settings", "CutRadiostationName", CutRadiostationNameCheckBox->Checked);
   CutRadiostationNameCheck = CutRadiostationNameCheckBox->Checked;
 
   delete Ini;
@@ -874,9 +839,7 @@ void __fastcall TMainForm::aAutoDownExecute(TObject *Sender)
   if(opis=="")
    aFoobarDown->Execute();
   if(opis=="")
-   aWMP7_11Down->Execute();
-  if(opis=="")
-   aWMP64Down->Execute();
+   aWMPDown->Execute();
   if(opis=="")
    aVUPlayerDown->Execute();
   if(opis=="")
@@ -1139,13 +1102,24 @@ void __fastcall TMainForm::aPluginAQQRadioDownExecute(TObject *Sender)
   int x = AnsiPos("Wtyczka AQQ Radio:", opis);
   if (x>0)
   {
+    x = AnsiPos(":", opis);
+
+    //Symulacja pierwszego uruchomienia SongTimer
+    if(DisableSongTimerCheck==true)
+    {
+      SongTimer->Enabled=false;
+      SongTimer->Interval=1000;
+      JustEnabled=1;
+      SongTimer->Enabled=true;
+    }
+
     PlayerName = "Wtyczka AQQ Radio";
-    opis.Delete(1, 18);
+    opis.Delete(1, x);
     opis=opis.Trim();
     if(CutRadiostationNameCheck==1)
     {
-      x = AnsiPos(" - ", opis);
-      opis.Delete(1, x+1);
+      x = AnsiPos("- ", opis);
+      opis.Delete(1, x);
       opis=opis.Trim();
     }
   }
@@ -1153,4 +1127,6 @@ void __fastcall TMainForm::aPluginAQQRadioDownExecute(TObject *Sender)
    opis = "";
 }
 //---------------------------------------------------------------------------
+
+
 

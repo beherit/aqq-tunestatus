@@ -1,3 +1,12 @@
+1.0.4.14
+-----
+* Poprawka przy pobieraniu danych z wtyczki AQQ Radio i funkcji ucinania nazwy radiostacji.
+* Dodano opcję wyłączającą funkcję ustawiania opisu po danym czasie od rozpoczęcia utworu dla pobierania danych z wtyczki AQQ Radio.
+* Poprawiono błąd z ustawianiem pustego opisu po zapisaniu ustawień gdy wtyczka nie była włączona.
+* Poprawka w pobieraniu opisu początkowego gdy w między czasie zmienimy go sami.
+* Scalenie obsługi WMP 6 i 7-11.
+* Poprawiono drobny wyciek pamięci.
+
 1.0.4.12
 -----
 * Poprawienie działania funkcji po jakim czasie od rozpoczęcia utworu ma zmieniać się opis.
