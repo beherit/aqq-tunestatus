@@ -44,7 +44,6 @@ __published:	// IDE-managed Components
 		TLabel *AutoDownInfoLabel;
 		TButton *ResetButton;
 		TAction *aaTunesDown;
-		TLabel *AutoDownInfoLabel2;
 		TAction *aCutWWW;
 		TAction *aScreamerRadioDown;
 		TTimer *TurnOffTimer;
@@ -73,7 +72,7 @@ __published:	// IDE-managed Components
 		TPageControl *PageControl;
 		TTabSheet *HandlingTabSheet;
 		TTabSheet *StatusTabSheet;
-		TTabSheet *SettingsTabSheet;
+	TTabSheet *OtherTabSheet;
 		TTabSheet *UserTuneTabSheet;
 		TCheckListBox *AutoDownCheckListBox;
 		TCheckListBox *AutoDownCheckListBoxPreview;
@@ -102,6 +101,8 @@ __published:	// IDE-managed Components
 		TCheckBox *MovieExceptionCheckBox;
 	TTimer *StateChangeTimer;
 	TAction *aSelectAll;
+	TButton *OKButton;
+	TAction *aAllowApply;
 		void __fastcall aWinampDownExecute(TObject *Sender);
 		void __fastcall aFoobarDownExecute(TObject *Sender);
 		void __fastcall aMPCDownExecute(TObject *Sender);
@@ -121,7 +122,6 @@ __published:	// IDE-managed Components
 		void __fastcall TagsBoxCloseUp(TObject *Sender);
 		void __fastcall TagsBoxDropDown(TObject *Sender);
 		void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
-		void __fastcall PreviewStatusMemoChange(TObject *Sender);
 		void __fastcall SongTimerTimer(TObject *Sender);
 		void __fastcall aiTunesDownExecute(TObject *Sender);
 		void __fastcall aALSongDownExecute(TObject *Sender);
@@ -132,7 +132,6 @@ __published:	// IDE-managed Components
 		void __fastcall iTunesDownloadClick(TObject *Sender);
 		void __fastcall FoobarDownloadClick(TObject *Sender);
 		void __fastcall aaTunesDownExecute(TObject *Sender);
-		void __fastcall AutoDownCheckListBoxPreviewClick(TObject *Sender);
 		void __fastcall AutoDownCheckListBoxPreviewDragDrop(TObject *Sender, TObject *Source, int X, int Y);
 		void __fastcall AutoDownCheckListBoxPreviewDragOver(TObject *Sender, TObject *Source, int X, int Y, TDragState State, bool &Accept);
 		void __fastcall aCutWWWExecute(TObject *Sender);
@@ -154,6 +153,10 @@ __published:	// IDE-managed Components
 		void __fastcall aAutoDownUserTuneExecute(TObject *Sender);
 	void __fastcall StateChangeTimerTimer(TObject *Sender);
 	void __fastcall aSelectAllExecute(TObject *Sender);
+	void __fastcall OKButtonClick(TObject *Sender);
+	void __fastcall aAllowApplyExecute(TObject *Sender);
+	void __fastcall AutoDownCheckListBoxPreviewClick(TObject *Sender);
+	void __fastcall AutoDownCheckListBoxPreviewClickCheck(TObject *Sender);
 
 private:	// User declarations
 public:		// User declarations

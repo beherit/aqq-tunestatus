@@ -1,3 +1,11 @@
+2.1.0.0
+-----
+* Rozszerzenie obsługi XEP-0118 o długość słuchanego utworu (działa tylko z WMP oraz Winamp/AIMP).
+* Poprawiono obsługę Screamer Radio w Windows 7.
+* Zmiana adresów URL do wymaganych dodatków dla odtwarzaczy WMP, Foobar2000 oraz iTunes.
+* Poprawki wizualne formy ustawień.
+* Drobne poprawki w kodzie.
+
 2.0.2.0
 -----
 * Zabezpieczenie przed bugiem AQQ nr. 2941.

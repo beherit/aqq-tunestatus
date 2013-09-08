@@ -4,7 +4,6 @@
 #pragma hdrstop
 #pragma argsused
 #include <inifiles.hpp>
-#include <memory>
 #include "Aqq.h"
 #include "MainFrm.h"
 //---------------------------------------------------------------------------
@@ -16,31 +15,24 @@ int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved
 //---------------------------------------------------------------------------
 
 //utworzenie obiektow do struktur
-TPluginAction PluginAction;
-TPluginAction PluginActionButton;
+TPluginAction PopPluginsAccess;
+TPluginAction FastEnableAccess;
 TPluginStateChange PluginStateChange;
 TPluginShowInfo PluginShowInfo;
 TPluginContactSimpleInfo PluginContactSimpleInfo;
 TPluginLink PluginLink;
 TPluginInfo PluginInfo;
-TSaveSetup SaveSetup;
 
 //Do przywracania opisu po przejsciu na niewidoczny
 PPluginStateChange StateChange;
-int NewState;
 
 //Uchwytu do formy ustawien
 TMainForm *hMainForm;
 
 //Indeksy ikon
-int plugin_icon_idx;
-int plugin_icon_idx_off;
-int plugin_icon_idx_on;
-
-//Button szybkiego dostepu
-bool EnableFastOnOff;
-//Wlaczanie dzialania wtyczki na starcie
-bool EnablePluginOnStart;
+int POPPLUGINSACCESS;
+int FASTENABLE_ON;
+int FASTENABLE_OFF;
 
 //Do AQQ Radio
 UnicodeString AQQRadioSong;
@@ -57,19 +49,11 @@ UnicodeString UserTuneSongTMP;
 UnicodeString UserTuneIconPath;
 bool AllowUserTuneN=false; //Zezwalanie na notyfikacje
 int UserTuneTimeOut; //Czas wyswietlania chmurki
-bool UserTuneEnableN; //Czy wyswietlac notyfikacje
+bool UserTuneNotif; //Czy wyswietlac notyfikacje
 //Do wyjatkow z notyfikacji UserTune
 UnicodeString ExceptionJID[50];
 int ExceptionCount;
 bool AllowException;
-//Do wysylania informacji User Tune
-UnicodeString TuneXML;
-int TuneCount;
-int TuneAccount;
-UnicodeString TuneAccountName;
-
-//Do blokowania zmiany opisu gdy wtyczka jest aktywna
-UnicodeString nowy_opis;
 
 //Pobieranie aktualnego opisu
 UnicodeString GetStatus()
@@ -150,8 +134,8 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
 	hMainForm->JustEnabled=1;
 	hMainForm->Timer->Enabled=true;
 	//Update buttonu
-	PluginActionButton.IconIndex = plugin_icon_idx_on;
-	PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&PluginActionButton));
+	FastEnableAccess.IconIndex = FASTENABLE_ON;
+	PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&FastEnableAccess));
   }
   else
   {
@@ -165,8 +149,8 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
 	  hMainForm->OpisTMP="";
 	}
 	//Update buttonu
-	PluginActionButton.IconIndex = plugin_icon_idx_off;
-	PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&PluginActionButton));
+	FastEnableAccess.IconIndex = FASTENABLE_OFF;
+	PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&FastEnableAccess));
   }
   hMainForm->RunPluginCheckBox->Checked=!hMainForm->RunPluginCheckBox->Checked;
 
@@ -174,7 +158,7 @@ int __stdcall TuneStatus_FastOnOff (WPARAM, LPARAM)
 }
 //---------------------------------------------------------------------------
 
-//Serwis otwarcia formy
+//Serwis otwarcia formy ustawien
 int __stdcall TuneStatusService (WPARAM, LPARAM)
 {
   if(hMainForm==NULL)
@@ -182,7 +166,6 @@ int __stdcall TuneStatusService (WPARAM, LPARAM)
 	Application->Handle = (HWND)MainForm;
 	hMainForm = new TMainForm(Application);
   }
-
   hMainForm->Show();
 
   return 0;
@@ -194,7 +177,7 @@ int __stdcall OnCurrentSong (WPARAM wParam, LPARAM lParam)
 {
   Song = (PPluginSong)lParam;
   AQQRadioSong = (wchar_t*)(Song->Title);
-  if(AQQRadioSong.Length()!=0)
+  if(AQQRadioSong.IsEmpty())
     return 0;
   else
     return 1;
@@ -202,7 +185,7 @@ int __stdcall OnCurrentSong (WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 
 //Sprawdzanie czy w danym tekscie s¹ tylko liczby
-BOOL TestDigit(AnsiString Text)
+bool TestDigit(UnicodeString Text)
 {
   int digit[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -229,7 +212,7 @@ UnicodeString ReciveAccountName(int UserIdx)
 //Notyfikacja otrzymywanych pakietow XML
 int __stdcall OnXMLDebug (WPARAM wParam, LPARAM lParam)
 {
-  if((AllowUserTuneN==true)&&(UserTuneEnableN==true))
+  if((AllowUserTuneN)&&(UserTuneNotif))
   {
 	//UserTuneSong = (wchar_t*)(wParam);
 
@@ -238,9 +221,9 @@ int __stdcall OnXMLDebug (WPARAM wParam, LPARAM lParam)
 	XML = (wchar_t*)XMLChunk->XML;
 
 	if(
-	(AnsiPos("<tune xmlns='http://jabber.org/protocol/tune'>", XML)>0)&&
-	(AnsiPos("type='error'", XML)==0)&&
-	(AnsiPos("<title>", XML)>0)
+	(XML.Pos("<tune xmlns='http://jabber.org/protocol/tune'>")>0)&&
+	(XML.Pos("type='error'")==0)&&
+	(XML.Pos("<title>")>0)
 	)
 	{
 	  XMLFrom = (wchar_t*)XMLChunk->From;
@@ -263,17 +246,17 @@ int __stdcall OnXMLDebug (WPARAM wParam, LPARAM lParam)
 		if(AllowException==true)
 		{
 		  //Artysta i tytul osobno
-		  if(AnsiPos("<artist>", XML)>0)
+		  if(XML.Pos("<artist>")>0)
 		  {
 			UserTuneSongTMP=XML;
-			UserTuneSongTMP.Delete(1,AnsiPos("<artist>", UserTuneSongTMP)+7);
-			UserTuneSongTMP.Delete(AnsiPos("</artist>", UserTuneSongTMP), UserTuneSongTMP.Length());
+			UserTuneSongTMP.Delete(1,UserTuneSongTMP.Pos("<artist>")+7);
+			UserTuneSongTMP.Delete(UserTuneSongTMP.Pos("</artist>"), UserTuneSongTMP.Length());
 			UserTuneSongTMP=UserTuneSongTMP.Trim();
 			UserTuneSong = UserTuneSongTMP;
 
 			UserTuneSongTMP=XML;
-			UserTuneSongTMP.Delete(1,AnsiPos("<title>", UserTuneSongTMP)+6);
-			UserTuneSongTMP.Delete(AnsiPos("</title>", UserTuneSongTMP), UserTuneSongTMP.Length());
+			UserTuneSongTMP.Delete(1,UserTuneSongTMP.Pos("<title>")+6);
+			UserTuneSongTMP.Delete(UserTuneSongTMP.Pos("</title>"), UserTuneSongTMP.Length());
 			UserTuneSongTMP=UserTuneSongTMP.Trim();
 			UserTuneSong = UserTuneSong + " - " + UserTuneSongTMP;
 		  }
@@ -281,8 +264,8 @@ int __stdcall OnXMLDebug (WPARAM wParam, LPARAM lParam)
 		  else
 		  {
 			UserTuneSong=XML;
-			UserTuneSong.Delete(1,AnsiPos("<title>", UserTuneSong)+6);
-			UserTuneSong.Delete(AnsiPos("</title>", UserTuneSong), UserTuneSong.Length());
+			UserTuneSong.Delete(1,UserTuneSong.Pos("<title>")+6);
+			UserTuneSong.Delete(UserTuneSong.Pos("</title>"), UserTuneSong.Length());
 			UserTuneSong=UserTuneSong.Trim();
 		  }
 
@@ -295,27 +278,27 @@ int __stdcall OnXMLDebug (WPARAM wParam, LPARAM lParam)
 		  UserTuneSong = StringReplace(UserTuneSong, "&lt;", "<", TReplaceFlags() << rfReplaceAll);
 
 		  //Usuwanie "*** "
-		  if(AnsiPos("*** ", UserTuneSong)>0)
+		  if(UserTuneSong.Pos("*** ")>0)
 		  {
-			UserTuneSong.Delete(1, AnsiPos("*** ", UserTuneSong) + 3);
+			UserTuneSong.Delete(1, UserTuneSong.Pos("*** ") + 3);
 			UserTuneSong=UserTuneSong.Trim();
 		  }
 
 		  //Usuwanie numeru piosenki
-		  if((AnsiPos(". ", UserTuneSong)>0)&&(AnsiPos(". ", UserTuneSong)<7))
+		  if((UserTuneSong.Pos(". ")>0)&&(UserTuneSong.Pos(". ")<7))
 		  {
 			UserTuneSongTMP=UserTuneSong;
-			UserTuneSongTMP.Delete(AnsiPos(". ", UserTuneSong), UserTuneSongTMP.Length());
-			if(TestDigit(UserTuneSongTMP)==true)
+			UserTuneSongTMP.Delete(UserTuneSong.Pos(". "), UserTuneSongTMP.Length());
+			if(TestDigit(UserTuneSongTMP))
 			{
-			  UserTuneSong.Delete(1, AnsiPos(". ", UserTuneSong));
+			  UserTuneSong.Delete(1, UserTuneSong.Pos(". "));
 			  UserTuneSong=UserTuneSong.Trim();
 			}
 		  }
 
 		  //Usuwanie "Wtyczka AQQ Radio: "
-		  if(AnsiPos("Wtyczka AQQ Radio: ", UserTuneSong)>0)
-		   UserTuneSong.Delete(1,AnsiPos("Wtyczka AQQ Radio: ", UserTuneSong)+18);
+		  if(UserTuneSong.Pos("Wtyczka AQQ Radio: ")>0)
+		   UserTuneSong.Delete(1,UserTuneSong.Pos("Wtyczka AQQ Radio: ")+18);
 
 		  //Pobieranie Nick'a z JID
 		  PluginContactSimpleInfo.cbSize = sizeof(TPluginContactSimpleInfo);
@@ -323,7 +306,7 @@ int __stdcall OnXMLDebug (WPARAM wParam, LPARAM lParam)
 		  PluginLink.CallService(AQQ_CONTACTS_FILLSIMPLEINFO,0,(LPARAM)(&PluginContactSimpleInfo));
 		  UserTuneSongTMP = (wchar_t*)(PluginContactSimpleInfo.Nick);
 		  UserTuneSongTMP = UserTuneSongTMP.Trim();
-		  if(UserTuneSongTMP!="")
+		  if(!UserTuneSongTMP.IsEmpty())
 		   XMLFrom = UserTuneSongTMP;
 
 		  UserTuneIconPath = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPNG_FILEPATH,76,0));
@@ -354,7 +337,7 @@ int __stdcall OnXMLDebug (WPARAM wParam, LPARAM lParam)
 //Zmiana ustawien User Tune
 void ChangeUserTune(bool Enabled, int Value)
 {
-  UserTuneEnableN = Enabled;
+  UserTuneNotif = Enabled;
   UserTuneTimeOut = Value;
 }
 //---------------------------------------------------------------------------
@@ -369,7 +352,7 @@ int __stdcall OnModulesLoaded(WPARAM, LPARAM)
   }
 
   hMainForm->aReadSettings->Execute();
-  hMainForm->AllowUserTuneNTimer->Enabled=true;
+  hMainForm->AllowUserTuneNTimer->Enabled = true;
 
   return 0;
 }
@@ -378,15 +361,14 @@ int __stdcall OnModulesLoaded(WPARAM, LPARAM)
 //Zezwalanie na pokazywanie notyfikacji User Tune
 void SetAllowUserTuneNTrue()
 {
-  AllowUserTuneN=true;
+  AllowUserTuneN = true;
 }
 //---------------------------------------------------------------------------
 
 //Pobieranie odtwarzanego utworu w AQQ Radio
 UnicodeString GetAQQRadioSong()
 {
-  UnicodeString Song;
-  Song=AQQRadioSong;
+  UnicodeString Song = AQQRadioSong;
   return Song;
 }
 //---------------------------------------------------------------------------
@@ -394,16 +376,16 @@ UnicodeString GetAQQRadioSong()
 //Notyfikacja zmiany statusu
 int __stdcall OnPreSetNote(WPARAM wParam, LPARAM lParam)
 {
-  if((hMainForm!=NULL)&&(hMainForm->Timer->Enabled==true))
+  if((hMainForm)&&(hMainForm->Timer->Enabled))
   {
-	nowy_opis = (wchar_t*)(lParam);
+	UnicodeString NewStatus = (wchar_t*)(lParam);
 
-	if((nowy_opis!=hMainForm->Opis_pocz)
-	&&(nowy_opis!=hMainForm->OpisTMP)
-	&&(nowy_opis!=hMainForm->Opis)
-	&&(hMainForm->Opis!=""))
+	if((NewStatus!=hMainForm->Opis_pocz)
+	&&(NewStatus!=hMainForm->OpisTMP)
+	&&(NewStatus!=hMainForm->Opis)
+	&&(!hMainForm->Opis.IsEmpty()))
 	{
-	  hMainForm->Opis_pocz = nowy_opis;
+	  hMainForm->Opis_pocz = NewStatus;
 	  return 1;
 	}
 	else
@@ -417,60 +399,56 @@ int __stdcall OnPreSetNote(WPARAM wParam, LPARAM lParam)
 //Notyfikacja zmiany stanu
 int __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
 {
-  if((hMainForm!=NULL)&&(hMainForm->Timer->Enabled==true)&&(hMainForm->Opis!=""))
+  if((hMainForm)&&(hMainForm->Timer->Enabled)&&(!hMainForm->Opis.IsEmpty()))
   {
     StateChange = (PPluginStateChange)lParam;
-	NewState = StateChange->NewState;
+	int NewState = StateChange->NewState;
 
 	//Jezeli blokowac przy niewidocznym
-	if((hMainForm->BlockInvisibleCheck==true)&&(NewState==6))
-	 hMainForm->StateChangeTimer->Enabled=true;
+	if((hMainForm->BlockInvisibleCheck)&&(NewState==6))
+	 hMainForm->StateChangeTimer->Enabled = true;
   }
 
   return 0;
 }
 //---------------------------------------------------------------------------
 
-//Przypisywanie skrótu w popPlugins
-void PrzypiszSkrot()
+//Tworzenie skrótu w popPlugins
+void BuildPopPluginsAccess()
 {
-  PluginAction.cbSize = sizeof(TPluginAction);
-  PluginAction.pszName = (wchar_t*)L"TuneStatusServiceButton";
-  PluginAction.pszCaption = (wchar_t*) L"TuneStatus";
-  PluginAction.Position = 0;
-  PluginAction.IconIndex = plugin_icon_idx;
-  PluginAction.pszService = (wchar_t*) L"serwis_TuneStatusService";
-  PluginAction.pszPopupName = (wchar_t*) L"popPlugins";
-  PluginAction.PopupPosition = 0;
+  PopPluginsAccess.cbSize = sizeof(TPluginAction);
+  PopPluginsAccess.pszName = (wchar_t*)L"TuneStatusPopPluginsAccess";
+  PopPluginsAccess.pszCaption = (wchar_t*) L"TuneStatus";
+  PopPluginsAccess.Position = 0;
+  PopPluginsAccess.IconIndex = POPPLUGINSACCESS;
+  PopPluginsAccess.pszService = (wchar_t*) L"sTuneStatusPopPluginsAccess";
+  PopPluginsAccess.pszPopupName = (wchar_t*) L"popPlugins";
+  PopPluginsAccess.PopupPosition = 0;
 
-  PluginLink.CallService(AQQ_CONTROLS_CREATEPOPUPMENUITEM,0,(LPARAM)(&PluginAction));
-  PluginLink.CreateServiceFunction(L"serwis_TuneStatusService",TuneStatusService);
+  PluginLink.CallService(AQQ_CONTROLS_CREATEPOPUPMENUITEM,0,(LPARAM)(&PopPluginsAccess));
+  PluginLink.CreateServiceFunction(L"sTuneStatusPopPluginsAccess",TuneStatusService);
 }
 //---------------------------------------------------------------------------
 
-//Przypisywanie buttonu
-void PrzypiszButton()
+//Tworzenie buttonu do szybkiego wlaczania/wylaczania
+void BuildFastEnableAccess()
 {
-  PluginActionButton.cbSize = sizeof(TPluginAction);
-  PluginActionButton.pszName = (wchar_t*) L"TuneStatus_FastOnOff";
-  PluginActionButton.Position = 999;
-  PluginActionButton.IconIndex = plugin_icon_idx_off;
-  PluginActionButton.pszService = (wchar_t*) L"serwis_TuneStatus_FastOnOff";
+  FastEnableAccess.cbSize = sizeof(TPluginAction);
+  FastEnableAccess.pszName = (wchar_t*) L"TuneStatusFastEnableAccess";
+  FastEnableAccess.Position = 999;
+  FastEnableAccess.IconIndex = FASTENABLE_OFF;
+  FastEnableAccess.pszService = (wchar_t*) L"sTuneStatusFastEnableAccess";
 
-  PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_CREATEBUTTON,0,(LPARAM)(&PluginActionButton));
-  PluginLink.CreateServiceFunction(L"serwis_TuneStatus_FastOnOff",TuneStatus_FastOnOff);
-
-  EnableFastOnOff=1;
+  PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_CREATEBUTTON,0,(LPARAM)(&FastEnableAccess));
+  PluginLink.CreateServiceFunction(L"sTuneStatusFastEnableAccess",TuneStatus_FastOnOff);
 }
 //---------------------------------------------------------------------------
 
-//Usuwanie buttonu
-void UsunButton()
+//Usuwanie buttonu do szybkiego wlaczania/wylaczania
+void DestroyFastEnableAccess()
 {
   PluginLink.DestroyServiceFunction(TuneStatus_FastOnOff);
-  PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_DESTROYBUTTON ,0,(LPARAM)(&PluginActionButton));
-
-  EnableFastOnOff=0;
+  PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_DESTROYBUTTON ,0,(LPARAM)(&FastEnableAccess));
 }
 //---------------------------------------------------------------------------
 
@@ -493,45 +471,66 @@ bool SaveResourceToFile(char *FileName, char *res)
 //Pobieranie sciezki katalogu prywatnego uzytkownika
 UnicodeString GetPluginUserDir()
 {
-  UnicodeString PluginUserDir;
-  PluginUserDir = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,(WPARAM)(HInstance),0));
-  PluginUserDir = StringReplace(PluginUserDir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-  return PluginUserDir;
+  UnicodeString Dir = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,0,0));
+  Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+  return Dir;
 }
 //---------------------------------------------------------------------------
 
 //Pobieranie sciezki do pliku wtyczki
 UnicodeString GetPluginDir()
 {
-  UnicodeString PluginDir;
-  PluginDir = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPLUGINDIR,(WPARAM)(HInstance),0));
-  PluginDir = StringReplace(PluginDir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-  return PluginDir;
+  UnicodeString Dir = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPLUGINDIR,(WPARAM)(HInstance),0));
+  Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+  return Dir;
 }
 //---------------------------------------------------------------------------
 
 //Ustawianie UserTune
-void SetUserTune(UnicodeString Tune)
+void SetUserTune(UnicodeString Tune, UnicodeString Time)
 {
+  UnicodeString TuneXML;
+  UnicodeString TuneAccountName;
   Tune = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_CONVERTTOXML,0,(WPARAM)Tune.w_str()));
 
-  TuneCount = PluginLink.CallService(AQQ_FUNCTION_GETUSEREXCOUNT,0,0);
-  for(TuneAccount=0;TuneAccount<TuneCount;TuneAccount++)
+  int TuneCount = PluginLink.CallService(AQQ_FUNCTION_GETUSEREXCOUNT,0,0);
+  for(int TuneAccount=0;TuneAccount<TuneCount;TuneAccount++)
   {
 	//Gdy stan konta jest rozny od niewidoczny/rozlaczony
-	if(AllowChangeStatusUserTune(TuneAccount)==true)
+	if((AllowChangeStatusUserTune(TuneAccount))&&(!Tune.IsEmpty()))
 	{
-	  //Gdy w zmiennej Tune jest odtwarzany utwor
-	  if(Tune!="")
+	  //Gdy w zmienna dlugosci utworu jest pusta
+	  if(Time.IsEmpty())
 	   TuneXML = "<iq type=\"set\" from=\"CC_JID\" id=\"CC_SESSION\"><pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"http://jabber.org/protocol/tune\"><item><tune xmlns=\"http://jabber.org/protocol/tune\"><artist/><rating/><source/><title>CC_TUNESTATUS</title><track/><uri/></tune></item></publish></pubsub></iq>";
-	  //W przeciwnym razie wylaczanie informowania User Tune
+	  //W przeciwnym razie dodaje informacje o dlugosci utworu
 	  else
-	   TuneXML = "<iq type=\"set\" from=\"CC_JID\" id=\"CC_SESSION\"><pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"http://jabber.org/protocol/tune\"><item><tune xmlns=\"http://jabber.org/protocol/tune\"/></item></publish></pubsub></iq>";
+	  {
+		//Odkodowanie minut na sekund
+		try
+		{
+		  UnicodeString TimeTMP = Time;
+		  TimeTMP.Delete(TimeTMP.Pos(":"),TimeTMP.Length());
+		  int TimeInt = StrToInt(TimeTMP) * 60;
+		  TimeTMP = Time;
+		  TimeTMP.Delete(1,TimeTMP.Pos(":"));
+		  TimeInt = TimeInt + StrToInt(TimeTMP);
+		  Time = IntToStr(TimeInt);
+		  //Definicja pakieru XML
+		  TuneXML = "<iq type=\"set\" from=\"CC_JID\" id=\"CC_SESSION\"><pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"http://jabber.org/protocol/tune\"><item><tune xmlns=\"http://jabber.org/protocol/tune\"><artist/><length>CC_SONGLENGTH</length><rating/><source/><title>CC_TUNESTATUS</title><track/><uri/></tune></item></publish></pubsub></iq>";
+		}
+		catch(...)
+		{
+		  //Blad = definicja standardowego pakietu XML
+		  TuneXML = "<iq type=\"set\" from=\"CC_JID\" id=\"CC_SESSION\"><pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"http://jabber.org/protocol/tune\"><item><tune xmlns=\"http://jabber.org/protocol/tune\"><artist/><rating/><source/><title>CC_TUNESTATUS</title><track/><uri/></tune></item></publish></pubsub></iq>";
+        }
+	  }
 
 	  //Zamiana CC_SESSION na wygenerowany ID
 	  TuneXML = StringReplace(TuneXML, "CC_SESSION", ((wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETSTRID,0,0))), TReplaceFlags());
 	  //Zamiania CC_TUNESTATUS na odtwarzany utwor
 	  TuneXML = StringReplace(TuneXML, "CC_TUNESTATUS", Tune, TReplaceFlags());
+	  //Zmiana CC_SONGLENGTH na dlugosc utworu
+	  TuneXML = StringReplace(TuneXML, "CC_SONGLENGTH", Time, TReplaceFlags());
 	  //Zamiania CC_JID na JID konta
 	  PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),TuneAccount);
 	  TuneAccountName = (UnicodeString)((wchar_t*)(PluginStateChange.JID)) + "/" + (UnicodeString)((wchar_t*)(PluginStateChange.Resource));
@@ -558,38 +557,37 @@ void SetUserTune(UnicodeString Tune)
 //---------------------------------------------------------------------------
 
 //Do aktualizowania grafiki buttonu
-void UpdateButton(bool OnOff)
+void UpdateButton(bool Enabled)
 {
-  if(OnOff==true)
+  if(Enabled)
   {
-	PluginActionButton.IconIndex = plugin_icon_idx_on;
-	PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&PluginActionButton));
+	FastEnableAccess.IconIndex = FASTENABLE_ON;
+	PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&FastEnableAccess));
   }
   else
   {
-	PluginActionButton.IconIndex = plugin_icon_idx_off;
-	PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&PluginActionButton));
+	FastEnableAccess.IconIndex = FASTENABLE_OFF;
+	PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)(&FastEnableAccess));
   }
 }
 //---------------------------------------------------------------------------
 
+//Wylaczanie obslugi UserTune w AQQ
 void SetAQQUserTuneOff()
 {
+  TSaveSetup SaveSetup;
   SaveSetup.Section = L"Settings";
   SaveSetup.Ident = L"Tune";
   SaveSetup.Value = L"0";
 
   PluginLink.CallService(AQQ_FUNCTION_SAVESETUP,1,(LPARAM)(&SaveSetup));
-  PluginLink.CallService(AQQ_FUNCTION_REFRESHSETUP,0,0);
 }
 //---------------------------------------------------------------------------
 
+//Odswiezanie wyjatkow z notyfikacji UserTune
 void RefreshUserTuneException()
 {
-  UnicodeString TuneExceptionDir = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,(WPARAM)(HInstance),0));
-  TuneExceptionDir = StringReplace(TuneExceptionDir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
-  TIniFile *Ini = new TIniFile(TuneExceptionDir + "\\\\TuneStatus\\\\TuneStatus.ini");
+  TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
   ExceptionCount = Ini->ReadInteger("UserTune", "ExceptionCount", 0);
   if(ExceptionCount!=0)
    for(int Count=0;Count<ExceptionCount;Count++)
@@ -598,65 +596,28 @@ void RefreshUserTuneException()
 }
 //---------------------------------------------------------------------------
 
-extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVersion)
-{
-  //Sprawdzanie wersji AQQ
-  if (CompareVersion(AQQVersion,PLUGIN_MAKE_VERSION(2,1,0,20))<0)
-  {
-	AQQVersion=false;
-	MessageBox(Application->Handle,
-	  "Wymagana wesja AQQ przez wtyczkê to minimum 2.1.0.20!\n"
-	  "Wtyczka TuneStatus nie bêdzie dzia³aæ poprawnie!",
-	  "Nieprawid³owa wersja AQQ",
-	  MB_OK | MB_ICONEXCLAMATION);
-  }
-  PluginInfo.cbSize = sizeof(TPluginInfo);
-  PluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,0,2,0);
-  PluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
-  PluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
-  PluginInfo.AuthorMail = (wchar_t *)L"email@beherit.pl";
-  PluginInfo.Copyright = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
-  PluginInfo.Homepage = (wchar_t *)L"http://beherit.pl";
-
-  return &PluginInfo;
-}
-//---------------------------------------------------------------------------
-
 extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
 {
   PluginLink = *Link;
 
-  //sciezka katalogu prywatnego uzytkownika
-  UnicodeString Dir = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,(WPARAM)(HInstance),0));
-  Dir = StringReplace(Dir, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-
+  //Sciezka katalogu prywatnego wtyczek
+  UnicodeString Dir = GetPluginUserDir();
+  //Tworzenie folderu wtyczki
   if(!DirectoryExists(Dir + "\\\\TuneStatus"))
    CreateDir(Dir + "\\\\TuneStatus");
-
   //Wypakowanie ikon
-  SaveResourceToFile((Dir + "\\\\TuneStatus\\\\TuneStatus.png").t_str(),"ID_PNG1");
-  //Przypisanie ikony
-  plugin_icon_idx=PluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(Dir + "\\\\TuneStatus\\\\TuneStatus.png").w_str());
-  //Usuniecie ikony
-  DeleteFile(Dir + "\\\\TuneStatus\\\\TuneStatus.png");
-
-  //Wypakowanie ikon
+  if(!FileExists(Dir + "\\\\TuneStatus\\\\TuneStatus.png"))
+   SaveResourceToFile((Dir + "\\\\TuneStatus\\\\TuneStatus.png").t_str(),"ID_PNG1");
   if(!FileExists(Dir + "\\\\TuneStatus\\\\TuneStatusOff.png"))
    SaveResourceToFile((Dir + "\\\\TuneStatus\\\\TuneStatusOff.png").t_str(),"ID_PNG2");
-  //Przypisanie ikony
-  plugin_icon_idx_off=PluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(Dir +"\\\\TuneStatus\\\\TuneStatusOff.png").w_str());
-
-  //Wypakowanie ikon
   if(!FileExists(Dir + "\\\\TuneStatus\\\\TuneStatusOn.png"))
-
    SaveResourceToFile((Dir + "\\\\TuneStatus\\\\TuneStatusOn.png").t_str(),"ID_PNG3");
   //Przypisanie ikony
-  plugin_icon_idx_on=PluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(Dir +"\\\\TuneStatus\\\\TuneStatusOn.png").w_str());
-
-  //Przyspisanie przycisku
-  PrzypiszSkrot();
-
+  POPPLUGINSACCESS = PluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(Dir + "\\\\TuneStatus\\\\TuneStatus.png").w_str());
+  FASTENABLE_OFF = PluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(Dir +"\\\\TuneStatus\\\\TuneStatusOff.png").w_str());
+  FASTENABLE_ON = PluginLink.CallService(AQQ_ICONS_LOADPNGICON,0, (LPARAM)(Dir +"\\\\TuneStatus\\\\TuneStatusOn.png").w_str());
+  //Przyspisanie przycisku w PopPlugins
+  BuildPopPluginsAccess();
   //Hook dla zmiany opisu
   PluginLink.HookEvent(AQQ_WINDOW_PRESETNOTE_NOTE,OnPreSetNote);
   //Hook dla AQQ Radio
@@ -667,50 +628,46 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
   PluginLink.HookEvent(AQQ_SYSTEM_XMLDEBUG,OnXMLDebug);
   //Po zaladowaniu wtyczek
   PluginLink.HookEvent(AQQ_SYSTEM_MODULESLOADED, OnModulesLoaded);
-  AllowUserTuneN=PluginLink.CallService(AQQ_SYSTEM_MODULESLOADED,0,0);
-
+  AllowUserTuneN = PluginLink.CallService(AQQ_SYSTEM_MODULESLOADED,0,0);
   //Odczyt ustawien
   TIniFile *Ini = new TIniFile(Dir + "\\\\TuneStatus\\\\TuneStatus.ini");
-  EnablePluginOnStart = Ini->ReadBool("Settings", "EnablePluginOnStart", 0);
-  EnableFastOnOff = Ini->ReadBool("Settings", "EnableFastOnOff", 1);
-  UserTuneEnableN = Ini->ReadBool("UserTune", "EnableN", 0);
-  bool UserTuneEnableS = Ini->ReadBool("UserTune", "EnableS", 0);
+  bool EnablePluginOnStart = Ini->ReadBool("Settings", "EnablePluginOnStart", 0);
+  bool FastEnableAccessChk = Ini->ReadBool("Settings", "EnableFastOnOff", true);
+  UserTuneNotif = Ini->ReadBool("UserTune", "EnableN", false);
+  bool UserTuneSend = Ini->ReadBool("UserTune", "EnableS", false);
   UserTuneTimeOut = Ini->ReadInteger("UserTune", "TimeOutN", 4);
   ExceptionCount = Ini->ReadInteger("UserTune", "ExceptionCount", 0);
   if(ExceptionCount!=0)
    for(int Count=0;Count<ExceptionCount;Count++)
 	ExceptionJID[Count] = Ini->ReadString("UserTuneEx" + IntToStr(Count+1), "JID", "");
   delete Ini;
-
   //Czy wlaczyc wysylanie informacji User Tune
-  if(UserTuneEnableS==1)
+  if(UserTuneSend)
   {
-	if(hMainForm==NULL)
+	if(!hMainForm)
 	{
 	  Application->Handle = (HWND)MainForm;
 	  hMainForm = new TMainForm(Application);
 	}
 	hMainForm->aReadSettings->Execute();
-	hMainForm->UserTuneTimer->Enabled=true;
+	hMainForm->UserTuneTimer->Enabled = true;
   }
-
   //Czy w³¹czonac na starcie
-  if(EnablePluginOnStart==1)
+  if(EnablePluginOnStart)
   {
-	if(hMainForm==NULL)
+	if(!hMainForm)
 	{
 	  Application->Handle = (HWND)MainForm;
 	  hMainForm = new TMainForm(Application);
 	}
 	hMainForm->aReadSettings->Execute();
-	hMainForm->GetStatusTimer->Enabled=true;
-	hMainForm->SongTimer->Interval=1000;
-	hMainForm->JustEnabled=1;
+	hMainForm->GetStatusTimer->Enabled = true;
+	hMainForm->SongTimer->Interval = 1000;
+	hMainForm->JustEnabled = true;
   }
-
   //Czy przyspisac button
-  if(EnableFastOnOff==1)
-   PrzypiszButton();
+  if(FastEnableAccessChk)
+   BuildFastEnableAccess();
 
   return 0;
 }
@@ -719,7 +676,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
 //Otwieranie formy przez ustawienia
 extern "C" int __declspec(dllexport)__stdcall Settings()
 {
-  if(hMainForm==NULL)
+  if(!hMainForm)
   {
 	Application->Handle = (HWND)MainForm;
 	hMainForm = new TMainForm(Application);
@@ -732,7 +689,7 @@ extern "C" int __declspec(dllexport)__stdcall Settings()
 
 extern "C" int __declspec(dllexport) __stdcall Unload()
 {
-  if((hMainForm!=NULL)&&(hMainForm->Timer->Enabled==true))
+  if((hMainForm)&&(hMainForm->Timer->Enabled))
   {
 	hMainForm->OpisTMP=GetStatus();
 	if(hMainForm->Opis_pocz!=hMainForm->OpisTMP)
@@ -741,24 +698,36 @@ extern "C" int __declspec(dllexport) __stdcall Unload()
 	   SetStatus(hMainForm->Opis_pocz,!hMainForm->SetOnlyInJabberCheck);
 	}
   }
-  if((hMainForm!=NULL)&&(hMainForm->UserTuneTimer->Enabled==true))
-   SetUserTune("");
+  if((hMainForm)&&(hMainForm->UserTuneTimer->Enabled))
+   SetUserTune("","");
   PluginLink.UnhookEvent(OnPreSetNote);
   PluginLink.UnhookEvent(OnCurrentSong);
   PluginLink.UnhookEvent(OnStateChange);
   PluginLink.UnhookEvent(OnXMLDebug);
   PluginLink.UnhookEvent(OnModulesLoaded);
   PluginLink.DestroyServiceFunction(TuneStatusService);
-  PluginLink.CallService(AQQ_CONTROLS_DESTROYPOPUPMENUITEM,0,(LPARAM)(&PluginAction));
-  PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx));
-  PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx_off));
-  PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(plugin_icon_idx_on));
-  if(EnableFastOnOff==1)
-  {
-	PluginLink.DestroyServiceFunction(TuneStatus_FastOnOff);
-	PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_DESTROYBUTTON ,0,(LPARAM)(&PluginActionButton));
-  }
+  PluginLink.CallService(AQQ_CONTROLS_DESTROYPOPUPMENUITEM,0,(LPARAM)(&PopPluginsAccess));
+  PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(POPPLUGINSACCESS));
+  PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(FASTENABLE_OFF));
+  PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(FASTENABLE_ON));
+  PluginLink.DestroyServiceFunction(TuneStatus_FastOnOff);
+  PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_DESTROYBUTTON ,0,(LPARAM)(&FastEnableAccess));
 
   return 0;
+}
+//---------------------------------------------------------------------------
+
+extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVersion)
+{
+  PluginInfo.cbSize = sizeof(TPluginInfo);
+  PluginInfo.ShortName = (wchar_t*)L"TuneStatus";
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,1,0,0);
+  PluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
+  PluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
+  PluginInfo.AuthorMail = (wchar_t *)L"email@beherit.pl";
+  PluginInfo.Copyright = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
+  PluginInfo.Homepage = (wchar_t *)L"http://beherit.pl";
+
+  return &PluginInfo;
 }
 //---------------------------------------------------------------------------
