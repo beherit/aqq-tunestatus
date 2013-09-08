@@ -86,7 +86,6 @@ __published:	// IDE-managed Components
         TTimer *TurnOffTimer;
         TLMDCheckBox *TimeTurnOffCheckBox;
         TLMDSpinEdit *TimeTurnOffSpin;
-        TLabel *TimeTurnOffLabel;
         TBevel *Bevel1;
         TBevel *Bevel2;
         TAction *aResetSettings;
@@ -98,6 +97,7 @@ __published:	// IDE-managed Components
         TMenuItem *iTunesDownload;
         TPopupMenu *SongbirdPopupMenu;
         TMenuItem *SongbirdDownload;
+        TLMDCheckBox *BlockInvisibleCheckBox;
         void __fastcall aWinampDownExecute(TObject *Sender);
         void __fastcall aFoobarDownExecute(TObject *Sender);
         void __fastcall aMPCDownExecute(TObject *Sender);

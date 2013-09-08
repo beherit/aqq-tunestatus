@@ -292,7 +292,7 @@ object MainForm: TMainForm
         305)
       object SongTimerIntervalLabel1: TLabel
         Left = 16
-        Top = 93
+        Top = 117
         Width = 78
         Height = 13
         Caption = 'Ustawiaj opis po'
@@ -300,7 +300,7 @@ object MainForm: TMainForm
       end
       object SongTimerIntervalLabel2: TLabel
         Left = 150
-        Top = 93
+        Top = 117
         Width = 108
         Height = 13
         Caption = 'od rozpocz'#281'cia utworu'
@@ -308,26 +308,15 @@ object MainForm: TMainForm
       end
       object Bevel3: TBevel
         Left = 9
-        Top = 232
+        Top = 256
         Width = 258
         Height = 4
         Anchors = [akLeft, akTop, akRight]
         Shape = bsTopLine
       end
-      object TimeTurnOffLabel: TLabel
-        Left = 39
-        Top = 245
-        Width = 139
-        Height = 26
-        Alignment = taCenter
-        Caption = 'Wy'#322#261'cz dzia'#322'anie wtyczki gdy utw'#243'r nie zmienia si'#281' od'
-        Enabled = False
-        Transparent = True
-        WordWrap = True
-      end
       object Bevel1: TBevel
         Left = 9
-        Top = 152
+        Top = 176
         Width = 258
         Height = 4
         Anchors = [akLeft, akTop, akRight]
@@ -335,7 +324,7 @@ object MainForm: TMainForm
       end
       object Bevel2: TBevel
         Left = 9
-        Top = 80
+        Top = 104
         Width = 258
         Height = 4
         Anchors = [akLeft, akTop, akRight]
@@ -343,7 +332,7 @@ object MainForm: TMainForm
       end
       object EnableFastOnOffCheckBox: TLMDCheckBox
         Left = 6
-        Top = 54
+        Top = 78
         Width = 258
         Height = 18
         Caption = 'Pokazuj przycisk szybkiego w'#322#261'czenia/wy'#322#261'czenia'
@@ -357,7 +346,7 @@ object MainForm: TMainForm
       end
       object EnablePluginOnStartCheckBox: TLMDCheckBox
         Left = 6
-        Top = 30
+        Top = 54
         Width = 188
         Height = 18
         Caption = 'W'#322#261'czaj wtyczk'#281' przy starcie AQQ'
@@ -381,7 +370,7 @@ object MainForm: TMainForm
       end
       object SongTimerSpin: TLMDSpinEdit
         Left = 98
-        Top = 90
+        Top = 114
         Width = 45
         Height = 21
         Bevel.Mode = bmWindows
@@ -399,7 +388,7 @@ object MainForm: TMainForm
       end
       object CutRadiostationNameCheckBox: TLMDCheckBox
         Left = 6
-        Top = 162
+        Top = 186
         Width = 263
         Height = 31
         Caption = 
@@ -415,7 +404,7 @@ object MainForm: TMainForm
       end
       object DisableSongTimerCheckBox: TLMDCheckBox
         Left = 39
-        Top = 116
+        Top = 140
         Width = 198
         Height = 31
         Caption = 'Funkcja nieaktywna przy pobieraniu danych z wtyczki AQQ Radio'
@@ -429,7 +418,7 @@ object MainForm: TMainForm
       end
       object CutWWWCheckBox: TLMDCheckBox
         Left = 5
-        Top = 204
+        Top = 228
         Width = 258
         Height = 18
         Caption = 'Wycinaj adresy stron WWW z pobranego utworu'
@@ -440,20 +429,23 @@ object MainForm: TMainForm
         Transparent = True
       end
       object TimeTurnOffCheckBox: TLMDCheckBox
-        Left = 20
-        Top = 251
-        Width = 16
-        Height = 15
-        Alignment.Alignment = agTopLeft
+        Left = 18
+        Top = 266
+        Width = 165
+        Height = 31
+        Caption = 'Wy'#322#261'cz dzia'#322'anie wtyczki gdy utw'#243'r nie zmienia si'#281' od'
+        Alignment.Alignment = agCenter
         Alignment.Spacing = 4
         AutoSize = True
         TabOrder = 7
         Transparent = True
         OnChange = TimeTurnOffCheckBoxChange
+        BiDiMode = bdRightToLeft
+        ParentBiDiMode = False
       end
       object TimeTurnOffSpin: TLMDSpinEdit
-        Left = 183
-        Top = 249
+        Left = 184
+        Top = 271
         Width = 57
         Height = 21
         Bevel.Mode = bmWindows
@@ -469,6 +461,20 @@ object MainForm: TMainForm
         MaxValue = 60
         Value = 15
         Value = 15
+      end
+      object BlockInvisibleCheckBox: TLMDCheckBox
+        Left = 6
+        Top = 30
+        Width = 226
+        Height = 18
+        Caption = 'Nie ustawiaj opisu przy stanie niewidoczny'
+        Alignment.Alignment = agTopLeft
+        Alignment.Spacing = 4
+        AutoSize = True
+        TabOrder = 9
+        Transparent = True
+        Checked = True
+        State = cbChecked
       end
     end
   end
@@ -615,7 +621,7 @@ object MainForm: TMainForm
   end
   object FoobarPopupMenu: TPopupMenu
     Left = 248
-    Top = 160
+    Top = 136
     object FoobarDownload: TMenuItem
       Caption = 'Pobierz wtyczk'#281
       OnClick = FoobarDownloadClick
@@ -623,7 +629,7 @@ object MainForm: TMainForm
   end
   object WMPPopupMenu: TPopupMenu
     Left = 248
-    Top = 192
+    Top = 168
     object WMPDownload: TMenuItem
       Caption = 'Pobierz plugin'
       OnClick = WMPDownloadClick
@@ -631,7 +637,7 @@ object MainForm: TMainForm
   end
   object iTunesPopupMenu: TPopupMenu
     Left = 248
-    Top = 224
+    Top = 200
     object iTunesDownload: TMenuItem
       Caption = 'Pobierz plugin'
       OnClick = iTunesDownloadClick
@@ -639,7 +645,7 @@ object MainForm: TMainForm
   end
   object SongbirdPopupMenu: TPopupMenu
     Left = 248
-    Top = 256
+    Top = 232
     object SongbirdDownload: TMenuItem
       Caption = 'Pobierz rozszerzenie'
       OnClick = SongbirdDownloadClick

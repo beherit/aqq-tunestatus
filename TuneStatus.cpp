@@ -80,15 +80,28 @@ void UstawOpis(AnsiString opis, bool force)
 }
 //---------------------------------------------------------------------------
 
-bool AllowChangeStatus() //Sprawdzanie stanu czy rozny od rozlaczony/niewidoczny
+bool AllowChangeStatus(bool WithInvisible) //Sprawdzanie stanu czy rozny od rozlaczony/niewidoczny
 {
-  PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),0);
+  if(WithInvisible==1)
+  {
+    PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),0);
 
-  PluginStateChange.cbSize = sizeof(TPluginStateChange);
-  if((PluginStateChange.OldState!=0)&&(PluginStateChange.OldState!=6))
-   return true;
+    PluginStateChange.cbSize = sizeof(TPluginStateChange);
+    if((PluginStateChange.OldState!=0)&&(PluginStateChange.OldState!=6))
+     return true;
+    else
+     return false;
+  }
   else
-   return false;
+  {
+    PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)(&PluginStateChange),0);
+
+    PluginStateChange.cbSize = sizeof(TPluginStateChange);
+    if(PluginStateChange.OldState!=0)
+     return true;
+    else
+     return false;
+  }
 }
 //---------------------------------------------------------------------------
 
@@ -211,7 +224,7 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
   }*/
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = (wchar_t*)L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,5,0);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(1,0,5,2);
   PluginInfo.Description = (wchar_t *)L"Wstawianie do opisu aktualnie s³uchanego utworu z wielu odtwarzaczy";
   PluginInfo.Author = (wchar_t *)L"Krzysztof Grochocki (Beherit)";
   PluginInfo.AuthorMail = (wchar_t *)L"beherit666@vp.pl";
