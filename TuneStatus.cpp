@@ -533,10 +533,11 @@ UnicodeString GetPathOfProces(HWND hWnd)
 bool CALLBACK FindVCL(HWND hWnd, LPARAM lParam)
 {
   //Pobranie klasy okna
-  wchar_t* WindowCaptionName = new wchar_t[512];
-  GetClassNameW(hWnd, WindowCaptionName, 512);
+  wchar_t WindowCaptionNameW[512];
+  GetClassNameW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
+  UnicodeString WindowCaptionName = WindowCaptionNameW;
   //Sprawdenie klasy okna
-  if((UnicodeString)WindowCaptionName=="QWidget")
+  if(WindowCaptionName=="QWidget")
   {
 	//Pobranie sciezki procesu
 	UnicodeString PlayerPath = GetPathOfProces(hWnd);
@@ -544,11 +545,12 @@ bool CALLBACK FindVCL(HWND hWnd, LPARAM lParam)
 	if(ExtractFileName(PlayerPath)=="vlc.exe")
 	{
 	  //Pobranie tekstu okna
-	  GetWindowTextW(hWnd, WindowCaptionName, 512);
+	  GetWindowTextW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
+	  WindowCaptionName = WindowCaptionNameW;
 	  //Sprawdzenie tekstu okna
-	  if(((UnicodeString)WindowCaptionName!="vcl")
-	  &&((UnicodeString)WindowCaptionName!="O programie")
-	  &&((UnicodeString)WindowCaptionName!=""))
+	  if((WindowCaptionName!="vcl")
+	  &&(WindowCaptionName!="O programie")
+	  &&(WindowCaptionName!=""))
 	  {
 		//Przypisanie uchwytu
 		VCLWindowHwnd = hWnd;
@@ -564,10 +566,11 @@ bool CALLBACK FindVCL(HWND hWnd, LPARAM lParam)
 bool CALLBACK FindLastfm(HWND hWnd, LPARAM lParam)
 {
   //Pobranie klasy okna
-  wchar_t* WindowCaptionName = new wchar_t[512];
-  GetClassNameW(hWnd, WindowCaptionName, 512);
+  wchar_t WindowCaptionNameW[512];
+  GetClassNameW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
+  UnicodeString WindowCaptionName = WindowCaptionNameW;
   //Sprawdenie klasy okna
-  if((UnicodeString)WindowCaptionName=="QWidget")
+  if(WindowCaptionName=="QWidget")
   {
 	//Pobranie sciezki procesu
 	UnicodeString PlayerPath = GetPathOfProces(hWnd);
@@ -575,33 +578,34 @@ bool CALLBACK FindLastfm(HWND hWnd, LPARAM lParam)
 	if(ExtractFileName(PlayerPath)=="LastFM.exe")
 	{
 	  //Pobranie tekstu okna
-	  GetWindowTextW(hWnd, WindowCaptionName, 512);
+	  GetWindowTextW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
+	  WindowCaptionName = WindowCaptionNameW;
 	  //Sprawdzenie tekstu okna
-	  if(((UnicodeString)WindowCaptionName!="LastFM")
-	  &&((UnicodeString)WindowCaptionName!="Diagnostyka")
-	  &&((UnicodeString)WindowCaptionName!="Diagnostics")
-	  &&((UnicodeString)WindowCaptionName!="Poleæ")
-	  &&((UnicodeString)WindowCaptionName!="Share")
-	  &&((UnicodeString)WindowCaptionName!="Zaloguj")
-	  &&((UnicodeString)WindowCaptionName!="Kreator automatycznej aktualizacji")
-	  &&((UnicodeString)WindowCaptionName!="Kreator ustawieñ")
-	  &&((UnicodeString)WindowCaptionName!="Opcje programu Last.fm")
-	  &&((UnicodeString)WindowCaptionName!="Dodaj u¿ytkownika")
-	  &&((UnicodeString)WindowCaptionName!="Aktualne")
-	  &&((UnicodeString)WindowCaptionName!="Last.fm — Informacje")
-	  &&((UnicodeString)WindowCaptionName!="Form")
-	  &&((UnicodeString)WindowCaptionName!="volume")
-	  &&((UnicodeString)WindowCaptionName!="recommendTypeBox")
-	  &&((UnicodeString)WindowCaptionName!="label")
-	  &&((UnicodeString)WindowCaptionName!="label_2")
-	  &&((UnicodeString)WindowCaptionName!="label_3")
-	  &&((UnicodeString)WindowCaptionName!="messageEdit")
-	  &&((UnicodeString)WindowCaptionName!="userEdit")
-	  &&((UnicodeString)WindowCaptionName!="buttonBox")
-	  &&((UnicodeString)WindowCaptionName!="qt_scrollarea_hcontainer")
-	  &&((UnicodeString)WindowCaptionName!="qt_scrollarea_vcontainer")
-	  &&((UnicodeString)WindowCaptionName!="qt_scrollarea_viewport")
-	  &&((UnicodeString)WindowCaptionName!=""))
+	  if((WindowCaptionName!="LastFM")
+	  &&(WindowCaptionName!="Diagnostyka")
+	  &&(WindowCaptionName!="Diagnostics")
+	  &&(WindowCaptionName!="Poleæ")
+	  &&(WindowCaptionName!="Share")
+	  &&(WindowCaptionName!="Zaloguj")
+	  &&(WindowCaptionName!="Kreator automatycznej aktualizacji")
+	  &&(WindowCaptionName!="Kreator ustawieñ")
+	  &&(WindowCaptionName!="Opcje programu Last.fm")
+	  &&(WindowCaptionName!="Dodaj u¿ytkownika")
+	  &&(WindowCaptionName!="Aktualne")
+	  &&(WindowCaptionName!="Last.fm — Informacje")
+	  &&(WindowCaptionName!="Form")
+	  &&(WindowCaptionName!="volume")
+	  &&(WindowCaptionName!="recommendTypeBox")
+	  &&(WindowCaptionName!="label")
+	  &&(WindowCaptionName!="label_2")
+	  &&(WindowCaptionName!="label_3")
+	  &&(WindowCaptionName!="messageEdit")
+	  &&(WindowCaptionName!="userEdit")
+	  &&(WindowCaptionName!="buttonBox")
+	  &&(WindowCaptionName!="qt_scrollarea_hcontainer")
+	  &&(WindowCaptionName!="qt_scrollarea_vcontainer")
+	  &&(WindowCaptionName!="qt_scrollarea_viewport")
+	  &&(WindowCaptionName!=""))
 	  {
 		//Przypisanie uchwytu
 		LastfmWindowHwnd = hWnd;
@@ -617,10 +621,11 @@ bool CALLBACK FindLastfm(HWND hWnd, LPARAM lParam)
 bool CALLBACK FindSongbird(HWND hWnd, LPARAM lParam)
 {
   //Pobranie klasy okna
-  wchar_t* WindowCaptionName = new wchar_t[512];
-  GetClassNameW(hWnd, WindowCaptionName, 512);
+  wchar_t WindowCaptionNameW[512];
+  GetClassNameW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
+  UnicodeString WindowCaptionName = WindowCaptionNameW;
   //Sprawdenie klasy okna
-  if((UnicodeString)WindowCaptionName=="MozillaUIWindowClass")
+  if(WindowCaptionName=="MozillaUIWindowClass")
   {
 	//Pobranie sciezki procesu
 	UnicodeString PlayerPath = GetPathOfProces(hWnd);
@@ -628,10 +633,11 @@ bool CALLBACK FindSongbird(HWND hWnd, LPARAM lParam)
 	if(ExtractFileName(PlayerPath)=="songbird.exe")
 	{
 	  //Pobranie tekstu okna
-	  GetWindowTextW(hWnd, WindowCaptionName, 512);
+	  GetWindowTextW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
+	  WindowCaptionName = WindowCaptionNameW;
 	  //Sprawdzenie tekstu okna
-	  if(((UnicodeString)WindowCaptionName!="Birdtitle notifer")
-	  &&(!((UnicodeString)WindowCaptionName).IsEmpty()))
+	  if((WindowCaptionName!="Birdtitle notifer")
+	  &&(!(WindowCaptionName).IsEmpty()))
 	  {
 		//Przypisanie uchwytu
 		SongbirdWindowHwnd = hWnd;
@@ -647,10 +653,11 @@ bool CALLBACK FindSongbird(HWND hWnd, LPARAM lParam)
 bool CALLBACK FindScreamerRadio(HWND hWnd, LPARAM lParam)
 {
   //Pobranie klasy okna
-  wchar_t* WindowCaptionName = new wchar_t[512];
-  GetClassNameW(hWnd, WindowCaptionName, 512);
+  wchar_t WindowCaptionNameW[512];
+  GetClassNameW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
+  UnicodeString WindowCaptionName = WindowCaptionNameW;
   //Sprawdenie klasy okna
-  if(AnsiPos("32770", (UnicodeString)WindowCaptionName))
+  if(WindowCaptionName.Pos("32770"))
   {
 	//Pobranie sciezki procesu
 	UnicodeString PlayerPath = GetPathOfProces(hWnd);
@@ -658,10 +665,11 @@ bool CALLBACK FindScreamerRadio(HWND hWnd, LPARAM lParam)
 	if(ExtractFileName(PlayerPath)=="screamer.exe")
 	{
 	  //Pobranie tekstu okna
-	  GetWindowTextW(hWnd, WindowCaptionName, 512);
+	  GetWindowTextW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
+	  WindowCaptionName = WindowCaptionNameW;
 	  //Sprawdzenie tekstu okna
-	  if(((UnicodeString)WindowCaptionName!="Screamer Log")
-	  &&(!((UnicodeString)WindowCaptionName).IsEmpty()))
+	  if((WindowCaptionName!="Screamer Log")
+	  &&(!(WindowCaptionName).IsEmpty()))
 	  {
 		//Przypisanie uchwytu
 		ScreamerRadioWindowHwnd = hWnd;
@@ -677,10 +685,11 @@ bool CALLBACK FindScreamerRadio(HWND hWnd, LPARAM lParam)
 bool CALLBACK FindaTunes(HWND hWnd, LPARAM lParam)
 {
   //Pobranie klasy okna
-  wchar_t WindowCaptionName[128];
-  GetClassNameW(hWnd, WindowCaptionName, sizeof(WindowCaptionName));
+  wchar_t WindowCaptionNameW[512];
+  GetClassNameW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
+  UnicodeString WindowCaptionName = WindowCaptionNameW;
   //Sprawdenie klasy okna
-  if((UnicodeString)WindowCaptionName=="SunAwtFrame")
+  if(WindowCaptionName=="SunAwtFrame")
   {
 	//Pobranie sciezki procesu
 	UnicodeString PlayerPath = GetPathOfProces(hWnd);
@@ -709,9 +718,9 @@ UnicodeString GetDataFromWinamp()
 	if(SendMessage(PlayerHwnd,WM_USER,0,104))
 	{
 	  //Pobranie tekstu okna
-	  wchar_t* PlayerTitle = new wchar_t[512];
-	  GetWindowTextW(PlayerHwnd,PlayerTitle,512);
-	  UnicodeString PlayerCaption = PlayerTitle;
+	  wchar_t PlayerCaptionW[512];
+	  GetWindowTextW(PlayerHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	  UnicodeString PlayerCaption = PlayerCaptionW;
 	  //Pomijanie "Winamp"
 	  if(PlayerCaption.Pos("Winamp")==1) return "";
 	  //Usuwanie "- Winamp"
@@ -767,9 +776,9 @@ UnicodeString GetDataFromFoobar()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t* PlayerTitle = new wchar_t[512];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
-	UnicodeString PlayerCaption = PlayerTitle;
+	wchar_t PlayerCaptionW[512];
+	GetWindowTextW(PlayerHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	UnicodeString PlayerCaption = PlayerCaptionW;
 	//Usuwanie "[foobar2000"
 	if(PlayerCaption.Pos("[foobar2000"))
 	{
@@ -825,9 +834,9 @@ UnicodeString GetDataFromWMP()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t* PlayerTitle = new wchar_t[512];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
-	PlayerCaption = PlayerTitle;
+	wchar_t PlayerCaptionW[512];
+	GetWindowTextW(PlayerHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	UnicodeString PlayerCaption = PlayerCaptionW;
 	//Usuwanie "- Windows Media Player"
 	if(PlayerCaption.Pos("- Windows Media Player"))
 	{
@@ -852,9 +861,9 @@ UnicodeString GetDataFromVUPlayer()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t* PlayerTitle = new wchar_t[512];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
-	UnicodeString PlayerCaption = PlayerTitle;
+	wchar_t PlayerCaptionW[512];
+	GetWindowTextW(PlayerHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	UnicodeString PlayerCaption = PlayerCaptionW;
 	//Usuwanie " ["
 	if(PlayerCaption.Pos(" ["))
 	{
@@ -877,9 +886,9 @@ UnicodeString GetDataFromXMPlay()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t* PlayerTitle = new wchar_t[512];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
-	UnicodeString PlayerCaption = PlayerTitle;
+	wchar_t PlayerCaptionW[512];
+	GetWindowTextW(PlayerHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	UnicodeString PlayerCaption = PlayerCaptionW;
 	//Pomijanie "XMPlay"
 	if(PlayerCaption.Pos("XMPlay")) return "";
 	//Odtwarzacz jest zatrzymany
@@ -900,9 +909,9 @@ UnicodeString GetDataFromMPC()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t* PlayerTitle = new wchar_t[512];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
-	UnicodeString PlayerCaption = PlayerTitle;
+	wchar_t PlayerCaptionW[512];
+	GetWindowTextW(PlayerHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	UnicodeString PlayerCaption = PlayerCaptionW;
 	//Usuwanie "- Media Player Classic"
 	if(PlayerCaption.Pos("- Media Player Classic"))
 	{
@@ -967,9 +976,9 @@ UnicodeString GetDataFromALSong()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t* PlayerTitle = new wchar_t[512];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
-	UnicodeString PlayerCaption = PlayerTitle;
+	wchar_t PlayerCaptionW[512];
+	GetWindowTextW(PlayerHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	UnicodeString PlayerCaption = PlayerCaptionW;
 	//Pomijanie "ALSong"
 	if(PlayerCaption.Pos("ALSong")) return "";
 	//Zwrocenie odtwarzanego utworu
@@ -1020,9 +1029,9 @@ UnicodeString GetDataFromScreamerRadio()
 	if(IsWindow(ScreamerRadioWindowHwnd))
 	{
 	  //Pobranie tekstu okna
-	  wchar_t* PlayerTitle = new wchar_t[512];
-	  GetWindowTextW(ScreamerRadioWindowHwnd,PlayerTitle,512);
-	  UnicodeString PlayerCaption = PlayerTitle;
+      wchar_t PlayerCaptionW[512];
+	  GetWindowTextW(ScreamerRadioWindowHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	  UnicodeString PlayerCaption = PlayerCaptionW;\
 	  //Pomijanie "Screamer Radio"
 	  if(PlayerCaption.Pos("Screamer Radio")) return "";
 	  //Zwrocenie odtwarzanego utworu
@@ -1047,9 +1056,9 @@ UnicodeString GetDataFromaTunes()
 	if(IsWindow(aTunesWindowHwnd))
 	{
 	  //Pobranie tekstu okna
-	  wchar_t* PlayerTitle = new wchar_t[512];
-	  GetWindowTextW(aTunesWindowHwnd,PlayerTitle,512);
-	  UnicodeString PlayerCaption = PlayerTitle;
+	  wchar_t PlayerCaptionW[512];
+	  GetWindowTextW(aTunesWindowHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	  UnicodeString PlayerCaption = PlayerCaptionW;
 	  //Usuwanie "- aTunes [wersja]""
 	  if(PlayerCaption.Pos("- aTunes"))
 	  {
@@ -1080,9 +1089,9 @@ UnicodeString GetDataFromSongbird()
 	if(IsWindow(SongbirdWindowHwnd))
 	{
 	  //Pobranie tekstu okna
-	  wchar_t* PlayerTitle = new wchar_t[512];
-	  GetWindowTextW(SongbirdWindowHwnd,PlayerTitle,512);
-	  UnicodeString PlayerCaption = PlayerTitle;
+	  wchar_t PlayerCaptionW[512];
+	  GetWindowTextW(SongbirdWindowHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	  UnicodeString PlayerCaption = PlayerCaptionW;
 	  //Pomijanie "[Stopped]" & "Songbird"
 	  if(PlayerCaption.Pos("[Stopped]")) return "";
 	  if(PlayerCaption.Pos("Songbird")) return "";
@@ -1108,9 +1117,9 @@ UnicodeString GetDataFromLastFM()
 	if(IsWindow(LastfmWindowHwnd))
 	{
 	  //Pobranie tekstu okna
-	  wchar_t* PlayerTitle = new wchar_t[512];
-	  GetWindowTextW(LastfmWindowHwnd,PlayerTitle,512);
-	  UnicodeString PlayerCaption = PlayerTitle;
+	  wchar_t PlayerCaptionW[512];
+	  GetWindowTextW(LastfmWindowHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	  UnicodeString PlayerCaption = PlayerCaptionW;
 	  //Pomijanie "Last.fm"
 	  if(PlayerCaption.Pos("Last.fm")) return "";
 	  //Zwrocenie odtwarzanego utworu
@@ -1135,9 +1144,9 @@ UnicodeString GetDataFromVCL()
 	if(IsWindow(VCLWindowHwnd))
 	{
 	  //Pobranie tekstu okna
-	  wchar_t* PlayerTitle = new wchar_t[512];
-	  GetWindowTextW(VCLWindowHwnd,PlayerTitle,512);
-	  UnicodeString PlayerCaption = PlayerTitle;
+	  wchar_t PlayerCaptionW[512];
+	  GetWindowTextW(VCLWindowHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	  UnicodeString PlayerCaption = PlayerCaptionW;
 	  //Pomijanie "VLC media player"
 	  if(PlayerCaption=="VLC media player") return "";
 	  //Usuwanie "- VLC media player"
@@ -1165,9 +1174,9 @@ UnicodeString GetDataFromSpotify()
   if(PlayerHwnd)
   {
 	//Pobranie tekstu okna
-	wchar_t* PlayerTitle = new wchar_t[512];
-	GetWindowTextW(PlayerHwnd,PlayerTitle,512);
-	UnicodeString PlayerCaption = PlayerTitle;
+	wchar_t PlayerCaptionW[512];
+	GetWindowTextW(PlayerHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	UnicodeString PlayerCaption = PlayerCaptionW;
 	//Pomijanie "Spotify"
 	if(PlayerCaption=="Spotify") return "";
 	//Usuwanie "Spotify -"
@@ -1763,8 +1772,10 @@ int __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam)
   {
 	//Pobieranie identyfikatora kontaktu
 	UnicodeString JID = (wchar_t*)ContactsUpdateContact.JID;
+	//Pobieranie nicku kontaktu
+	UnicodeString Nick = (wchar_t*)ContactsUpdateContact.Nick;
 	//Pobieranie i zapisywanie nicku kontatku
-	ContactsNickList->WriteString("Nick",JID,(wchar_t*)ContactsUpdateContact.Nick);
+	ContactsNickList->WriteString("Nick",JID,Nick);
   }
 
   return 0;
@@ -1843,8 +1854,10 @@ int __stdcall OnReplyList(WPARAM wParam, LPARAM lParam)
 	{
 	  //Pobieranie identyfikatora kontaktu
 	  UnicodeString JID = (wchar_t*)ReplyListContact.JID;
+	  //Pobranie nicku kontaktu
+	  UnicodeString Nick = (wchar_t*)ReplyListContact.Nick;
 	  //Pobieranie i zapisywanie nicku kontatku
-	  ContactsNickList->WriteString("Nick",JID,(wchar_t*)ReplyListContact.Nick);
+	  ContactsNickList->WriteString("Nick",JID,Nick);
 	}
   }
 
@@ -2331,7 +2344,7 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
 {
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,4,1,0);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,4,2,0);
   PluginInfo.Description = L"Wtyczka s³u¿y do informowania naszych znajomych o tym co aktualnie s³uchamy w odtwarzaczu plików audio. Informowanie odbywa siê poprzez zmianê naszego opisu oraz opcjonalnie poprzez wysy³anie notyfikacji User Tune (XEP-0118) w sieci Jabber.";
   PluginInfo.Author = L"Krzysztof Grochocki (Beherit)";
   PluginInfo.AuthorMail = L"kontakt@beherit.pl";
