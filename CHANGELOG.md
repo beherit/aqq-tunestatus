@@ -1,3 +1,7 @@
+2.4.2.0
+-----
+* Drobne poprawki w kodzie.
+
 2.4.1.0
 -----
 * Obsługa kolorystyki stylizacji okien (barwa i nasycenie).
