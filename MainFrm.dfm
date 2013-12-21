@@ -1,6 +1,7 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
+  ActiveControl = AutoModeCheckListBoxPreview
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'TuneStatus - ustawienia'
@@ -265,25 +266,13 @@ object MainForm: TMainForm
       end
     end
     object StatusTabSheet: TsTabSheet
-      Caption = 'Wygl'#261'd opisu'
+      Caption = 'Zmiana opisu'
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      DesignSize = (
-        292
-        268)
-      object Bevel1: TsBevel
-        Left = 9
-        Top = 144
-        Width = 274
-        Height = 4
-        Anchors = [akLeft, akTop, akRight]
-        Shape = bsTopLine
-        ExplicitWidth = 271
-      end
       object SetStatuslLabel: TsLabel
-        Left = 151
-        Top = 161
+        Left = 150
+        Top = 140
         Width = 116
         Height = 13
         Caption = 's od rozpocz'#281'cia utworu'
@@ -296,7 +285,7 @@ object MainForm: TMainForm
       end
       object TagsBox: TsComboBox
         Left = 17
-        Top = 8
+        Top = 32
         Width = 256
         Height = 21
         Alignment = taLeftJustify
@@ -310,6 +299,7 @@ object MainForm: TMainForm
         BoundLabel.MaxWidth = 0
         BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
+        VerticalAlignment = taAlignTop
         Style = csDropDownList
         Font.Charset = EASTEUROPE_CHARSET
         Font.Color = clWindowText
@@ -318,7 +308,7 @@ object MainForm: TMainForm
         Font.Style = []
         ItemIndex = -1
         ParentFont = False
-        TabOrder = 0
+        TabOrder = 1
         OnCloseUp = TagsBoxCloseUp
         OnSelect = TagsBoxSelect
         OnDropDown = TagsBoxDropDown
@@ -332,7 +322,7 @@ object MainForm: TMainForm
       end
       object SongFromFile: TsMemo
         Left = 18
-        Top = 105
+        Top = 106
         Width = 256
         Height = 25
         TabStop = False
@@ -343,7 +333,7 @@ object MainForm: TMainForm
         Font.Style = []
         ParentFont = False
         ReadOnly = True
-        TabOrder = 6
+        TabOrder = 3
         Visible = False
         WordWrap = False
         BoundLabel.Indent = 0
@@ -359,9 +349,9 @@ object MainForm: TMainForm
       end
       object PreviewStatusMemo: TsMemo
         Left = 18
-        Top = 35
+        Top = 59
         Width = 256
-        Height = 96
+        Height = 72
         Hint = 'W opisie musi wyst'#261'pi'#263' tag CC_TUNESTATUS'
         Font.Charset = EASTEUROPE_CHARSET
         Font.Color = clWindowText
@@ -373,7 +363,7 @@ object MainForm: TMainForm
         ParentShowHint = False
         ScrollBars = ssVertical
         ShowHint = True
-        TabOrder = 1
+        TabOrder = 2
         OnChange = aAllowApplyExecute
         BoundLabel.Indent = 0
         BoundLabel.Font.Charset = DEFAULT_CHARSET
@@ -386,53 +376,9 @@ object MainForm: TMainForm
         BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'EDIT'
       end
-      object SetOnlyInJabberCheckBox: TsCheckBox
-        Left = 17
-        Top = 244
-        Width = 224
-        Height = 20
-        Caption = 'Ustawiaj opis tylko na kontach sieci Jabber'
-        TabOrder = 5
-        OnClick = aAllowApplyExecute
-        SkinData.SkinSection = 'CHECKBOX'
-        ImgChecked = 0
-        ImgUnchecked = 0
-      end
-      object BlockInvisibleCheckBox: TsCheckBox
-        Left = 17
-        Top = 218
-        Width = 223
-        Height = 20
-        Caption = 'Nie ustawiaj opisu przy stanie niewidoczny'
-        Checked = True
-        State = cbChecked
-        TabOrder = 4
-        OnClick = aAllowApplyExecute
-        SkinData.SkinSection = 'CHECKBOX'
-        ImgChecked = 0
-        ImgUnchecked = 0
-      end
-      object IgnorePluginsCheckBox: TsCheckBox
-        Left = 48
-        Top = 184
-        Width = 193
-        Height = 28
-        Caption = 
-          'Funkcja nieaktywna przy pobieraniu danych z wtyczek np. AQQ Radi' +
-          'o'
-        AutoSize = False
-        Checked = True
-        State = cbChecked
-        TabOrder = 3
-        OnClick = aAllowApplyExecute
-        SkinData.SkinSection = 'CHECKBOX'
-        ImgChecked = 0
-        ImgUnchecked = 0
-        WordWrap = True
-      end
       object SetStatusSpin: TsSpinEdit
-        Left = 107
-        Top = 158
+        Left = 106
+        Top = 137
         Width = 38
         Height = 21
         Font.Charset = EASTEUROPE_CHARSET
@@ -441,7 +387,7 @@ object MainForm: TMainForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 4
         Text = '5'
         OnChange = aAllowApplyExecute
         SkinData.SkinSection = 'EDIT'
@@ -460,39 +406,13 @@ object MainForm: TMainForm
         MinValue = 4
         Value = 5
       end
-    end
-    object OtherTabSheet: TsTabSheet
-      Caption = 'Inne'
-      ImageIndex = 2
-      OnShow = OtherTabSheetShow
-      SkinData.CustomColor = False
-      SkinData.CustomFont = False
-      DesignSize = (
-        292
-        268)
-      object Bevel2: TsBevel
-        Left = 9
-        Top = 66
-        Width = 274
-        Height = 4
-        Anchors = [akLeft, akTop, akRight]
-        Shape = bsTopLine
-      end
-      object Bevel3: TsBevel
-        Left = 9
-        Top = 175
-        Width = 274
-        Height = 4
-        Anchors = [akLeft, akTop, akRight]
-        Shape = bsTopLine
-      end
       object EnableOnStartCheckBox: TsCheckBox
         Left = 6
-        Top = 6
-        Width = 276
+        Top = 198
+        Width = 211
         Height = 20
-        Caption = 'Aktywuj dzia'#322'anie wtyczki wraz z uruchomieniem AQQ'
-        TabOrder = 0
+        Caption = 'Aktywuj funkcj'#281' zmian'#281' opisu na starcie'
+        TabOrder = 7
         OnClick = aAllowApplyExecute
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -500,47 +420,16 @@ object MainForm: TMainForm
       end
       object FastAccessCheckBox: TsCheckBox
         Left = 6
-        Top = 29
-        Width = 256
+        Top = 224
+        Width = 260
         Height = 28
         Caption = 
-          'Pokazuj przycisk szybkiego w'#322#261'czenia/wy'#322#261'czenia dzia'#322'ania wtyczk' +
-          'i'
+          'Pokazuj przycisk szybkiego w'#322#261'czenia/wy'#322#261'czenia funkcji zmiany o' +
+          'pisu'
         AutoSize = False
         Checked = True
         State = cbChecked
-        TabOrder = 1
-        OnClick = aAllowApplyExecute
-        SkinData.SkinSection = 'CHECKBOX'
-        ImgChecked = 0
-        ImgUnchecked = 0
-        WordWrap = True
-      end
-      object CutRadiostationNameCheckBox: TsCheckBox
-        Left = 6
-        Top = 76
-        Width = 263
-        Height = 28
-        Caption = 
-          'Ucinaj nazw'#281' radiostacji przy pobieraniu utworu z wtyczki AQQ Ra' +
-          'dio'
-        AutoSize = False
-        Checked = True
-        State = cbChecked
-        TabOrder = 2
-        OnClick = aAllowApplyExecute
-        SkinData.SkinSection = 'CHECKBOX'
-        ImgChecked = 0
-        ImgUnchecked = 0
-        WordWrap = True
-      end
-      object CutWWWCheckBox: TsCheckBox
-        Left = 6
-        Top = 110
-        Width = 255
-        Height = 20
-        Caption = 'Wycinaj adresy stron WWW z pobranego utworu'
-        TabOrder = 3
+        TabOrder = 8
         OnClick = aAllowApplyExecute
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -549,12 +438,12 @@ object MainForm: TMainForm
       end
       object AutoTurnOffCheckBox: TsCheckBox
         Left = 6
-        Top = 134
-        Width = 163
+        Top = 164
+        Width = 190
         Height = 28
-        Caption = 'Wy'#322#261'cz dzia'#322'anie wtyczki gdy utw'#243'r nie zmienia si'#281' od (min)'
+        Caption = 'Wy'#322#261'cz funkcj'#281' zmiany opisu kiedy utw'#243'r nie zmienia si'#281' od (min)'
         AutoSize = False
-        TabOrder = 4
+        TabOrder = 5
         OnClick = AutoTurnOffCheckBoxClick
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -562,8 +451,8 @@ object MainForm: TMainForm
         WordWrap = True
       end
       object AutoTurnOffSpin: TsSpinEdit
-        Left = 175
-        Top = 138
+        Left = 202
+        Top = 168
         Width = 38
         Height = 21
         Font.Charset = EASTEUROPE_CHARSET
@@ -572,7 +461,7 @@ object MainForm: TMainForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 5
+        TabOrder = 6
         Text = '5'
         OnChange = aAllowApplyExecute
         SkinData.SkinSection = 'EDIT'
@@ -589,19 +478,15 @@ object MainForm: TMainForm
         MinValue = 5
         Value = 5
       end
-      object MovieExceptionCheckBox: TsCheckBox
-        Left = 6
-        Top = 184
-        Width = 261
-        Height = 28
-        Caption = 
-          'Nie pobieraj aktualnie odtwarzanych film'#243'w wideo (.avi .mpg .mpe' +
-          'g .rmvb)'
+      object RunPluginCheckBox: TsCheckBox
+        Left = 18
+        Top = 6
+        Width = 256
+        Height = 20
+        Caption = 'W'#322#261'cz/wy'#322#261'cz funkcj'#281' zmiany opisu'
         AutoSize = False
-        Checked = True
-        State = cbChecked
-        TabOrder = 6
-        OnClick = aAllowApplyExecute
+        TabOrder = 0
+        OnClick = RunPluginCheckBoxClick
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
         ImgUnchecked = 0
@@ -614,19 +499,16 @@ object MainForm: TMainForm
       OnShow = UserTuneTabSheetShow
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      DesignSize = (
-        292
-        268)
       object UserTuneLabel: TsLabel
         Left = 23
-        Top = 204
-        Width = 245
+        Top = 132
+        Width = 242
         Height = 39
         Alignment = taCenter
         Caption = 
           'Obs'#322'uga User Tune (XEP-0118) jest przeznaczona tylko i wy'#322#261'cznie' +
-          ' dla sieci Jabber. Funkcja jest niezale'#380'na od aktywacji wtyczki ' +
-          '(ustawianie opisu)!'
+          ' dla sieci Jabber. Funkcja jest niezale'#380'na od aktywacji funkcji ' +
+          'zmiany opisu!'
         Enabled = False
         ParentFont = False
         WordWrap = True
@@ -636,37 +518,21 @@ object MainForm: TMainForm
         Font.Name = 'Tahoma'
         Font.Style = []
       end
-      object Bevel5: TsBevel
-        Left = 9
-        Top = 194
-        Width = 274
-        Height = 4
-        Anchors = [akLeft, akTop, akRight]
-        Shape = bsTopLine
-      end
-      object Bevel4: TsBevel
-        Left = 9
-        Top = 112
-        Width = 274
-        Height = 4
-        Anchors = [akLeft, akTop, akRight]
-        Shape = bsTopLine
-      end
       object UserTuneSendLabel: TsLabel
         Left = 166
-        Top = 81
+        Top = 43
         Width = 116
         Height = 13
         Caption = 's od rozpocz'#281'cia utworu'
       end
       object UserTuneNotificationCheckBox: TsCheckBox
         Left = 6
-        Top = 122
-        Width = 189
+        Top = 67
+        Width = 194
         Height = 28
         Caption = 'Powiadamiaj o aktualnie s'#322'uchanych przez znajomych utworach'
         AutoSize = False
-        TabOrder = 3
+        TabOrder = 2
         OnClick = UserTuneNotificationCheckBoxClick
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -675,10 +541,10 @@ object MainForm: TMainForm
       end
       object UserTuneNotificationSpin: TsSpinEdit
         Left = 204
-        Top = 160
+        Top = 105
         Width = 38
         Height = 21
-        TabOrder = 5
+        TabOrder = 4
         Text = '6'
         OnChange = aAllowApplyExecute
         SkinData.SkinSection = 'EDIT'
@@ -713,10 +579,10 @@ object MainForm: TMainForm
       end
       object UserTuneSendSpin: TsSpinEdit
         Left = 122
-        Top = 78
+        Top = 40
         Width = 38
         Height = 21
-        TabOrder = 2
+        TabOrder = 1
         Text = '5'
         OnChange = aAllowApplyExecute
         SkinData.SkinSection = 'EDIT'
@@ -735,59 +601,40 @@ object MainForm: TMainForm
         MinValue = 4
         Value = 5
       end
-      object IgnoreCoreUserTuneCheckBox: TsCheckBox
-        Left = 16
-        Top = 40
-        Width = 267
-        Height = 28
-        Caption = 
-          'Wymuszaj dzia'#322'anie z odtwarzaczami obs'#322'ugiwanymi przez AQQ oraz ' +
-          'z wtyczk'#261' AQQ Radio'
-        AutoSize = False
-        TabOrder = 1
-        OnClick = aAllowApplyExecute
-        SkinData.SkinSection = 'CHECKBOX'
-        ImgChecked = 0
-        ImgUnchecked = 0
-        WordWrap = True
-      end
       object UserTuneExceptionButton: TsButton
         Left = 206
-        Top = 126
+        Top = 71
         Width = 68
         Height = 20
         Caption = 'Wyj'#261'tki...'
-        TabOrder = 4
+        TabOrder = 3
         OnClick = UserTuneExceptionButtonClick
         SkinData.SkinSection = 'BUTTON'
       end
     end
   end
-  object RunPluginCheckBox: TsCheckBox
-    Left = 14
-    Top = 319
-    Width = 105
-    Height = 20
-    Caption = 'Wtyczka aktywna'
-    TabOrder = 3
-    OnClick = RunPluginCheckBoxClick
-    SkinData.SkinSection = 'CHECKBOX'
-    ImgChecked = 0
-    ImgUnchecked = 0
-  end
   object OKButton: TsButton
-    Left = 149
+    Left = 68
     Top = 316
     Width = 75
     Height = 25
     Caption = 'OK'
-    TabOrder = 2
+    TabOrder = 3
     OnClick = OKButtonClick
     SkinData.SkinSection = 'BUTTON'
   end
+  object CancelButton: TButton
+    Left = 149
+    Top = 316
+    Width = 75
+    Height = 25
+    Caption = 'Anuluj'
+    TabOrder = 2
+    OnClick = aExitExecute
+  end
   object ActionList: TActionList
-    Left = 219
-    Top = 320
+    Left = 187
+    Top = 272
     object aLoadSettings: TAction
       Caption = 'aLoadSettings'
       OnExecute = aLoadSettingsExecute
@@ -839,14 +686,6 @@ object MainForm: TMainForm
       OnClick = iTunesDownloadClick
     end
   end
-  object SongbirdPopupMenu: TPopupMenu
-    Left = 280
-    Top = 288
-    object SongbirdDownload: TMenuItem
-      Caption = 'Pobierz rozszerzenie'
-      OnClick = SongbirdDownloadClick
-    end
-  end
   object sSkinManager: TsSkinManager
     ExtendedBorders = True
     Active = False
@@ -882,8 +721,8 @@ object MainForm: TMainForm
     ThirdParty.ThirdUpDown = ' '
     ThirdParty.ThirdScrollBar = ' '
     ThirdParty.ThirdStaticText = ' '
-    Left = 280
-    Top = 320
+    Left = 256
+    Top = 272
   end
   object sSkinProvider: TsSkinProvider
     AddedTitle.Font.Charset = DEFAULT_CHARSET
@@ -893,7 +732,7 @@ object MainForm: TMainForm
     AddedTitle.Font.Style = []
     SkinData.SkinSection = 'FORM'
     TitleButtons = <>
-    Left = 248
-    Top = 320
+    Left = 224
+    Top = 272
   end
 end

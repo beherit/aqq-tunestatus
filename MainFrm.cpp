@@ -58,7 +58,6 @@ __declspec(dllimport)void UpdateTuneStatusFastOperation(bool Enabled);
 __declspec(dllimport)void FastOperation(bool FromForm);
 __declspec(dllimport)void LoadSettings();
 __declspec(dllimport)void ChangeUserTuneStatus(bool Enabled);
-__declspec(dllimport)void TurnOffCoreUserTune();
 __declspec(dllimport)void ForceChangeStatus();
 //---------------------------------------------------------------------------
 UnicodeString AutoModeListText;
@@ -139,8 +138,6 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
    AutoModeCheckListBoxPreview->Items->Add("Screamer Radio");
   if(AutoModeCheckListBoxPreview->Items->IndexOf("aTunes")==-1)
    AutoModeCheckListBoxPreview->Items->Add("aTunes");
-  if(AutoModeCheckListBoxPreview->Items->IndexOf("Songbird")==-1)
-   AutoModeCheckListBoxPreview->Items->Add("Songbird");
   if(AutoModeCheckListBoxPreview->Items->IndexOf("Last.fm Player")==-1)
    AutoModeCheckListBoxPreview->Items->Add("Last.fm Player");
   //Dodanie tekstu do TagsBox i ustawienie go jako element pokazywany
@@ -157,8 +154,6 @@ void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
   //Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
   TagsBox->Items->Delete(6);
-  //Odczyt ustawien
-  aLoadSettings->Execute();
 }
 //---------------------------------------------------------------------------
 
@@ -168,8 +163,6 @@ void __fastcall TMainForm::SaveButtonClick(TObject *Sender)
   aSaveSettings->Execute();
   //Odczyt ustawien w rdzeniu wtyczki
   LoadSettings();
-  //Wylaczanie obslugi User Tune w rdzeniu AQQ
-  if((UserTuneSendCheckBox->Checked)&&(IgnoreCoreUserTuneCheckBox->Checked)) TurnOffCoreUserTune();
   //Wlaczenie/wylaczenie obslugi User Tune
   ChangeUserTuneStatus(UserTuneSendCheckBox->Checked);
   //Wymuszenie natychmiastowego ustawienienia w opisie dokonanych zmian
@@ -187,8 +180,6 @@ void __fastcall TMainForm::OKButtonClick(TObject *Sender)
   aSaveSettings->Execute();
   //Odczyt ustawien w rdzeniu wtyczki
   LoadSettings();
-  //Wylaczanie obslugi User Tune w rdzeniu AQQ
-  if((UserTuneSendCheckBox->Checked)&&(IgnoreCoreUserTuneCheckBox->Checked)) TurnOffCoreUserTune();
   //Wlaczenie/wylaczenie obslugi User Tune
   ChangeUserTuneStatus(UserTuneSendCheckBox->Checked);
   //Wymuszenie natychmiastowego ustawienienia w opisie dokonanych zmian
@@ -279,13 +270,6 @@ void __fastcall TMainForm::AutoModeCheckListBoxPreviewMouseMove(
 	  AutoModeCheckListBoxPreview->PopupMenu = iTunesPopupMenu;
 	  AutoModeCheckListBoxPreview->Cursor = crHelp;
 	}
-	//Songbird
-	else if(AutoModeCheckListBoxPreview->Items->Strings[AutoModeCheckListBoxPreview->ItemAtPos(Point,true)]=="Songbird")
-	{
-	  AutoModeCheckListBoxPreview->Hint = "Do obs³ugi potrzebne jest rozszerzenie Birdtitle zainstalowane w Songbird";
-	  AutoModeCheckListBoxPreview->PopupMenu = SongbirdPopupMenu;
-	  AutoModeCheckListBoxPreview->Cursor = crHelp;
-	}
 	//Inne
 	else
 	{
@@ -299,25 +283,19 @@ void __fastcall TMainForm::AutoModeCheckListBoxPreviewMouseMove(
 
 void __fastcall TMainForm::FoobarDownloadClick(TObject *Sender)
 {
-  ShellExecute(NULL, L"open", L"http://beherit.pl/download/Foobar2000.zip", NULL, NULL, SW_SHOWNORMAL);
+  ShellExecute(NULL, L"open", L"http://beherit.pl/download/tunestatus-addon-foobar2000/", NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::WMPDownloadClick(TObject *Sender)
 {
-  ShellExecute(NULL, L"open", L"http://beherit.pl/download/WMP.zip", NULL, NULL, SW_SHOWNORMAL);
+  ShellExecute(NULL, L"open", L"http://beherit.pl/download/tunestatus-addon-wmp/", NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TMainForm::iTunesDownloadClick(TObject *Sender)
 {
-  ShellExecute(NULL, L"open", L"http://beherit.pl/download/iTunes.zip", NULL, NULL, SW_SHOWNORMAL);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TMainForm::SongbirdDownloadClick(TObject *Sender)
-{
-  ShellExecute(NULL, L"open", L"http://addons.songbirdnest.com/addon/42", NULL, NULL, SW_SHOWNORMAL);
+  ShellExecute(NULL, L"open", L"http://beherit.pl/download/tunestatus-addon-itunes/", NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 
@@ -395,7 +373,6 @@ void __fastcall TMainForm::UserTuneSendCheckBoxClick(TObject *Sender)
 {
   UserTuneSendLabel->Enabled = UserTuneSendCheckBox->Checked;
   UserTuneSendSpin->Enabled = UserTuneSendCheckBox->Checked;
-  IgnoreCoreUserTuneCheckBox->Enabled = UserTuneSendCheckBox->Checked;
   //Wlaczenie przycisku zastosuj
   SaveButton->Enabled = true;
 }
@@ -455,7 +432,7 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
 	  else if(StrToInt(PlayerID)==9) PlayerID = "Wtyczki (np. AQQ Radio)";
 	  else if(StrToInt(PlayerID)==10) PlayerID = "Screamer Radio";
 	  else if(StrToInt(PlayerID)==11) PlayerID = "aTunes";
-	  else if(StrToInt(PlayerID)==12) PlayerID = "Songbird";
+	  else if(StrToInt(PlayerID)==12) PlayerID = "FREE_ID";
 	  else if(StrToInt(PlayerID)==13) PlayerID = "Last.fm Player";
 	  else if(StrToInt(PlayerID)==14) PlayerID = "VLC media player";
 	  else if(StrToInt(PlayerID)==15) PlayerID = "Spotify";
@@ -464,48 +441,36 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
 	  AutoModeCheckListBoxPreview->Checked[Count] = StrToBool(Enabled);
 	}
   }
+  //Pozostalosci po Songbird
+  if(AutoModeCheckListBoxPreview->Items->IndexOf("FREE_ID")!=-1)
+   AutoModeCheckListBoxPreview->Items->Delete(AutoModeCheckListBoxPreview->Items->IndexOf("FREE_ID"));
   AutoModeListText = AutoModeCheckListBoxPreview->Items->Text;
   //Wyglad opisu
   PreviewStatusMemo->Text = UTF8ToUnicodeString((IniStrToStr(Ini->ReadString("Settings", "Status", "Obecnie s³ucham: CC_TUNESTATUS"))).w_str());
   //Opoznienie ustawiania nowego opisu
   SetStatusSpin->Value = Ini->ReadInteger("Settings", "SetStatusDelay", 5);
-  //Ignorowanie wtyczek w opoznieniu ustawiania nowego opisu
-  IgnorePluginsCheckBox->Checked = Ini->ReadBool("Settings", "IgnorePlugins", true);
-  //Nie ustawianie opisu przy stanie niewidocznym
-  BlockInvisibleCheckBox->Checked = Ini->ReadBool("Settings", "BlockInvisible", true);
-  //Ustawianie opisu tylko w sieci Jabber
-  SetOnlyInJabberCheckBox->Checked = Ini->ReadBool("Settings", "SetOnlyInJabber", false);
   //Wlaczanie dzialnia wtyczki wraz z uruchomieniem
   EnableOnStartCheckBox->Checked = Ini->ReadBool("Settings", "EnableOnStart", false);
   ////Pokazywanie przycisku szybkiego wlaczania/wylaczania dzialnia wtyczki
   FastAccessCheckBox->Checked = Ini->ReadBool("Settings", "FastAccess", true);
-  //Usuwanie nazwy radiostacji przy pobieraniu utworu z wtyczki AQQ Radio
-  CutRadiostationNameCheckBox->Checked = Ini->ReadBool("Settings", "CutRadiostationName", true);
-  //Usuwanie adresow URL z pobranych danych
-  CutWWWCheckBox->Checked = Ini->ReadBool("Settings", "CutWWW", false);
   //Automatyczne wylaczanie dzialania wtyczki przy bezczynnosci
   AutoTurnOffCheckBox->Checked = Ini->ReadBool("Settings", "AutoTurnOff", false);
   AutoTurnOffSpin->Enabled = AutoTurnOffCheckBox->Checked;
   //Czas automatycznego wylaczania dzialania wtyczki przy bezczynnosci
   AutoTurnOffSpin->Value = Ini->ReadInteger("Settings", "AutoTurnOffDelay", 15);
-  //Blokowanie danych z filmow wideo
-  MovieExceptionCheckBox->Checked = Ini->ReadBool("Settings", "MovieException", true);
+  //User Tune - informowanie o aktualnym odtwarzanym przez nas utworze
+  UserTuneSendCheckBox->Checked = Ini->ReadBool("UserTune", "Send", false);
+  UserTuneSendLabel->Enabled = UserTuneSendCheckBox->Checked;
+  UserTuneSendSpin->Enabled = UserTuneSendCheckBox->Checked;
+  //User Tune - opoznienie wysylania nowego odtwarzanego utworu
+  UserTuneSendSpin->Value = Ini->ReadInteger("UserTune", "SendDelay", 5);
+  if(UserTuneSendSpin->Value<4) UserTuneSendSpin->Value = 4;
   //User Tune - powiadomienie o aktualnych sluchanych utworach przez inne kontakty
   UserTuneNotificationCheckBox->Checked = Ini->ReadBool("UserTune", "Notification", false);
   UserTuneNotificationSpin->Enabled = UserTuneNotificationCheckBox->Checked;
   UserTuneExceptionButton->Enabled = UserTuneNotificationCheckBox->Checked;
   //User Tune - czas wyswietlania chmurki informacyjnej
   UserTuneNotificationSpin->Value = Ini->ReadInteger("UserTune", "Cloud", 6);
-  //User Tune - informowanie o aktualnym odtwarzanym przez nas utworze
-  UserTuneSendCheckBox->Checked = Ini->ReadBool("UserTune", "Send", false);
-  UserTuneSendLabel->Enabled = UserTuneSendCheckBox->Checked;
-  UserTuneSendSpin->Enabled = UserTuneSendCheckBox->Checked;
-  IgnoreCoreUserTuneCheckBox->Enabled = UserTuneSendCheckBox->Checked;
-  //User Tune - opoznienie wysylania nowego odtwarzanego utworu
-  UserTuneSendSpin->Value = Ini->ReadInteger("UserTune", "SendDelay", 5);
-  if(UserTuneSendSpin->Value<4) UserTuneSendSpin->Value = 4;
-  //User Tune - wymuszanie dzialania z Winamp oraz Foobar2000
-  IgnoreCoreUserTuneCheckBox->Checked = Ini->ReadBool("UserTune", "IgnoreCore", false);
 
   delete Ini;
 }
@@ -516,10 +481,11 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
   //Ustawianie domyslnego opisu
   if(!PreviewStatusMemo->Text.Pos("CC_TUNESTATUS"))
    PreviewStatusMemo->Text = "Obecnie s³ucham: CC_TUNESTATUS";
-
+  //Wczytanie pliku INI
   TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
   //Zapis ustawien trybu automatycznego
-  for(int Count=0;Count<15;Count++)
+  Ini->EraseSection("AutoMode");
+  for(int Count=0;Count<14;Count++)
   {
 	UnicodeString Player = AutoModeCheckListBoxPreview->Items->Strings[Count];
 	if(Player=="Winamp/AIMP/KMPlayer") Player = 1;
@@ -533,7 +499,7 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 	else if(Player=="Wtyczki (np. AQQ Radio)") Player = 9;
 	else if(Player=="Screamer Radio") Player = 10;
 	else if(Player=="aTunes") Player = 11;
-	else if(Player=="Songbird") Player = 12;
+	//else if(Player=="FREE_ID") Player = 12;
 	else if(Player=="Last.fm Player") Player = 13;
 	else if(Player=="VLC media player") Player = 14;
 	else if(Player=="Spotify") Player = 15;
@@ -543,10 +509,6 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
   //Status
   ShortString StatusShort = UTF8EncodeToShortString(PreviewStatusMemo->Text);
   Ini->WriteString("Settings", "Status", StrToIniStr(StatusShort.operator AnsiString()));
-  //SetOnlyInJabber
-  Ini->WriteBool("Settings", "SetOnlyInJabber", SetOnlyInJabberCheckBox->Checked);
-  //BlockInvisible
-  Ini->WriteBool("Settings", "BlockInvisible", BlockInvisibleCheckBox->Checked);
   //EnableOnStart
   Ini->WriteBool("Settings", "EnableOnStart", EnableOnStartCheckBox->Checked);
   //FastAccess
@@ -555,29 +517,19 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
   if(FastAccessCheckBox->Checked) BuildTuneStatusFastOperation();
   //SetStatusDelay
   Ini->WriteInteger("Settings", "SetStatusDelay", SetStatusSpin->Value);
-  //IgnorePlugins
-  Ini->WriteBool("Settings", "IgnorePlugins", IgnorePluginsCheckBox->Checked);
-  //CutRadiostationName
-  Ini->WriteBool("Settings", "CutRadiostationName", CutRadiostationNameCheckBox->Checked);
-  //CutWWW
-  Ini->WriteBool("Settings", "CutWWW", CutWWWCheckBox->Checked);
   //AutoTurnOff
   Ini->WriteBool("Settings", "AutoTurnOff", AutoTurnOffCheckBox->Checked);
   //AutoTurnOffDelay
   Ini->WriteInteger("Settings", "AutoTurnOffDelay", AutoTurnOffSpin->Value);
-  //MovieException
-  Ini->WriteBool("Settings", "MovieException", MovieExceptionCheckBox->Checked);
-  //Notification
-  Ini->WriteBool("UserTune", "Notification", UserTuneNotificationCheckBox->Checked);
-  //Cloud
-  Ini->WriteInteger("UserTune", "Cloud", UserTuneNotificationSpin->Value);
   //Send
   Ini->WriteBool("UserTune", "Send", UserTuneSendCheckBox->Checked);
   //SendDelay
   Ini->WriteInteger("UserTune", "SendDelay", UserTuneSendSpin->Value);
-  //IgnoreCore
-  Ini->WriteBool("UserTune", "IgnoreCore", IgnoreCoreUserTuneCheckBox->Checked);
-
+  //Notification
+  Ini->WriteBool("UserTune", "Notification", UserTuneNotificationCheckBox->Checked);
+  //Cloud
+  Ini->WriteInteger("UserTune", "Cloud", UserTuneNotificationSpin->Value);
+  //Zwolnienie pliku INI
   delete Ini;
 }
 //---------------------------------------------------------------------------
@@ -600,12 +552,11 @@ void __fastcall TMainForm::aResetSettingsExecute(TObject *Sender)
   AutoModeCheckListBoxPreview->Items->Add("Wtyczki (np. AQQ Radio)");
   AutoModeCheckListBoxPreview->Items->Add("Screamer Radio");
   AutoModeCheckListBoxPreview->Items->Add("aTunes");
-  AutoModeCheckListBoxPreview->Items->Add("Songbird");
   AutoModeCheckListBoxPreview->Items->Add("Last.fm Player");
   //Zaznaczanie/odznaczanie odpowiednich checkbox'ow
   for(int Count=0;Count<11;Count++)
    AutoModeCheckListBoxPreview->Checked[Count] = true;
-  for(int Count=11;Count<15;Count++)
+  for(int Count=11;Count<14;Count++)
    AutoModeCheckListBoxPreview->Checked[Count] = false;
   //Wlaczenie przycisku zastosuj
   SaveButton->Enabled = true;

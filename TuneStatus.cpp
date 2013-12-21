@@ -50,29 +50,21 @@ int FASTACCESS_OFF;
 HWND hTimerFrm; //Uchwyt do okna timera
 HWND VCLWindowHwnd; //Uchwyt do okna VLC media player
 HWND LastfmWindowHwnd; //Uchwyt do okna Last.fm Player
-HWND SongbirdWindowHwnd; //Uchwyt do okna Songbird
 HWND ScreamerRadioWindowHwnd; //Uchwyt do okna Screamer Radio
 HWND aTunesWindowHwnd; //Uchwyt do okna iTunes
 //SETTINGS-------------------------------------------------------------------
 TStringList *SupportedPlayers = new TStringList;
 UnicodeString StatusLook;
 int SetStatusDelayChk;
-bool IgnorePluginsChk;
-bool BlockInvisibleChk;
-bool SetOnlyInJabberChk;
 bool EnableOnStartChk;
 bool FastAccessChk;
-bool CutRadiostationNameChk;
-bool CutURLChk;
 bool AutoTurnOffChk;
 int AutoTurnOffDelayChk;
-bool MovieExceptionChk;
 bool UserTuneNotifChk;
 TStringList *UserTuneExceptions = new TStringList;
 int UserTuneCloudChk;
 bool UserTuneSendChk;
 int UserTuneSendDelayChk;
-bool UserTuneIgnoreCoreChk;
 //Inne-----------------------------------------------------------------------
 UnicodeString Status; //Pobrany z odtwarzaczy utwor i sformatowany na nowy opis
 UnicodeString StartStatus; //Opis startowy
@@ -89,6 +81,7 @@ int GetStatusTimerInterval = 0; //Interwal timera pobieranie aktualnego opisu
 UnicodeString iTunesPath; //Sciezka do procesu iTunes
 TMemIniFile* ContactsNickList = new TMemIniFile(ChangeFileExt(Application->ExeName, ".INI")); //Lista JID wraz z nickami
 DWORD ReplyListID = 0; //ID wywolania enumeracji listy kontaktow
+bool BlockUserTuneSend = false; //Blokada User Tune przez wtyczke Auto-Tune ShortCut
 //TIMERY---------------------------------------------------------------------
 #define TIMER_ALLOWUSERTUNE 10
 #define TIMER_GETSTATUS 20
@@ -110,22 +103,21 @@ UnicodeString GetDataFromALSong();
 UnicodeString GetDataFromPlugins();
 UnicodeString GetDataFromScreamerRadio();
 UnicodeString GetDataFromaTunes();
-UnicodeString GetDataFromSongbird();
 UnicodeString GetDataFromLastFM();
 UnicodeString GetDataFromVCL();
 UnicodeString GetDataFromSpotify();
 //FORWARD-AQQ-HOOKS----------------------------------------------------------
-int __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam);
-int __stdcall OnCurrentSong(WPARAM wParam, LPARAM lParam);
-int __stdcall OnListReady(WPARAM wParam, LPARAM lParam);
-int __stdcall OnModulesLoaded(WPARAM wParam, LPARAM lParam);
-int __stdcall OnPreSetNote(WPARAM wParam, LPARAM lParam);
-int __stdcall OnReplyList(WPARAM wParam, LPARAM lParam);
-int __stdcall OnStateChange(WPARAM wParam, LPARAM lParam);
-int __stdcall OnThemeChanged(WPARAM wParam, LPARAM lParam);
-int __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam);
-int __stdcall ServiceTuneStatusFastOperationItem(WPARAM wParam, LPARAM lParam);
-int __stdcall ServiceTuneStatusFastSettingsItem(WPARAM wParam, LPARAM lParam);
+INT_PTR __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam);
+INT_PTR __stdcall OnCurrentSong(WPARAM wParam, LPARAM lParam);
+INT_PTR __stdcall OnListReady(WPARAM wParam, LPARAM lParam);
+INT_PTR __stdcall OnModulesLoaded(WPARAM wParam, LPARAM lParam);
+INT_PTR __stdcall OnPreSetNote(WPARAM wParam, LPARAM lParam);
+INT_PTR __stdcall OnReplyList(WPARAM wParam, LPARAM lParam);
+INT_PTR __stdcall OnStateChange(WPARAM wParam, LPARAM lParam);
+INT_PTR __stdcall OnThemeChanged(WPARAM wParam, LPARAM lParam);
+INT_PTR __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam);
+INT_PTR __stdcall ServiceTuneStatusFastOperationItem(WPARAM wParam, LPARAM lParam);
+INT_PTR __stdcall ServiceTuneStatusFastSettingsItem(WPARAM wParam, LPARAM lParam);
 //FORWARD-TIMER--------------------------------------------------------------
 LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 //FORWARD-OTHER-FUNCTION-----------------------------------------------------
@@ -336,13 +328,13 @@ UnicodeString GetStatus()
 //---------------------------------------------------------------------------
 
 //Ustawianie nowego opisu
-void SetStatus(UnicodeString SetStatusStatus, bool SetStatusForce)
+void SetStatus(UnicodeString SetStatusStatus)
 {
   TPluginStateChange PluginStateChange;
   PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)&PluginStateChange,0);
   PluginStateChange.cbSize = sizeof(TPluginStateChange);
   PluginStateChange.Status = SetStatusStatus.w_str();
-  PluginStateChange.Force = SetStatusForce;
+  PluginStateChange.Force = true;
   PluginLink.CallService(AQQ_SYSTEM_SETSHOWANDSTATUS,0,(LPARAM)&PluginStateChange);
 }
 //---------------------------------------------------------------------------
@@ -355,28 +347,15 @@ void ForceChangeStatus()
 //---------------------------------------------------------------------------
 
 //Sprawdzanie stanu glownego konta - czy rozny od rozlaczony/niewidoczny
-bool AllowChangeStatus(bool WithInvisible)
+bool AllowChangeStatus()
 {
-  if(WithInvisible)
-  {
-    TPluginStateChange PluginStateChange;
-	PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)&PluginStateChange,0);
-    PluginStateChange.cbSize = sizeof(TPluginStateChange);
-	if((PluginStateChange.NewState!=0)&&(PluginStateChange.NewState!=6))
-     return true;
-    else
-     return false;
-  }
+  TPluginStateChange PluginStateChange;
+  PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)&PluginStateChange,0);
+  PluginStateChange.cbSize = sizeof(TPluginStateChange);
+  if((PluginStateChange.NewState!=0)&&(PluginStateChange.NewState!=6))
+   return true;
   else
-  {
-    TPluginStateChange PluginStateChange;
-	PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)&PluginStateChange,0);
-	PluginStateChange.cbSize = sizeof(TPluginStateChange);
-	if(PluginStateChange.NewState!=0)
-     return true;
-    else
-     return false;
-  }
+   return false;
 }
 //---------------------------------------------------------------------------
 
@@ -609,38 +588,6 @@ bool CALLBACK FindLastfm(HWND hWnd, LPARAM lParam)
 	  {
 		//Przypisanie uchwytu
 		LastfmWindowHwnd = hWnd;
-		return false;
-	  }
-	}
-  }
-  return true;
-}
-//---------------------------------------------------------------------------
-
-//Szukanie okna Songbird
-bool CALLBACK FindSongbird(HWND hWnd, LPARAM lParam)
-{
-  //Pobranie klasy okna
-  wchar_t WindowCaptionNameW[512];
-  GetClassNameW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
-  UnicodeString WindowCaptionName = WindowCaptionNameW;
-  //Sprawdenie klasy okna
-  if(WindowCaptionName=="MozillaUIWindowClass")
-  {
-	//Pobranie sciezki procesu
-	UnicodeString PlayerPath = GetPathOfProces(hWnd);
-	//Sprawdzenie nazwy procesu
-	if(ExtractFileName(PlayerPath)=="songbird.exe")
-	{
-	  //Pobranie tekstu okna
-	  GetWindowTextW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
-	  WindowCaptionName = WindowCaptionNameW;
-	  //Sprawdzenie tekstu okna
-	  if((WindowCaptionName!="Birdtitle notifer")
-	  &&(!(WindowCaptionName).IsEmpty()))
-	  {
-		//Przypisanie uchwytu
-		SongbirdWindowHwnd = hWnd;
 		return false;
 	  }
 	}
@@ -1001,14 +948,10 @@ UnicodeString GetDataFromPlugins()
 	{
 	  PlayerCaption = PlayerCaption.Delete(1, PlayerCaption.Pos(":"));
 	  PlayerCaption = PlayerCaption.Trim();
-	  if(CutRadiostationNameChk)
-	  {
-		PlayerCaption = PlayerCaption.Delete(1, PlayerCaption.Pos("- "));
-		PlayerCaption = PlayerCaption.Trim();
-	  }
+	  //Usuwanie nazwy radiostacji
+	  PlayerCaption = PlayerCaption.Delete(1, PlayerCaption.Pos("- "));
+	  PlayerCaption = PlayerCaption.Trim();
 	}
-	//Symulacja pierwszego uruchomienia timera ustawiajacego nowy opis
-	if(IgnorePluginsChk) JustEnabled = true;
 	//Zwrocenie odtwarzanego utworu
 	return PlayerCaption;
   }
@@ -1071,34 +1014,6 @@ UnicodeString GetDataFromaTunes()
 	  return PlayerCaption;
 	}
 	else aTunesWindowHwnd = NULL;
-	return "";
-  }
-  return "";
-}
-//---------------------------------------------------------------------------
-
-//Pobieranie danych z Songbird
-UnicodeString GetDataFromSongbird()
-{
-  //Pobieranie uchwytu do okna odtwarzacza
-  if(!SongbirdWindowHwnd) EnumWindows((WNDENUMPROC)FindSongbird,0);
-  //Okno odtwarzacza istnieje
-  if(SongbirdWindowHwnd)
-  {
-	//Okno jest oknem :D
-	if(IsWindow(SongbirdWindowHwnd))
-	{
-	  //Pobranie tekstu okna
-	  wchar_t PlayerCaptionW[512];
-	  GetWindowTextW(SongbirdWindowHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
-	  UnicodeString PlayerCaption = PlayerCaptionW;
-	  //Pomijanie "[Stopped]" & "Songbird"
-	  if(PlayerCaption.Pos("[Stopped]")) return "";
-	  if(PlayerCaption.Pos("Songbird")) return "";
-	  //Zwrocenie odtwarzanego utworu
-	  return PlayerCaption;
-	}
-	else SongbirdWindowHwnd = NULL;
 	return "";
   }
   return "";
@@ -1203,15 +1118,9 @@ UnicodeString GetDataFromPlayers(bool UserTune)
   {
 	//Uruchomienie pobierania utworu z danego odtwarzacza
 	if(SupportedPlayers->Strings[Count]=="Winamp/AIMP/KMPlayer")
-	{
-	  if((UserTune)&&(!UserTuneIgnoreCoreChk)) { /* blokada */ }
-	  else Text = GetDataFromWinamp();
-	}
+	 Text = GetDataFromWinamp();
 	else if(SupportedPlayers->Strings[Count]=="Foobar2000")
-	{
-	  if((UserTune)&&(!UserTuneIgnoreCoreChk)) { /* blokada */ }
-	  else Text = GetDataFromFoobar();
-	}
+	 Text = GetDataFromFoobar();
 	else if(SupportedPlayers->Strings[Count]=="Windows Media Player")
 	 Text = GetDataFromWMP();
 	else if(SupportedPlayers->Strings[Count]=="VUPlayer")
@@ -1225,16 +1134,11 @@ UnicodeString GetDataFromPlayers(bool UserTune)
 	else if(SupportedPlayers->Strings[Count]=="ALSong")
 	 Text = GetDataFromALSong();
 	else if(SupportedPlayers->Strings[Count]=="Wtyczki (np. AQQ Radio)")
-	{
-	  if((UserTune)&&(!UserTuneIgnoreCoreChk)) { /* blokada */ }
-	  else Text = GetDataFromPlugins();
-	}
+	 Text = GetDataFromPlugins();
 	else if(SupportedPlayers->Strings[Count]=="Screamer Radio")
 	 Text = GetDataFromScreamerRadio();
 	else if(SupportedPlayers->Strings[Count]=="aTunes")
 	 Text = GetDataFromaTunes();
-	else if(SupportedPlayers->Strings[Count]=="Songbird")
-	 Text = GetDataFromSongbird();
 	else if(SupportedPlayers->Strings[Count]=="Last.fm Player")
 	 Text = GetDataFromLastFM();
 	else if(SupportedPlayers->Strings[Count]=="VLC media player")
@@ -1242,7 +1146,7 @@ UnicodeString GetDataFromPlayers(bool UserTune)
     else if(SupportedPlayers->Strings[Count]=="Spotify")
 	 Text = GetDataFromSpotify();
 	//Zablokowanie plikow filmowych
-	if((!Text.IsEmpty())&&(MovieExceptionChk))
+	if(!Text.IsEmpty())
 	{
 	  if(Text.LowerCase().Pos(".avi")>0) Text = "";
 	  if(Text.LowerCase().Pos(".mpg")>0) Text = "";
@@ -1270,7 +1174,7 @@ UnicodeString GetDataFromPlayers(bool UserTune)
 	  //Wycinanie numeru utworu
 	  Text = CutSongNumber(Text);
 	  //Wycianie adresow URL
-	  if(CutURLChk) Text = CutURL(Text);
+	  Text = CutURL(Text);
 	  //Zakonczenie petli
 	  Count = SupportedPlayers->Count;
 	}
@@ -1453,7 +1357,7 @@ void FastOperation(bool FromForm)
 	if(StartStatus!=TempStatus)
 	{
 	  while(GetStatus()!=StartStatus)
-	   SetStatus(StartStatus,!SetOnlyInJabberChk);
+	   SetStatus(StartStatus);
 	  TempStatus = "";
 	}
   }
@@ -1461,7 +1365,7 @@ void FastOperation(bool FromForm)
 //---------------------------------------------------------------------------
 
 //Serwis szybkiego wlaczenia/wylaczenia dzialania wtyczki
-int __stdcall ServiceTuneStatusFastOperationItem(WPARAM wParam, LPARAM lParam)
+INT_PTR __stdcall ServiceTuneStatusFastOperationItem(WPARAM wParam, LPARAM lParam)
 {
   FastOperation(false);
 
@@ -1522,7 +1426,7 @@ void BuildTuneStatusFastOperation()
 //---------------------------------------------------------------------------
 
 //Serwis otwarcia formy ustawien
-int __stdcall ServiceTuneStatusFastSettingsItem(WPARAM wParam, LPARAM lParam)
+INT_PTR __stdcall ServiceTuneStatusFastSettingsItem(WPARAM wParam, LPARAM lParam)
 {
   //Przypisanie uchwytu do formy
   if(!hMainForm)
@@ -1617,7 +1521,7 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	  if(StartStatus!=TempStatus)
 	  {
 		while(GetStatus()!=StartStatus)
-		 SetStatus(StartStatus,!SetOnlyInJabberChk);
+		 SetStatus(StartStatus);
 		TempStatus = "";
 	  }
 	  //Zasygnalizowanie dopiero co wlaczenia dzialania wtyczki
@@ -1662,7 +1566,7 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		  //Przywrocenie opisu poczatkowego
 		  TempStatus = StartStatus;
 		  while(GetStatus()!=StartStatus)
-		   SetStatus(StartStatus,!SetOnlyInJabberChk);
+		   SetStatus(StartStatus);
 		}
 	  }
 	}
@@ -1679,10 +1583,10 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		//Zatrzymanie timera automatycznego wylaczania dzialania wtyczki
 		KillTimer(hTimerFrm,TIMER_AUTOTURNOFF);
 		//Jezeli mozna ustawic nowy opis
-		if(AllowChangeStatus(BlockInvisibleChk))
+		if(AllowChangeStatus())
 		{
 		  //Ustawianie nowego opisu
-		  while(GetStatus()!=Status) SetStatus(Status,!SetOnlyInJabberChk);
+		  while(GetStatus()!=Status) SetStatus(Status);
 		  //Wlaczenie timera automatycznego wylaczania dzialania wtyczki
 		  if(AutoTurnOffChk) SetTimer(hTimerFrm,TIMER_AUTOTURNOFF,AutoTurnOffDelayChk,(TIMERPROC)TimerFrmProc);
 		}
@@ -1708,7 +1612,7 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	  if(StartStatus!=TempStatus)
 	  {
 		while(GetStatus()!=StartStatus)
-		 SetStatus(StartStatus,!SetOnlyInJabberChk);
+		 SetStatus(StartStatus);
 		TempStatus = "";
 	  }
 	}
@@ -1763,7 +1667,7 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 //---------------------------------------------------------------------------
 
 //Hook na zmianê stanu kontaktu
-int __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam)
+INT_PTR __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam)
 {
   //Pobieranie danych kontatku
   TPluginContact ContactsUpdateContact = *(PPluginContact)wParam;
@@ -1783,7 +1687,7 @@ int __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 
 //Utwor przekazany przez wtyczki np. AQQ Radio
-int __stdcall OnCurrentSong(WPARAM wParam, LPARAM lParam)
+INT_PTR __stdcall OnCurrentSong(WPARAM wParam, LPARAM lParam)
 {
   //Pobranie danych nt utworu
   TPluginSong Song = *(PPluginSong)lParam;
@@ -1794,7 +1698,7 @@ int __stdcall OnCurrentSong(WPARAM wParam, LPARAM lParam)
 }
 //---------------------------------------------------------------------------
 
-int __stdcall OnListReady(WPARAM wParam, LPARAM lParam)
+INT_PTR __stdcall OnListReady(WPARAM wParam, LPARAM lParam)
 {
   //Pobranie ID dla enumeracji kontaktów
   ReplyListID = GetTickCount();
@@ -1806,7 +1710,7 @@ int __stdcall OnListReady(WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 
 //Notyfikacja zaladowania wszystkich modulow w AQQ
-int __stdcall OnModulesLoaded(WPARAM wParam, LPARAM lParam)
+INT_PTR __stdcall OnModulesLoaded(WPARAM wParam, LPARAM lParam)
 {
   //Wlaczenie timera
   SetTimer(hTimerFrm,TIMER_ALLOWUSERTUNE,20000,(TIMERPROC)TimerFrmProc);
@@ -1816,7 +1720,7 @@ int __stdcall OnModulesLoaded(WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 
 //Notyfikacja zmiany statusu
-int __stdcall OnPreSetNote(WPARAM wParam, LPARAM lParam)
+INT_PTR __stdcall OnPreSetNote(WPARAM wParam, LPARAM lParam)
 {
   //Jezeli dzialanie wtyczki jest wlaczone
   if(AutoModeEnabled)
@@ -1842,7 +1746,7 @@ int __stdcall OnPreSetNote(WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 
 //Hook na enumeracje listy kontatkow
-int __stdcall OnReplyList(WPARAM wParam, LPARAM lParam)
+INT_PTR __stdcall OnReplyList(WPARAM wParam, LPARAM lParam)
 {
   //Sprawdzanie ID wywolania enumeracji
   if(wParam==ReplyListID)
@@ -1866,7 +1770,7 @@ int __stdcall OnReplyList(WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 
 //Notyfikacja zmiany stanu
-int __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
+INT_PTR __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
 {
   //Jezeli dzialanie wtyczki jest wlaczone i zdefiniowany opis nie jest pusty
   if((AutoModeEnabled)&&(!Status.IsEmpty()))
@@ -1875,9 +1779,8 @@ int __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
 	TPluginStateChange StateChange = *(PPluginStateChange)lParam;
 	//Pobranie nowego stanu konta
 	int NewState = StateChange.NewState;
-	//Jezeli blokowac przy niewidocznym
-	if((BlockInvisibleChk)&&(NewState==6))
-	 SetTimer(hTimerFrm,TIMER_STATECHANGED,500,(TIMERPROC)TimerFrmProc);
+	//Blokowanie przy niewidocznym
+	if(NewState==6) SetTimer(hTimerFrm,TIMER_STATECHANGED,500,(TIMERPROC)TimerFrmProc);
   }
 
   return 0;
@@ -1885,7 +1788,7 @@ int __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 
 //Hook na zmiane kompozycji
-int __stdcall OnThemeChanged(WPARAM wParam, LPARAM lParam)
+INT_PTR __stdcall OnThemeChanged(WPARAM wParam, LPARAM lParam)
 {
   //Okno ustawien zostalo juz stworzone
   if(hMainForm)
@@ -1924,7 +1827,7 @@ int __stdcall OnThemeChanged(WPARAM wParam, LPARAM lParam)
 //---------------------------------------------------------------------------
 
 //Notyfikacja otrzymywanych pakietow XML
-int __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam)
+INT_PTR __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam)
 {
   //Wlaczone powiadomienie o aktualnie sluchanym utworze + zezwolenie na notyfikacje
   if((AllowUserTune)&&(UserTuneNotifChk))
@@ -2100,12 +2003,12 @@ void LoadSettings()
 		else if(StrToInt(PlayerID)==9) PlayerID = "Wtyczki (np. AQQ Radio)";
 		else if(StrToInt(PlayerID)==10) PlayerID = "Screamer Radio";
 		else if(StrToInt(PlayerID)==11) PlayerID = "aTunes";
-		else if(StrToInt(PlayerID)==12) PlayerID = "Songbird";
+		else if(StrToInt(PlayerID)==12) PlayerID = "";
 		else if(StrToInt(PlayerID)==13) PlayerID = "Last.fm Player";
 		else if(StrToInt(PlayerID)==14) PlayerID = "VLC media player";
 		else if(StrToInt(PlayerID)==15) PlayerID = "Spotify";
 		//Dodawnie odtwarzacza do listy
-		SupportedPlayers->Add(PlayerID);
+		if(!PlayerID.IsEmpty()) SupportedPlayers->Add(PlayerID);
 	  }
 	}
   }
@@ -2114,26 +2017,21 @@ void LoadSettings()
   //Opoznienie ustawiania nowego opisu
   SetStatusDelayChk = 1000*Ini->ReadInteger("Settings", "SetStatusDelay", 5);
   if(SetStatusDelayChk<4000) SetStatusDelayChk = 4000;
-  //Ignorowanie wtyczek w opoznieniu ustawiania nowego opisu
-  IgnorePluginsChk = Ini->ReadBool("Settings", "IgnorePlugins", true);
-  //Nie ustawianie opisu przy stanie niewidocznym
-  BlockInvisibleChk = Ini->ReadBool("Settings", "BlockInvisible", true);
-  //Ustawianie opisu tylko w sieci Jabber
-  SetOnlyInJabberChk = Ini->ReadBool("Settings", "SetOnlyInJabber", false);
   //Wlaczanie dzialnia wtyczki wraz z uruchomieniem
   EnableOnStartChk = Ini->ReadBool("Settings", "EnableOnStart", false);
   //Pokazywanie przycisku szybkiego wlaczania/wylaczania dzialnia wtyczki
   FastAccessChk = Ini->ReadBool("Settings", "FastAccess", true);
-  //Usuwanie nazwy radiostacji przy pobieraniu utworu z wtyczki AQQ Radio
-  CutRadiostationNameChk = Ini->ReadBool("Settings", "CutRadiostationName", true);
-  //Usuwanie adresow URL z pobranych danych
-  CutURLChk = Ini->ReadBool("Settings", "CutWWW", false);
   //Automatyczne wylaczanie dzialania wtyczki przy bezczynnosci
   AutoTurnOffChk = Ini->ReadBool("Settings", "AutoTurnOff", false);
   //Czas automatycznego wylaczania dzialania wtyczki przy bezczynnosci
   AutoTurnOffDelayChk = 60000*Ini->ReadInteger("Settings", "AutoTurnOffDelay", 15);
-  //Blokowanie danych z filmow wideo
-  MovieExceptionChk = Ini->ReadBool("Settings", "MovieException", true);
+  //User Tune - informowanie o aktualnym odtwarzanym przez nas utworze
+  UserTuneSendChk = Ini->ReadBool("UserTune", "Send", false);
+  //Wylaczanie obslugi User Tune w rdzeniu AQQ
+  if(UserTuneSendChk) TurnOffCoreUserTune();
+  //User Tune - opoznienie wysylania nowego odtwarzanego utworu
+  UserTuneSendDelayChk = 1000*Ini->ReadInteger("UserTune", "SendDelay", 5);
+  if(UserTuneSendDelayChk<4000) UserTuneSendDelayChk = 4000;
   //User Tune - powiadomienie o aktualnych sluchanych utworach przez inne kontakty
   UserTuneNotifChk - Ini->ReadBool("UserTune", "Notification", false);
   //User Tune - wyjatki wylaczone z powiadomienia
@@ -2152,13 +2050,6 @@ void LoadSettings()
   }
   //User Tune - czas wyswietlania chmurki informacyjnej
   UserTuneCloudChk = Ini->ReadInteger("UserTune", "Cloud", 6);
-  //User Tune - informowanie o aktualnym odtwarzanym przez nas utworze
-  UserTuneSendChk = Ini->ReadBool("UserTune", "Send", false);
-  //User Tune - opoznienie wysylania nowego odtwarzanego utworu
-  UserTuneSendDelayChk = 1000*Ini->ReadInteger("UserTune", "SendDelay", 5);
-  if(UserTuneSendDelayChk<4000) UserTuneSendDelayChk = 4000;
-  //User Tune - wymuszanie dzialania z Winamp oraz Foobar2000
-  UserTuneIgnoreCoreChk = Ini->ReadBool("UserTune", "IgnoreCore", false);
   //Zwolnienie pliku INI
   delete Ini;
 }
@@ -2174,22 +2065,22 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
   if(!DirectoryExists(PluginUserDir + "\\\\TuneStatus"))
    CreateDir(PluginUserDir + "\\\\TuneStatus");
   //Wypakiwanie ikonki TuneStatus.png
-  //BD2244AC282A5ADA48B0D79CACC59426
+  //13C4EE8D3C0DC40E5C91BA6006889E05
   if(!FileExists(PluginUserDir + "\\\\TuneStatus\\\\TuneStatus.png"))
    ExtractRes((PluginUserDir + "\\\\TuneStatus\\\\TuneStatus.png").w_str(),L"FASTACCESS",L"DATA");
-  else if(MD5File(PluginUserDir + "\\\\TuneStatus\\\\TuneStatus.png")!="BD2244AC282A5ADA48B0D79CACC59426")
+  else if(MD5File(PluginUserDir + "\\\\TuneStatus\\\\TuneStatus.png")!="13C4EE8D3C0DC40E5C91BA6006889E05")
    ExtractRes((PluginUserDir + "\\\\TuneStatus\\\\TuneStatus.png").w_str(),L"FASTACCESS",L"DATA");
    //Wypakiwanie ikonki TuneStatusOn.png
-  //949CAB3FE9D12710DB496211A0D682DA
+  //13C4EE8D3C0DC40E5C91BA6006889E05
   if(!FileExists(PluginUserDir + "\\\\TuneStatus\\\\TuneStatusOn.png"))
    ExtractRes((PluginUserDir + "\\\\TuneStatus\\\\TuneStatusOn.png").w_str(),L"FASTACCESS_ON",L"DATA");
-  else if(MD5File(PluginUserDir + "\\\\TuneStatus\\\\TuneStatusOn.png")!="949CAB3FE9D12710DB496211A0D682DA")
+  else if(MD5File(PluginUserDir + "\\\\TuneStatus\\\\TuneStatusOn.png")!="13C4EE8D3C0DC40E5C91BA6006889E05")
    ExtractRes((PluginUserDir + "\\\\TuneStatus\\\\TuneStatusOn.png").w_str(),L"FASTACCESS_ON",L"DATA");
    //Wypakiwanie ikonki TuneStatusOff.png
-  //337AA693BCC4F5858C3F25590DBE200D
+  //53F17EBD9F552D104FEF9DA1DC2CFAFB
   if(!FileExists(PluginUserDir + "\\\\TuneStatus\\\\TuneStatusOff.png"))
    ExtractRes((PluginUserDir + "\\\\TuneStatus\\\\TuneStatusOff.png").w_str(),L"FASTACCESS_OFF",L"DATA");
-  else if(MD5File(PluginUserDir + "\\\\TuneStatus\\\\TuneStatusOff.png")!="337AA693BCC4F5858C3F25590DBE200D")
+  else if(MD5File(PluginUserDir + "\\\\TuneStatus\\\\TuneStatusOff.png")!="53F17EBD9F552D104FEF9DA1DC2CFAFB")
    ExtractRes((PluginUserDir + "\\\\TuneStatus\\\\TuneStatusOff.png").w_str(),L"FASTACCESS_OFF",L"DATA");
    //Wypakiwanie ikonki TuneStatus.dll.png
   //0757AC4903B8DE698B1A39E5F61AA796
@@ -2307,7 +2198,7 @@ extern "C" int __declspec(dllexport) __stdcall Unload()
 	{
       //Przywracanie poczatkowego opisu
 	  while(StartStatus!=GetStatus())
-	   SetStatus(StartStatus,!SetOnlyInJabberChk);
+	   SetStatus(StartStatus);
 	}
   }
   //Wylacznie User Tune
@@ -2344,7 +2235,7 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
 {
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,4,2,0);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,5,0,0);
   PluginInfo.Description = L"Wtyczka s³u¿y do informowania naszych znajomych o tym co aktualnie s³uchamy w odtwarzaczu plików audio. Informowanie odbywa siê poprzez zmianê naszego opisu oraz opcjonalnie poprzez wysy³anie notyfikacji User Tune (XEP-0118) w sieci Jabber.";
   PluginInfo.Author = L"Krzysztof Grochocki (Beherit)";
   PluginInfo.AuthorMail = L"kontakt@beherit.pl";

@@ -1,3 +1,13 @@
+2.5.0.0
+-----
+* Zmiana adresów URL do wymaganych dodatków dla odtwarzaczy WMP, Foobar2000 oraz iTunes.
+* Ujednolicenie wszystkich ikonek wtyczki.
+* Usunięcie z ustawień niektórych opcji (zintegrowane na stałe z rdzeniem wtyczki) oraz inne kosmetyczne zmiany GUI.
+* Usunięcie wsparcia dla odtwarzacza Songbird (nie rozwijany, brak dostępnego wymaganego dodatku).
+* Kompilacja pod poprawionymi nagłówkami dla wersji 64-bitowej.
+* Zmniejszenie rozmiaru wtyczki 64-bitowej poprzez użycie kompresji LZMA.
+* Aktualizacja komponentów AlphaControls do nowszej wersji (8.51).
+
 2.4.2.0
 -----
 * Drobne poprawki w kodzie.
