@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-// Copyright (C) 2009-2013 Krzysztof Grochocki
+// Copyright (C) 2009-2014 Krzysztof Grochocki
 //
 // This file is part of TuneStatus
 //
@@ -233,43 +233,6 @@ UnicodeString GetFileInfo(wchar_t *ModulePath, String KeyName)
 //---------------------------------------------------------------------------
 
 //Konwersja ciagu znakow na potrzeby INI
-UnicodeString StrToIniStr(UnicodeString Str)
-{
-  //Definicja zmiennych
-  wchar_t Buffer[50010];
-  wchar_t* B;
-  wchar_t* S;
-  //Przekazywanie ciagu znakow
-  S = Str.w_str();
-  //Ustalanie wskaznika
-  B = Buffer;
-  //Konwersja znakow
-  while(*S!='\0')
-  {
-	switch(*S)
-	{
-	  case 13:
-	  case 10:
-		if((*S==13)&&(S[1]==10)) S++;
-		else if((*S==10)&&(S[1] == 13)) S++;
-		*B = '\\';
-		B++;
-		*B = 'n';
-		B++;
-		S++;
-	  break;
-	  default:
-		*B = *S;
-		B++;
-		S++;
-	  break;
-	}
-  }
-  *B = '\0';
-  //Zwracanie zkonwertowanego ciagu znakow
-  return (wchar_t*)Buffer;
-}
-//---------------------------------------------------------------------------
 UnicodeString IniStrToStr(UnicodeString Str)
 {
   //Definicja zmiennych
@@ -302,6 +265,20 @@ UnicodeString IniStrToStr(UnicodeString Str)
   *B = '\0';
   //Zwracanie zkonwertowanego ciagu znakow
   return (wchar_t*)Buffer;
+}
+//---------------------------------------------------------------------------
+
+//Kodowanie ciagu znakow do Base64
+UnicodeString EncodeBase64(UnicodeString Str)
+{
+  return (wchar_t*)PluginLink.CallService(AQQ_FUNCTION_BASE64,(WPARAM)Str.w_str(),3);
+}
+//---------------------------------------------------------------------------
+
+//Dekodowanie ciagu znakow z Base64
+UnicodeString DecodeBase64(UnicodeString Str)
+{
+  return (wchar_t*)PluginLink.CallService(AQQ_FUNCTION_BASE64,(WPARAM)Str.w_str(),2);
 }
 //---------------------------------------------------------------------------
 
@@ -2013,7 +1990,12 @@ void LoadSettings()
 	}
   }
   //Wyglad opisu
-  StatusLook = UTF8ToUnicodeString((IniStrToStr(Ini->ReadString("Settings", "Status", "Obecnie s³ucham: CC_TUNESTATUS"))).w_str());
+  if(Ini->ValueExists("Settings","Status"))
+  {
+	Ini->WriteString("Settings", "Status64", EncodeBase64(UTF8ToUnicodeString(IniStrToStr(Ini->ReadString("Settings","Status","").w_str()))));
+	Ini->DeleteKey("Settings","Status");
+  }
+  StatusLook = DecodeBase64(Ini->ReadString("Settings", "Status64", "Obecnie s³ucham: CC_TUNESTATUS"));
   //Opoznienie ustawiania nowego opisu
   SetStatusDelayChk = 1000*Ini->ReadInteger("Settings", "SetStatusDelay", 5);
   if(SetStatusDelayChk<4000) SetStatusDelayChk = 4000;
@@ -2235,11 +2217,11 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
 {
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,5,0,0);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,5,1,0);
   PluginInfo.Description = L"Wtyczka s³u¿y do informowania naszych znajomych o tym co aktualnie s³uchamy w odtwarzaczu plików audio. Informowanie odbywa siê poprzez zmianê naszego opisu oraz opcjonalnie poprzez wysy³anie notyfikacji User Tune (XEP-0118) w sieci Jabber.";
-  PluginInfo.Author = L"Krzysztof Grochocki (Beherit)";
+  PluginInfo.Author = L"Krzysztof Grochocki";
   PluginInfo.AuthorMail = L"kontakt@beherit.pl";
-  PluginInfo.Copyright = L"Krzysztof Grochocki (Beherit)";
+  PluginInfo.Copyright = L"Krzysztof Grochocki";
   PluginInfo.Homepage = L"http://beherit.pl";
   PluginInfo.Flag = 0;
   PluginInfo.ReplaceDefaultModule = 0;

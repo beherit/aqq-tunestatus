@@ -1,3 +1,8 @@
+2.5.1.0
+-----
+* Zmiany z zapisie zdefiniowanego opisu.
+* Aktualizacja komponentów AlphaControls do nowszej wersji (8.53).
+
 2.5.0.0
 -----
 * Zmiana adresów URL do wymaganych dodatków dla odtwarzaczy WMP, Foobar2000 oraz iTunes.
