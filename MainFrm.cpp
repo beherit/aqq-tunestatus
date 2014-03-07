@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-// Copyright (C) 2009-2013 Krzysztof Grochocki
+// Copyright (C) 2009-2014 Krzysztof Grochocki
 //
 // This file is part of TuneStatus
 //
@@ -50,8 +50,8 @@ __declspec(dllimport)bool ChkThemeAnimateWindows();
 __declspec(dllimport)bool ChkThemeGlowing();
 __declspec(dllimport)int GetHUE();
 __declspec(dllimport)int GetSaturation();
-__declspec(dllimport)UnicodeString IniStrToStr(UnicodeString Str);
-__declspec(dllimport)UnicodeString StrToIniStr(UnicodeString Str);
+__declspec(dllimport)UnicodeString EncodeBase64(UnicodeString Str);
+__declspec(dllimport)UnicodeString DecodeBase64(UnicodeString Str);
 __declspec(dllimport)void BuildTuneStatusFastOperation();
 __declspec(dllimport)void DestroyTuneStatusFastOperation();
 __declspec(dllimport)void UpdateTuneStatusFastOperation(bool Enabled);
@@ -446,7 +446,7 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
    AutoModeCheckListBoxPreview->Items->Delete(AutoModeCheckListBoxPreview->Items->IndexOf("FREE_ID"));
   AutoModeListText = AutoModeCheckListBoxPreview->Items->Text;
   //Wyglad opisu
-  PreviewStatusMemo->Text = UTF8ToUnicodeString((IniStrToStr(Ini->ReadString("Settings", "Status", "Obecnie s³ucham: CC_TUNESTATUS"))).w_str());
+  PreviewStatusMemo->Text = DecodeBase64(Ini->ReadString("Settings", "Status64", "Obecnie s³ucham: CC_TUNESTATUS"));
   //Opoznienie ustawiania nowego opisu
   SetStatusSpin->Value = Ini->ReadInteger("Settings", "SetStatusDelay", 5);
   //Wlaczanie dzialnia wtyczki wraz z uruchomieniem
@@ -507,8 +507,7 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 	Ini->WriteString("AutoMode", ("Player"+IntToStr(Count+1)), (Player+";"+IntToStr(Enabled)));
   }
   //Status
-  ShortString StatusShort = UTF8EncodeToShortString(PreviewStatusMemo->Text);
-  Ini->WriteString("Settings", "Status", StrToIniStr(StatusShort.operator AnsiString()));
+  Ini->WriteString("Settings", "Status64", EncodeBase64(PreviewStatusMemo->Text));
   //EnableOnStart
   Ini->WriteBool("Settings", "EnableOnStart", EnableOnStartCheckBox->Checked);
   //FastAccess
