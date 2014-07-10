@@ -91,7 +91,7 @@ __published:	// IDE-managed Components
 		TAction *aAllowApply;
 		TsSkinManager *sSkinManager;
 		TsSkinProvider *sSkinProvider;
-	TButton *CancelButton;
+		TButton *CancelButton;
 		void __fastcall SaveButtonClick(TObject *Sender);
 		void __fastcall FormShow(TObject *Sender);
 		void __fastcall aLoadSettingsExecute(TObject *Sender);
@@ -120,6 +120,7 @@ __published:	// IDE-managed Components
 		void __fastcall FormCreate(TObject *Sender);
 		void __fastcall OtherTabSheetShow(TObject *Sender);
 		void __fastcall UserTuneTabSheetShow(TObject *Sender);
+		void __fastcall sSkinManagerSysDlgInit(TacSysDlgData DlgData, bool &AllowSkinning);
 private:	// User declarations
 public:		// User declarations
 		__fastcall TMainForm(TComponent* Owner);

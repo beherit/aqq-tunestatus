@@ -1,3 +1,8 @@
+2.5.2.0
+-----
+* Nieskórkowanie systemowych okien dialogowych niepochodzących z wtyczki.
+* Aktualizacja komponentów AlphaControls do nowszej wersji (9.10).
+
 2.5.1.0
 -----
 * Zmiany z zapisie zdefiniowanego opisu.
