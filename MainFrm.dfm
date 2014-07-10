@@ -270,10 +270,6 @@ object MainForm: TMainForm
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object SetStatuslLabel: TsLabel
         Left = 150
         Top = 140
@@ -503,10 +499,6 @@ object MainForm: TMainForm
       OnShow = UserTuneTabSheetShow
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object UserTuneLabel: TsLabel
         Left = 23
         Top = 132
@@ -704,8 +696,7 @@ object MainForm: TMainForm
     MenuSupport.ExtraLineFont.Height = -11
     MenuSupport.ExtraLineFont.Name = 'Tahoma'
     MenuSupport.ExtraLineFont.Style = []
-    SkinDirectory = 'D:\C++ Projects\_ExtSkins'
-    SkinName = 'Skin'
+    Options.OptimizingPriority = opMemory
     SkinInfo = 'N/A'
     ThirdParty.ThirdEdits = ' '
     ThirdParty.ThirdButtons = 'TButton'
@@ -729,6 +720,8 @@ object MainForm: TMainForm
     ThirdParty.ThirdUpDown = ' '
     ThirdParty.ThirdScrollBar = ' '
     ThirdParty.ThirdStaticText = ' '
+    ThirdParty.ThirdNativePaint = ' '
+    OnSysDlgInit = sSkinManagerSysDlgInit
     Left = 256
     Top = 272
   end

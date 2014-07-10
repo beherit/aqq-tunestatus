@@ -583,4 +583,9 @@ void __fastcall TMainForm::aSelectAllExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TMainForm::sSkinManagerSysDlgInit(TacSysDlgData DlgData, bool &AllowSkinning)
+{
+  AllowSkinning = false;
+}
+//---------------------------------------------------------------------------
 
