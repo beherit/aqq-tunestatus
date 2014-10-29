@@ -48,7 +48,7 @@ int FASTACCESS_ON;
 int FASTACCESS_OFF;
 //UCHWYTY-DO-OKIEN-----------------------------------------------------------
 HWND hTimerFrm; //Uchwyt do okna timera
-HWND VCLWindowHwnd; //Uchwyt do okna VLC media player
+HWND VLCWindowHwnd; //Uchwyt do okna VLC media player
 HWND LastfmWindowHwnd; //Uchwyt do okna Last.fm Player
 HWND ScreamerRadioWindowHwnd; //Uchwyt do okna Screamer Radio
 HWND aTunesWindowHwnd; //Uchwyt do okna iTunes
@@ -104,7 +104,7 @@ UnicodeString GetDataFromPlugins();
 UnicodeString GetDataFromScreamerRadio();
 UnicodeString GetDataFromaTunes();
 UnicodeString GetDataFromLastFM();
-UnicodeString GetDataFromVCL();
+UnicodeString GetDataFromVLC();
 UnicodeString GetDataFromSpotify();
 //FORWARD-AQQ-HOOKS----------------------------------------------------------
 INT_PTR __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam);
@@ -455,7 +455,7 @@ UnicodeString GetPathOfProces(HWND hWnd)
 }
 //---------------------------------------------------------------------------
 
-bool CALLBACK FindVCL(HWND hWnd, LPARAM lParam)
+bool CALLBACK FindVLC(HWND hWnd, LPARAM lParam)
 {
   //Pobranie klasy okna
   wchar_t WindowCaptionNameW[512];
@@ -473,12 +473,12 @@ bool CALLBACK FindVCL(HWND hWnd, LPARAM lParam)
 	  GetWindowTextW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
 	  WindowCaptionName = WindowCaptionNameW;
 	  //Sprawdzenie tekstu okna
-	  if((WindowCaptionName!="vcl")
+	  if((WindowCaptionName!="vlc")
 	  &&(WindowCaptionName!="O programie")
 	  &&(WindowCaptionName!=""))
 	  {
 		//Przypisanie uchwytu
-		VCLWindowHwnd = hWnd;
+		VLCWindowHwnd = hWnd;
 		return false;
 	  }
 	}
@@ -994,19 +994,19 @@ UnicodeString GetDataFromLastFM()
 //---------------------------------------------------------------------------
 
 //Pobieranie danych z VLC media player
-UnicodeString GetDataFromVCL()
+UnicodeString GetDataFromVLC()
 {
   //Pobieranie uchwytu do okna odtwarzacza
-  if(!VCLWindowHwnd) EnumWindows((WNDENUMPROC)FindVCL,0);
+  if(!VLCWindowHwnd) EnumWindows((WNDENUMPROC)FindVLC,0);
   //Okno odtwarzacza istnieje
-  if(VCLWindowHwnd)
+  if(VLCWindowHwnd)
   {
 	//Okno jest oknem :D
-	if(IsWindow(VCLWindowHwnd))
+	if(IsWindow(VLCWindowHwnd))
 	{
 	  //Pobranie tekstu okna
 	  wchar_t PlayerCaptionW[512];
-	  GetWindowTextW(VCLWindowHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
+	  GetWindowTextW(VLCWindowHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
 	  UnicodeString PlayerCaption = PlayerCaptionW;
 	  //Pomijanie "VLC media player"
 	  if(PlayerCaption=="VLC media player") return "";
@@ -1019,7 +1019,7 @@ UnicodeString GetDataFromVCL()
 	  //Zwrocenie odtwarzanego utworu
 	  return PlayerCaption;
 	}
-	else VCLWindowHwnd = NULL;
+	else VLCWindowHwnd = NULL;
 	return "";
   }
   return "";
@@ -1088,7 +1088,7 @@ UnicodeString GetDataFromPlayers(bool UserTune)
 	else if(SupportedPlayers->Strings[Count]=="Last.fm Player")
 	 Text = GetDataFromLastFM();
 	else if(SupportedPlayers->Strings[Count]=="VLC media player")
-	 Text = GetDataFromVCL();
+	 Text = GetDataFromVLC();
     else if(SupportedPlayers->Strings[Count]=="Spotify")
 	 Text = GetDataFromSpotify();
 	//Zablokowanie plikow filmowych
