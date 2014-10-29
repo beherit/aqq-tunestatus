@@ -196,6 +196,11 @@ int GetSaturation()
   return (int)PluginLink.CallService(AQQ_SYSTEM_COLORGETSATURATION,0,0);
 }
 //---------------------------------------------------------------------------
+int GetBrightness()
+{
+  return (int)PluginLink.CallService(AQQ_SYSTEM_COLORGETBRIGHTNESS,0,0);
+}
+//---------------------------------------------------------------------------
 
 //Pobieranie informacji o pliku (wersja itp)
 UnicodeString GetFileInfo(wchar_t *ModulePath, String KeyName)
@@ -1789,6 +1794,7 @@ INT_PTR __stdcall OnThemeChanged(WPARAM wParam, LPARAM lParam)
 		//Zmiana kolorystyki AlphaControls
 		hMainForm->sSkinManager->HueOffset = GetHUE();
 		hMainForm->sSkinManager->Saturation = GetSaturation();
+		hMainForm->sSkinManager->Brightness = GetBrightness();
 		//Aktywacja skorkowania AlphaControls
 		hMainForm->sSkinManager->Active = true;
 	  }
