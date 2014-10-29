@@ -448,7 +448,7 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
    AutoModeCheckListBoxPreview->Items->Delete(AutoModeCheckListBoxPreview->Items->IndexOf("FREE_ID"));
   AutoModeListText = AutoModeCheckListBoxPreview->Items->Text;
   //Wyglad opisu
-  PreviewStatusMemo->Text = DecodeBase64(Ini->ReadString("Settings", "Status64", "Obecnie s³ucham: CC_TUNESTATUS"));
+  PreviewStatusMemo->Text = DecodeBase64(Ini->ReadString("Settings", "Status64", "T2JlY25pZSBzxYJ1Y2hhbTogQ0NfVFVORVNUQVRVUw=="));
   //Opoznienie ustawiania nowego opisu
   SetStatusSpin->Value = Ini->ReadInteger("Settings", "SetStatusDelay", 5);
   //Wlaczanie dzialnia wtyczki wraz z uruchomieniem

@@ -1960,7 +1960,7 @@ void LoadSettings()
 	}
   }
   //Wyglad opisu
-  StatusLook = DecodeBase64(Ini->ReadString("Settings", "Status64", "Obecnie s³ucham: CC_TUNESTATUS"));
+  StatusLook = DecodeBase64(Ini->ReadString("Settings", "Status64", "T2JlY25pZSBzxYJ1Y2hhbTogQ0NfVFVORVNUQVRVUw=="));
   //Opoznienie ustawiania nowego opisu
   SetStatusDelayChk = 1000*Ini->ReadInteger("Settings", "SetStatusDelay", 5);
   if(SetStatusDelayChk<4000) SetStatusDelayChk = 4000;
