@@ -254,10 +254,14 @@ UnicodeString DecodeBase64(UnicodeString Str)
 //Pobieranie pseudonimu kontaktu podajac jego JID
 UnicodeString GetContactNick(UnicodeString JID)
 {
+  //Odczyt pseudonimu z pliku INI
   UnicodeString Nick = ContactsNickList->ReadString("Nick",JID,"");
+  //Pseudonim nie zostal pobrany
   if(Nick.IsEmpty())
   {
+	//Skracanie JID do ladniejszej formy
 	if(JID.Pos("@")) JID.Delete(JID.Pos("@"),JID.Length());
+	if(JID.Pos(":")) JID.Delete(JID.Pos(":"),JID.Length());
 	return JID;
   }
   return Nick;
@@ -1622,10 +1626,12 @@ INT_PTR __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam)
   {
 	//Pobieranie identyfikatora kontaktu
 	UnicodeString JID = (wchar_t*)ContactsUpdateContact.JID;
+	//Pobieranie indeksu konta
+	UnicodeString UserIdx = ":" + IntToStr(ContactsUpdateContact.UserIdx);
 	//Pobieranie nicku kontaktu
 	UnicodeString Nick = (wchar_t*)ContactsUpdateContact.Nick;
 	//Pobieranie i zapisywanie nicku kontatku
-	ContactsNickList->WriteString("Nick",JID,Nick);
+	ContactsNickList->WriteString("Nick",JID+UserIdx,Nick);
   }
 
   return 0;
@@ -1704,10 +1710,12 @@ INT_PTR __stdcall OnReplyList(WPARAM wParam, LPARAM lParam)
 	{
 	  //Pobieranie identyfikatora kontaktu
 	  UnicodeString JID = (wchar_t*)ReplyListContact.JID;
+	  //Pobieranie indeksu konta
+	  UnicodeString UserIdx = ":" + IntToStr(ReplyListContact.UserIdx);
 	  //Pobranie nicku kontaktu
 	  UnicodeString Nick = (wchar_t*)ReplyListContact.Nick;
 	  //Pobieranie i zapisywanie nicku kontatku
-	  ContactsNickList->WriteString("Nick",JID,Nick);
+	  ContactsNickList->WriteString("Nick",JID+UserIdx,Nick);
 	}
   }
 
@@ -1788,6 +1796,8 @@ INT_PTR __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam)
 	{
 	  //Pobieranie danych nt. pakietu XML
 	  TPluginXMLChunk XMLChunk = *(PPluginXMLChunk)lParam;
+	  //Indeks konta
+	  UnicodeString XMLUserIdx = ":" + IntToStr(XMLChunk.UserIdx);
 	  //Nadawca pakietu
 	  UnicodeString XMLFrom = (wchar_t*)XMLChunk.From;
 	  //Odbiorca pakietu
@@ -1853,7 +1863,7 @@ INT_PTR __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam)
 		  TPluginShowInfo PluginShowInfo;
 		  PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
 		  PluginShowInfo.Event = tmeInfo;
-		  PluginShowInfo.Text = (GetContactNick(XMLFrom) + " s³ucha:").w_str();
+		  PluginShowInfo.Text = (GetContactNick(XMLFrom+XMLUserIdx) + " s³ucha:").w_str();
 		  PluginShowInfo.ImagePath = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPNG_FILEPATH,76,0));
 		  PluginShowInfo.TimeOut = 1000 * UserTuneCloudChk;
 		  PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)&PluginShowInfo);
