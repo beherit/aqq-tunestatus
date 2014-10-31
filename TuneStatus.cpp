@@ -1873,10 +1873,12 @@ INT_PTR __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam)
 		  //Chmurka "kto slucha"
 		  TPluginShowInfo PluginShowInfo;
 		  PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
-		  PluginShowInfo.Event = tmeInfo;
-		  PluginShowInfo.Text = (GetContactNick(XMLFrom+XMLUserIdx) + " s³ucha:").w_str();
-		  PluginShowInfo.ImagePath = (wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETPNG_FILEPATH,76,0));
+		  PluginShowInfo.Event = tmePseudoMsgCap;
+		  PluginShowInfo.Text = GetContactNick(XMLFrom+XMLUserIdx).w_str();
+		  PluginShowInfo.ImagePath = (wchar_t*)PluginLink.CallService(AQQ_FUNCTION_GETPNG_FILEPATH,76,0);
 		  PluginShowInfo.TimeOut = 1000 * UserTuneCloudChk;
+		  PluginShowInfo.ActionID = L"";
+		  PluginShowInfo.Tick = 0;
 		  PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)&PluginShowInfo);
 		  //Chmurka "co slucha"
 		  PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
@@ -1884,6 +1886,8 @@ INT_PTR __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam)
 		  PluginShowInfo.Text = UserTuneSong.w_str();
 		  PluginShowInfo.ImagePath = L"";
 		  PluginShowInfo.TimeOut = 1000 * UserTuneCloudChk;
+		  PluginShowInfo.ActionID = L"";
+		  PluginShowInfo.Tick = 0;
 		  PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)&PluginShowInfo);
 		}
 	  }
