@@ -2084,22 +2084,22 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
   //Hook na zmianê stanu kontaktu
   PluginLink.HookEvent(AQQ_CONTACTS_UPDATE,OnContactsUpdate);
   //Hook na przekazywanie utworu przez wtyczki np. AQQ Radio
-  PluginLink.HookEvent(AQQ_SYSTEM_CURRENTSONG, OnCurrentSong);
+  PluginLink.HookEvent(AQQ_SYSTEM_CURRENTSONG,OnCurrentSong);
   //Hook na zakonczenie ladowania listy kontaktow przy starcie AQQ
   PluginLink.HookEvent(AQQ_CONTACTS_LISTREADY,OnListReady);
   //Hook na zaladowanie wszystkich modolow
-  PluginLink.HookEvent(AQQ_SYSTEM_MODULESLOADED, OnModulesLoaded);
+  PluginLink.HookEvent(AQQ_SYSTEM_MODULESLOADED,OnModulesLoaded);
   AllowUserTune = PluginLink.CallService(AQQ_SYSTEM_MODULESLOADED,0,0);
   //Hook na reczna zmiane opisu
-  PluginLink.HookEvent(AQQ_WINDOW_PRESETNOTE_NOTE, OnPreSetNote);
+  PluginLink.HookEvent(AQQ_WINDOW_PRESETNOTE_NOTE,OnPreSetNote);
   //Hook na enumeracje listy kontatkow
   PluginLink.HookEvent(AQQ_CONTACTS_REPLYLIST,OnReplyList);
   //Hook na zmiane stanu sieci
-  PluginLink.HookEvent(AQQ_SYSTEM_STATECHANGE, OnStateChange);
+  PluginLink.HookEvent(AQQ_SYSTEM_STATECHANGE,OnStateChange);
   //Hook na zmiane kompozycji
-  PluginLink.HookEvent(AQQ_SYSTEM_THEMECHANGED, OnThemeChanged);
+  PluginLink.HookEvent(AQQ_SYSTEM_THEMECHANGED,OnThemeChanged);
   //Hook na przychodzace pakiety XML
-  PluginLink.HookEvent(AQQ_SYSTEM_XMLDEBUG, OnXMLDebug);
+  PluginLink.HookEvent(AQQ_SYSTEM_XMLDEBUG,OnXMLDebug);
   //Odczyt ustawien
   LoadSettings();
   //Tworzenie interfejsu szybkiego dostepu do ustawien wtyczki
