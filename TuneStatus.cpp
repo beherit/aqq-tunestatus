@@ -2001,7 +2001,7 @@ void LoadSettings()
   UserTuneSendDelayChk = 1000*Ini->ReadInteger("UserTune", "SendDelay", 5);
   if(UserTuneSendDelayChk<4000) UserTuneSendDelayChk = 4000;
   //User Tune - powiadomienie o aktualnych sluchanych utworach przez inne kontakty
-  UserTuneNotifChk - Ini->ReadBool("UserTune", "Notification", false);
+  UserTuneNotifChk = Ini->ReadBool("UserTune", "Notification", false);
   //User Tune - wyjatki wylaczone z powiadomienia
   UserTuneExceptions->Clear();
   TStringList *JIDList = new TStringList;
