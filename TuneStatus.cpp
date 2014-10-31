@@ -52,6 +52,9 @@ HWND VLCWindowHwnd; //Uchwyt do okna VLC media player
 HWND LastfmWindowHwnd; //Uchwyt do okna Last.fm Player
 HWND ScreamerRadioWindowHwnd; //Uchwyt do okna Screamer Radio
 HWND aTunesWindowHwnd; //Uchwyt do okna iTunes
+//LOAD/UNLOAD-PLUGIN---------------------------------------------------------
+//Gdy zostalo uruchomione zaladowanie wtyczki
+bool LoadExecuted = false;
 //SETTINGS-------------------------------------------------------------------
 TStringList *SupportedPlayers = new TStringList;
 UnicodeString StatusLook;
@@ -1619,19 +1622,23 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 //Hook na zmianê stanu kontaktu
 INT_PTR __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam)
 {
-  //Pobieranie danych kontatku
-  TPluginContact ContactsUpdateContact = *(PPluginContact)wParam;
-  //Kontakt nie jest czatem
-  if(!ContactsUpdateContact.IsChat)
+  //Wlaczono notyfikacje User Tune
+  if(UserTuneNotifChk)
   {
-	//Pobieranie identyfikatora kontaktu
-	UnicodeString JID = (wchar_t*)ContactsUpdateContact.JID;
-	//Pobieranie indeksu konta
-	UnicodeString UserIdx = ":" + IntToStr(ContactsUpdateContact.UserIdx);
-	//Pobieranie nicku kontaktu
-	UnicodeString Nick = (wchar_t*)ContactsUpdateContact.Nick;
-	//Pobieranie i zapisywanie nicku kontatku
-	ContactsNickList->WriteString("Nick",JID+UserIdx,Nick);
+	//Pobieranie danych kontatku
+	TPluginContact ContactsUpdateContact = *(PPluginContact)wParam;
+	//Kontakt nie jest czatem
+	if(!ContactsUpdateContact.IsChat)
+	{
+	  //Pobieranie identyfikatora kontaktu
+	  UnicodeString JID = (wchar_t*)ContactsUpdateContact.JID;
+	  //Pobieranie indeksu konta
+	  UnicodeString UserIdx = ":" + IntToStr(ContactsUpdateContact.UserIdx);
+	  //Pobieranie nicku kontaktu
+	  UnicodeString Nick = (wchar_t*)ContactsUpdateContact.Nick;
+	  //Pobieranie i zapisywanie nicku kontatku
+	  ContactsNickList->WriteString("Nick",JID+UserIdx,Nick);
+	}
   }
 
   return 0;
@@ -1652,10 +1659,14 @@ INT_PTR __stdcall OnCurrentSong(WPARAM wParam, LPARAM lParam)
 
 INT_PTR __stdcall OnListReady(WPARAM wParam, LPARAM lParam)
 {
-  //Pobranie ID dla enumeracji kontaktów
-  ReplyListID = GetTickCount();
-  //Wywolanie enumeracji kontaktow
-  PluginLink.CallService(AQQ_CONTACTS_REQUESTLIST,(WPARAM)ReplyListID,0);
+  //Wlaczono notyfikacje User Tune
+  if(UserTuneNotifChk)
+  {
+	//Pobranie ID dla enumeracji kontaktów
+	ReplyListID = GetTickCount();
+	//Wywolanie enumeracji kontaktow
+	PluginLink.CallService(AQQ_CONTACTS_REQUESTLIST,(WPARAM)ReplyListID,0);
+  }
 
   return 0;
 }
@@ -2007,6 +2018,19 @@ void LoadSettings()
   }
   //User Tune - czas wyswietlania chmurki informacyjnej
   UserTuneCloudChk = Ini->ReadInteger("UserTune", "Cloud", 6);
+  //Wszystkie moduly zostaly zaladowane
+  if(PluginLink.CallService(AQQ_SYSTEM_MODULESLOADED,0,0))
+  {
+	//Wlaczono notyfikacje User Tune
+	if(UserTuneNotifChk)
+	{
+	  //Pobranie ID dla enumeracji kontaktów
+	  ReplyListID = GetTickCount();
+	  //Wywolanie enumeracji kontaktow
+	  PluginLink.CallService(AQQ_CONTACTS_REQUESTLIST,(WPARAM)ReplyListID,0);
+	}
+	else if(!LoadExecuted) ContactsNickList->Clear();
+  }
   //Zwolnienie pliku INI
   delete Ini;
 }
@@ -2014,6 +2038,8 @@ void LoadSettings()
 
 extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
 {
+  //Info o rozpoczeciu procedury ladowania
+  LoadExecuted = true;
   //Linkowanie wtyczki z komunikatorem
   PluginLink = *Link;
   //Sciezka katalogu prywatnego wtyczek
@@ -2074,14 +2100,6 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
   PluginLink.HookEvent(AQQ_SYSTEM_THEMECHANGED, OnThemeChanged);
   //Hook na przychodzace pakiety XML
   PluginLink.HookEvent(AQQ_SYSTEM_XMLDEBUG, OnXMLDebug);
-  //Wszystkie moduly zostaly zaladowane
-  if(PluginLink.CallService(AQQ_SYSTEM_MODULESLOADED,0,0))
-  {
-	//Pobranie ID dla enumeracji kontaktów
-	ReplyListID = GetTickCount();
-	//Wywolanie enumeracji kontaktow
-	PluginLink.CallService(AQQ_CONTACTS_REQUESTLIST,(WPARAM)ReplyListID,0);
-  }
   //Odczyt ustawien
   LoadSettings();
   //Tworzenie interfejsu szybkiego dostepu do ustawien wtyczki
@@ -2114,6 +2132,8 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
   //Wlaczenie dzialania wtyczki przy starcie
   if(EnableOnStartChk)
    SetTimer(hTimerFrm,TIMER_GETSTATUS,100,(TIMERPROC)TimerFrmProc);
+  //Info o zakonczeniu procedury ladowania
+  LoadExecuted = false;
 
   return 0;
 }
