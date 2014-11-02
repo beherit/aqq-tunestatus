@@ -366,6 +366,7 @@ void __fastcall TMainForm::UserTuneNotificationCheckBoxClick(TObject *Sender)
 void __fastcall TMainForm::UserTuneExceptionButtonClick(TObject *Sender)
 {
   UserTuneExceptionForm = new TUserTuneExceptionForm(Application);
+  UserTuneExceptionForm->SkinManagerEnabled = sSkinManager->Active;
   UserTuneExceptionForm->ShowModal();
   delete UserTuneExceptionForm;
 }
