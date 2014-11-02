@@ -48,7 +48,7 @@ __fastcall TUserTuneExceptionForm::TUserTuneExceptionForm(TComponent* Owner)
 void __fastcall TUserTuneExceptionForm::WMTransparency(TMessage &Message)
 {
   Application->ProcessMessages();
-  if(MainForm->sSkinManager->Active) sSkinProvider->BorderForm->UpdateExBordersPos(true,(int)Message.LParam);
+  if(SkinManagerEnabled) sSkinProvider->BorderForm->UpdateExBordersPos(true,(int)Message.LParam);
 }
 //---------------------------------------------------------------------------
 
