@@ -27,6 +27,7 @@
 #include <inifiles.hpp>
 #include <Registry.hpp>
 #include <tlhelp32.h>
+#include <XMLDoc.hpp>
 #include <PluginAPI.h>
 #include "MainFrm.h"
 #include <IdHashMessageDigest.hpp>
@@ -1801,9 +1802,7 @@ INT_PTR __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam)
     //Pobranie pakietu XML
 	UnicodeString XML = (wchar_t*)wParam;
 	//Pakiet jest informacja User Tune (XEP-0118)
-	if(((XML.Pos("<tune xmlns='http://jabber.org/protocol/tune'>"))||(XML.Pos("<tune xmlns=\"http://jabber.org/protocol/tune\">")))
-	&&(!XML.Pos("type='error'"))
-	&&(XML.Pos("<title>")))
+	if(((XML.Pos("<tune xmlns='http://jabber.org/protocol/tune'>"))||(XML.Pos("<tune xmlns=\"http://jabber.org/protocol/tune\">")))&&(XML.Pos("<title>")))
 	{
 	  //Pobieranie danych nt. pakietu XML
 	  TPluginXMLChunk XMLChunk = *(PPluginXMLChunk)lParam;
@@ -1819,76 +1818,100 @@ INT_PTR __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam)
         //Nadawca pakietu nie znajduje sie na liscie wyjatkow
 		if(UserTuneExceptions->IndexOf(XMLFrom)==-1)
 		{
-          //Zmienna przechowujaca informacje o utworze
-		  UnicodeString UserTuneSong;
-		  //Artysta i tytul osobno
-		  if(XML.Pos("<artist>")>0)
+          //Wczytanie pakietu XML do parsera
+		  _di_IXMLDocument XMLDoc = LoadXMLData(XML);
+		  _di_IXMLNode Nodes = XMLDoc->DocumentElement;
+		  //Sprawdzanie nazwy elementu
+		  if(Nodes->NodeName=="message")
 		  {
-			UnicodeString TMP = XML;
-			TMP.Delete(1,TMP.Pos("<artist>")+7);
-			TMP.Delete(TMP.Pos("</artist>"), TMP.Length());
-			TMP = TMP.Trim();
-			UserTuneSong = TMP;
-			TMP = XML;
-			TMP.Delete(1,TMP.Pos("<title>")+6);
-			TMP.Delete(TMP.Pos("</title>"), TMP.Length());
-			TMP = TMP.Trim();
-			UserTuneSong = UserTuneSong + " - " + TMP;
-		  }
-		  //Artysta i tytul razem w tagu <title>
-		  else
-		  {
-			UserTuneSong = XML;
-			UserTuneSong.Delete(1,UserTuneSong.Pos("<title>")+6);
-			UserTuneSong.Delete(UserTuneSong.Pos("</title>"), UserTuneSong.Length());
-			UserTuneSong = UserTuneSong.Trim();
-		  }
-		  //Poprawa kodowania UTF8
-		  UserTuneSong = UTF8ToUnicodeString(UserTuneSong.w_str());
-		  UserTuneSong = StringReplace(UserTuneSong, "&apos;", "'", TReplaceFlags() << rfReplaceAll);
-		  UserTuneSong = StringReplace(UserTuneSong, "&quot;", "\"", TReplaceFlags() << rfReplaceAll);
-		  UserTuneSong = StringReplace(UserTuneSong, "&amp;", "&", TReplaceFlags() << rfReplaceAll);
-		  UserTuneSong = StringReplace(UserTuneSong, "&gt;", ">", TReplaceFlags() << rfReplaceAll);
-		  UserTuneSong = StringReplace(UserTuneSong, "&lt;", "<", TReplaceFlags() << rfReplaceAll);
-		  //Usuwanie "*** "
-		  if(UserTuneSong.Pos("*** ")>0)
-		  {
-			UserTuneSong.Delete(1, UserTuneSong.Pos("*** ") + 3);
-			UserTuneSong = UserTuneSong.Trim();
-		  }
-		  //Usuwanie numeru piosenki
-		  if((UserTuneSong.Pos(". ")>0)&&(UserTuneSong.Pos(". ")<7))
-		  {
-			UnicodeString TMP = UserTuneSong;
-			TMP.Delete(UserTuneSong.Pos(". "), TMP.Length());
-			if(TestDigit(TMP))
+            //Pobranie pierwszego dziecka
+			Nodes = Nodes->ChildNodes->GetNode(0);
+			//Sprawdzanie nazwy elementu
+			if((Nodes->NodeName=="event")&&(Nodes->Attributes["xmlns"]=="http://jabber.org/protocol/pubsub#event"))
 			{
-			  UserTuneSong.Delete(1, UserTuneSong.Pos(". "));
-			  UserTuneSong = UserTuneSong.Trim();
-			}
+			  //Pobranie pierwszego dziecka
+			  Nodes = Nodes->ChildNodes->GetNode(0);
+			  //Sprawdzanie nazwy elementu
+			  if((Nodes->NodeName=="items")&&(Nodes->Attributes["node"]=="http://jabber.org/protocol/tune"))
+			  {
+			    //Pobranie pierwszego dziecka
+				Nodes = Nodes->ChildNodes->GetNode(0);
+				//Sprawdzanie nazwy elementu
+				if(Nodes->NodeName=="item")
+				{
+                  //Pobranie pierwszego dziecka
+				  Nodes = Nodes->ChildNodes->GetNode(0);
+				  //Sprawdzanie nazwy elementu
+				  if((Nodes->NodeName=="tune")&&(Nodes->Attributes["xmlns"]=="http://jabber.org/protocol/tune"))
+				  {
+                    //Pobranie ilosci kolejnych dzieci
+					int ItemsCount = Nodes->ChildNodes->GetCount();
+					//Zmienne przechowujaca informacje o utworze
+					UnicodeString Artist, Title;
+					//Parsowanie kolejnych elementow
+					for(int Count=0;Count<ItemsCount;Count++)
+					{
+					  //Pobieranie zawartosci dziecka
+					  _di_IXMLNode ChildNodes = Nodes->ChildNodes->GetNode(Count);
+					  //Sprawdzanie nazwy elementu
+					  if(ChildNodes->NodeName=="artist") Artist = ChildNodes->Text;
+					  else if(ChildNodes->NodeName=="title") Title = ChildNodes->Text;
+					}
+					//Skladanie tytulu utworu
+					UnicodeString UserTuneSong;
+					if(Artist.IsEmpty()) UserTuneSong = Title;
+					else UserTuneSong = Artist + " - " + Title;
+					//Poprawa kodowania UTF8
+					UserTuneSong = UTF8ToUnicodeString(UserTuneSong.w_str());
+					UserTuneSong = StringReplace(UserTuneSong, "&apos;", "'", TReplaceFlags() << rfReplaceAll);
+					UserTuneSong = StringReplace(UserTuneSong, "&quot;", "\"", TReplaceFlags() << rfReplaceAll);
+					UserTuneSong = StringReplace(UserTuneSong, "&amp;", "&", TReplaceFlags() << rfReplaceAll);
+					UserTuneSong = StringReplace(UserTuneSong, "&gt;", ">", TReplaceFlags() << rfReplaceAll);
+					UserTuneSong = StringReplace(UserTuneSong, "&lt;", "<", TReplaceFlags() << rfReplaceAll);
+					//Usuwanie "*** "
+					if(UserTuneSong.Pos("*** ")>0)
+					{
+					  UserTuneSong.Delete(1, UserTuneSong.Pos("*** ") + 3);
+					  UserTuneSong = UserTuneSong.Trim();
+					}
+					//Usuwanie numeru piosenki
+					if((UserTuneSong.Pos(". ")>0)&&(UserTuneSong.Pos(". ")<7))
+					{
+					  UnicodeString TMP = UserTuneSong;
+					  TMP.Delete(UserTuneSong.Pos(". "), TMP.Length());
+					  if(TestDigit(TMP))
+					  {
+						UserTuneSong.Delete(1, UserTuneSong.Pos(". "));
+						UserTuneSong = UserTuneSong.Trim();
+					  }
+					}
+					//Usuwanie "Wtyczka AQQ Radio: "
+					if(UserTuneSong.Pos("Wtyczka AQQ Radio: ")>0)
+					 UserTuneSong.Delete(1,UserTuneSong.Pos("Wtyczka AQQ Radio: ")+18);
+					//Chmurka "kto slucha"
+					TPluginShowInfo PluginShowInfo;
+					PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
+					PluginShowInfo.Event = tmePseudoMsgCap;
+					PluginShowInfo.Text = GetContactNick(XMLFrom+XMLUserIdx).w_str();
+					PluginShowInfo.ImagePath = (wchar_t*)PluginLink.CallService(AQQ_FUNCTION_GETPNG_FILEPATH,76,0);
+					PluginShowInfo.TimeOut = 1000 * UserTuneCloudChk;
+					PluginShowInfo.ActionID = L"";
+					PluginShowInfo.Tick = 0;
+					PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)&PluginShowInfo);
+					//Chmurka "co slucha"
+					PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
+					PluginShowInfo.Event = tmeInfo;
+					PluginShowInfo.Text = UserTuneSong.w_str();
+					PluginShowInfo.ImagePath = L"";
+					PluginShowInfo.TimeOut = 1000 * UserTuneCloudChk;
+					PluginShowInfo.ActionID = L"";
+					PluginShowInfo.Tick = 0;
+					PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)&PluginShowInfo);
+				  }
+                }
+              }
+            }
 		  }
-		  //Usuwanie "Wtyczka AQQ Radio: "
-		  if(UserTuneSong.Pos("Wtyczka AQQ Radio: ")>0)
-		   UserTuneSong.Delete(1,UserTuneSong.Pos("Wtyczka AQQ Radio: ")+18);
-		  //Chmurka "kto slucha"
-		  TPluginShowInfo PluginShowInfo;
-		  PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
-		  PluginShowInfo.Event = tmePseudoMsgCap;
-		  PluginShowInfo.Text = GetContactNick(XMLFrom+XMLUserIdx).w_str();
-		  PluginShowInfo.ImagePath = (wchar_t*)PluginLink.CallService(AQQ_FUNCTION_GETPNG_FILEPATH,76,0);
-		  PluginShowInfo.TimeOut = 1000 * UserTuneCloudChk;
-		  PluginShowInfo.ActionID = L"";
-		  PluginShowInfo.Tick = 0;
-		  PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)&PluginShowInfo);
-		  //Chmurka "co slucha"
-		  PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
-		  PluginShowInfo.Event = tmeInfo;
-		  PluginShowInfo.Text = UserTuneSong.w_str();
-		  PluginShowInfo.ImagePath = L"";
-		  PluginShowInfo.TimeOut = 1000 * UserTuneCloudChk;
-		  PluginShowInfo.ActionID = L"";
-		  PluginShowInfo.Tick = 0;
-		  PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)&PluginShowInfo);
 		}
 	  }
     }
