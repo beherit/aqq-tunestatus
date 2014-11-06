@@ -78,7 +78,7 @@ UnicodeString UserTuneStatusTMP; //Zmienna tymczasowa opisu do UserTune (do poro
 UnicodeString SongLength;  //Dlugosc odtwarzanego utworu
 UnicodeString PluginSong; //Utwor przekazany przez wtyczki np. AQQ Radio
 bool JustEnabled = false; //Zasygnalizowanie dopiero co wlaczenia dzialania wtyczki
-bool AllowUserTune = false; //Zezwalanie na notyfikacje UserTune
+bool AllowUserTuneNotif = false; //Zezwalanie na notyfikacje UserTune
 bool AutoModeEnabled = false; //Dzialnie wtyczki wylaczone/wlaczone
 bool UserTuneEnabled = false; //User Tune wylaczone/wlaczone
 int GetStatusTimerInterval = 0; //Interwal timera pobieranie aktualnego opisu
@@ -87,7 +87,7 @@ TMemIniFile* ContactsNickList = new TMemIniFile(ChangeFileExt(Application->ExeNa
 DWORD ReplyListID = 0; //ID wywolania enumeracji listy kontaktow
 bool BlockUserTuneSend = false; //Blokada User Tune przez wtyczke Auto-Tune ShortCut
 //TIMERY---------------------------------------------------------------------
-#define TIMER_ALLOWUSERTUNE 10
+#define TIMER_ALLOWUSERTUNENOTIFY 10
 #define TIMER_GETSTATUS 20
 #define TIMER_STATECHANGED 30
 #define TIMER_AUTOMODE 40
@@ -1431,12 +1431,12 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
   if(uMsg==WM_TIMER)
   {
 	//Zezwalanie na pokazywanie notyfikacji User Tune
-	if(wParam==TIMER_ALLOWUSERTUNE)
+	if(wParam==TIMER_ALLOWUSERTUNENOTIFY)
 	{
 	  //Zatrymanie timera
-	  KillTimer(hTimerFrm,TIMER_ALLOWUSERTUNE);
+	  KillTimer(hTimerFrm,TIMER_ALLOWUSERTUNENOTIFY);
 	  //Zezwalanie na pokazywanie notyfikacji User Tune
-	  AllowUserTune = true;
+	  AllowUserTuneNotif = true;
 	}
 	//Pobieranie aktualnego opisu
 	else if(wParam==TIMER_GETSTATUS)
@@ -1677,7 +1677,7 @@ INT_PTR __stdcall OnListReady(WPARAM wParam, LPARAM lParam)
 INT_PTR __stdcall OnModulesLoaded(WPARAM wParam, LPARAM lParam)
 {
   //Wlaczenie timera
-  SetTimer(hTimerFrm,TIMER_ALLOWUSERTUNE,20000,(TIMERPROC)TimerFrmProc);
+  SetTimer(hTimerFrm,TIMER_ALLOWUSERTUNENOTIFY,20000,(TIMERPROC)TimerFrmProc);
 
   return 0;
 }
@@ -1797,7 +1797,7 @@ INT_PTR __stdcall OnThemeChanged(WPARAM wParam, LPARAM lParam)
 INT_PTR __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam)
 {
   //Wlaczone powiadomienie o aktualnie sluchanym utworze + zezwolenie na notyfikacje
-  if((AllowUserTune)&&(UserTuneNotifChk))
+  if((AllowUserTuneNotif)&&(UserTuneNotifChk))
   {
     //Pobranie pakietu XML
 	UnicodeString XML = (wchar_t*)wParam;
@@ -2116,7 +2116,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
   PluginLink.HookEvent(AQQ_CONTACTS_LISTREADY,OnListReady);
   //Hook na zaladowanie wszystkich modolow
   PluginLink.HookEvent(AQQ_SYSTEM_MODULESLOADED,OnModulesLoaded);
-  AllowUserTune = PluginLink.CallService(AQQ_SYSTEM_MODULESLOADED,0,0);
+  AllowUserTuneNotif = PluginLink.CallService(AQQ_SYSTEM_MODULESLOADED,0,0);
   //Hook na reczna zmiane opisu
   PluginLink.HookEvent(AQQ_WINDOW_PRESETNOTE_NOTE,OnPreSetNote);
   //Hook na enumeracje listy kontatkow
