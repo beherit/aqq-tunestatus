@@ -1458,8 +1458,7 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		//Aktualizacja przycisku
 		if(FastAccessChk) UpdateTuneStatusFastOperation(true);
 	  }
-	  else
-	   GetStatusTimerInterval++;
+	  else GetStatusTimerInterval++;
 	}
 	//Zmiana opisu + ponowne wlaczenie dzialania wtyczki
 	else if(wParam==TIMER_STATECHANGED)
@@ -2157,8 +2156,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
 	SetTimer(hTimerFrm,TIMER_USERTUNE,1000,(TIMERPROC)TimerFrmProc);
   }
   //Wlaczenie dzialania wtyczki przy starcie
-  if(EnableOnStartChk)
-   SetTimer(hTimerFrm,TIMER_GETSTATUS,100,(TIMERPROC)TimerFrmProc);
+  if(EnableOnStartChk) SetTimer(hTimerFrm,TIMER_GETSTATUS,100,(TIMERPROC)TimerFrmProc);
   //Info o zakonczeniu procedury ladowania
   LoadExecuted = false;
 
