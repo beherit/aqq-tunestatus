@@ -72,7 +72,6 @@ int UserTuneSendDelayChk;
 //Inne-----------------------------------------------------------------------
 UnicodeString Status; //Pobrany z odtwarzaczy utwor i sformatowany na nowy opis
 UnicodeString StartStatus; //Opis startowy
-UnicodeString TempStatus; //Zapamietany opis
 UnicodeString UserTuneStatus; //Pobrany z odtwarzaczy utwor do UserTune
 UnicodeString SongLength;  //Dlugosc odtwarzanego utworu
 UnicodeString PluginSong; //Utwor przekazany przez wtyczki np. AQQ Radio
@@ -287,6 +286,7 @@ void SetStatus(UnicodeString SetStatusStatus)
   PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)&PluginStateChange,0);
   PluginStateChange.cbSize = sizeof(TPluginStateChange);
   PluginStateChange.Status = SetStatusStatus.w_str();
+  PluginStateChange.ByHand = false;
   PluginStateChange.Force = true;
   PluginLink.CallService(AQQ_SYSTEM_SETSHOWANDSTATUS,0,(LPARAM)&PluginStateChange);
 }
@@ -1278,7 +1278,7 @@ void RefreshUserTuneException()
 //Szybkie wlaczenie/wylaczenie dzialania wtyczki
 void FastOperation(bool FromForm)
 {
-  //Jezeli wtyczka jest nieaktywna
+  //Funkcja zmiany opisu jest nieaktywna
   if(!AutoModeEnabled)
   {
 	//Pobranie opisu poczatkowego
@@ -1293,7 +1293,7 @@ void FastOperation(bool FromForm)
 	//Zmiana statusu checkbox'a na formie
 	if((hMainForm)&&(hMainForm->Visible)&&(!FromForm)) hMainForm->RunPluginCheckBox->Checked = true;
   }
-  //Jezeli wtyczka jest aktywna
+  //Funkcja zmiany opisu jest aktywna
   else
   {
 	//Zatrzymanie timerow
@@ -1304,14 +1304,11 @@ void FastOperation(bool FromForm)
 	UpdateTuneStatusFastOperation(false);
 	//Zmiana statusu checkbox'a na formie
 	if((hMainForm)&&(hMainForm->Visible)&&(!FromForm)) hMainForm->RunPluginCheckBox->Checked = false;
-	//Pobranie aktualnego opisu
-	TempStatus = GetStatus();
 	//Przywrocenie poczatkowego opisu
-	if(StartStatus!=TempStatus)
+	if(GetStatus()!=StartStatus)
 	{
 	  while(GetStatus()!=StartStatus)
 	   SetStatus(StartStatus);
-	  TempStatus = "";
 	}
   }
 }
@@ -1449,7 +1446,7 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		KillTimer(hTimerFrm,TIMER_GETSTATUS);
 		//Zasygnalizowanie dopiero co wlaczenia dzialania wtyczki
 		JustEnabled = true;
-		//Wlaczenie dzialania wtyczki
+		//Wlaczenie funkcji zmiany opisu
 		AutoModeEnabled = true;
 		SetTimer(hTimerFrm,TIMER_AUTOMODE,1000,(TIMERPROC)TimerFrmProc);
 		//Zmiana statusu checkbox'a na formie
@@ -1467,14 +1464,11 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	  //Zatrzymanie innych timerow
 	  KillTimer(hTimerFrm,TIMER_SETSTATUS);
 	  KillTimer(hTimerFrm,TIMER_AUTOMODE);
-	  //Pobranie aktualnego opisu
-	  TempStatus = GetStatus();
 	  //Przywracanie poczatkowego opisu
-	  if(StartStatus!=TempStatus)
+	  if(GetStatus()!=StartStatus)
 	  {
 		while(GetStatus()!=StartStatus)
 		 SetStatus(StartStatus);
-		TempStatus = "";
 	  }
 	  //Zasygnalizowanie dopiero co wlaczenia dzialania wtyczki
 	  JustEnabled = true;
@@ -1486,15 +1480,15 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	else if(wParam==TIMER_AUTOMODE)
 	{
 	  //Uruchomienie automatycznego trybu pobierania odtwarzanego utworu
-	  Status = GetDataFromPlayers(false);
+	  UnicodeString PlayerData = GetDataFromPlayers(false);
 	  //Opis cos zawiera
-	  if(!Status.IsEmpty())
+	  if(!PlayerData.IsEmpty())
 	  {
 		//Opis jest rozny od poprzedniego opisu
-		if(Status!=TempStatus)
+		if(PlayerData!=Status)
 		{
 		  //Zapisanie opisu do pozniejszego porownania
-		  TempStatus = Status;
+		  Status = PlayerData;
 		  //Zatrzymanie timera ustawiajacego nowy opis
 		  KillTimer(hTimerFrm,TIMER_SETSTATUS);
 		  //Wlaczenie timera stawiajacego nowy opis z symulacja pierwszego uruchomienia
@@ -1506,17 +1500,17 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		}
 	  }
 	  //Opis jest pusty
-	  else if(Status.IsEmpty())
+	  else if(PlayerData.IsEmpty())
 	  {
 		//Opis jest rozny od opisu tymczasowego
-		if(StartStatus!=TempStatus)
+		if(Status!=StartStatus)
 		{
 		  //Zatrzymanie timera ustawiajacego nowy opis
 		  KillTimer(hTimerFrm,TIMER_SETSTATUS);
 		  //Symulacja pierwszego uruchomienia timera ustawiajacego nowy opis
 		  JustEnabled = true;
 		  //Przywrocenie opisu poczatkowego
-		  TempStatus = StartStatus;
+		  Status = StartStatus;
 		  while(GetStatus()!=StartStatus)
 		   SetStatus(StartStatus);
 		}
@@ -1530,7 +1524,7 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	  //Usuwanie symulacju pierwszego uruchomienia
 	  JustEnabled = false;
 	  //Opis jest inny niz obecny
-	  if(Status!=GetStatus())
+	  if(GetStatus()!=Status)
 	  {
 		//Zatrzymanie timera automatycznego wylaczania dzialania wtyczki
 		KillTimer(hTimerFrm,TIMER_AUTOTURNOFF);
@@ -1558,14 +1552,11 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	  KillTimer(hTimerFrm,TIMER_AUTOMODE);
 	  //Aktualizacja przycisku
 	  if(FastAccessChk) UpdateTuneStatusFastOperation(false);
-	  //Pobranie aktualnego opisu
-	  TempStatus = GetStatus();
 	  //Przywracanie poczatkowego opisu
-	  if(StartStatus!=TempStatus)
+	  if(GetStatus()!=StartStatus)
 	  {
 		while(GetStatus()!=StartStatus)
 		 SetStatus(StartStatus);
-		TempStatus = "";
 	  }
 	}
 	//Pobieranie odtwarzanego utworu w odtwarzaczach (User Tune)
@@ -1684,26 +1675,24 @@ INT_PTR __stdcall OnModulesLoaded(WPARAM wParam, LPARAM lParam)
 //Notyfikacja zmiany statusu
 INT_PTR __stdcall OnPreSetNote(WPARAM wParam, LPARAM lParam)
 {
-  //Jezeli dzialanie wtyczki jest wlaczone
+  //Funkcja zmiany opisu jest aktywna
   if(AutoModeEnabled)
   {
-    //Pobranie nowego opisu
-	UnicodeString NewStatus = (wchar_t*)lParam;
-	//Jezeli nowy opis spelnia ponizsze warunki
-	if((NewStatus!=StartStatus)
-	&&(NewStatus!=TempStatus)
-	&&(NewStatus!=Status)
-	&&(!Status.IsEmpty()))
+	//Wtyczka zmienila opis uzytkownika
+	if(!Status.IsEmpty())
 	{
+	  //Pobranie nowego opisu
+	  UnicodeString NewStatus = (wchar_t*)lParam;
 	  //Zmiana opisu startowego
-	  StartStatus = NewStatus;
+	  if(NewStatus!=Status) StartStatus = NewStatus;
+	  //Blokada zmiany opisu
 	  return 1;
 	}
-	else
-	 return 0;
+	//Zezwolenie na zmiane opisu
+	else return 0;
   }
-  else
-   return 0;
+  //Zezwolenie na zmiane opisu
+  else return 0;
 }
 //---------------------------------------------------------------------------
 
@@ -1746,7 +1735,6 @@ INT_PTR __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
 	//Blokowanie przy niewidocznym
 	if(NewState==6) SetTimer(hTimerFrm,TIMER_STATECHANGED,500,(TIMERPROC)TimerFrmProc);
   }
-  //
 
   return 0;
 }
@@ -2193,10 +2181,8 @@ extern "C" int __declspec(dllexport) __stdcall Unload()
   //Przywracanie poczatkowego opisu jezeli dzialanie wtyczki jest wlaczone
   if(AutoModeEnabled)
   {
-	//Pobranie aktualnego opisu
-	TempStatus = GetStatus();
 	//Jezeli opis startowy jest rozny od aktualnego
-	if(StartStatus!=TempStatus)
+	if(GetStatus()!=StartStatus)
 	{
       //Przywracanie poczatkowego opisu
 	  while(StartStatus!=GetStatus())
