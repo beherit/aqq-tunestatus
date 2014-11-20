@@ -204,6 +204,22 @@ int GetBrightness()
 }
 //---------------------------------------------------------------------------
 
+//Otwieranie okna ustawien wtyczki
+void OpenPluginSettings()
+{
+  //Przypisanie uchwytu do formy
+  if(!hMainForm)
+  {
+	Application->Handle = (HWND)MainForm;
+	hMainForm = new TMainForm(Application);
+  }
+  //Zmiana statusu checkbox'a na formie
+  hMainForm->RunPluginCheckBox->Checked = AutoModeEnabled;
+  //Pokaznie okna
+  hMainForm->Show();
+}
+//---------------------------------------------------------------------------
+
 //Pobieranie informacji o pliku (wersja itp)
 UnicodeString GetFileInfo(wchar_t *ModulePath, String KeyName)
 {
@@ -1378,16 +1394,8 @@ void BuildTuneStatusFastOperation()
 //Serwis otwarcia formy ustawien
 INT_PTR __stdcall ServiceTuneStatusFastSettingsItem(WPARAM wParam, LPARAM lParam)
 {
-  //Przypisanie uchwytu do formy
-  if(!hMainForm)
-  {
-	Application->Handle = (HWND)MainForm;
-	hMainForm = new TMainForm(Application);
-  }
-  //Zmiana statusu checkbox'a na formie
-  hMainForm->RunPluginCheckBox->Checked = AutoModeEnabled;
-  //Pokaznie okna
-  hMainForm->Show();
+  //Otwieranie okna ustawien wtyczki
+  OpenPluginSettings();
 
   return 0;
 }
@@ -2155,16 +2163,8 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Load(PPluginLink Link)
 //Otwieranie formy ustawien
 extern "C" INT_PTR __declspec(dllexport)__stdcall Settings()
 {
-  //Przypisanie uchwytu do formy
-  if(!hMainForm)
-  {
-	Application->Handle = (HWND)MainForm;
-	hMainForm = new TMainForm(Application);
-  }
-  //Zmiana statusu checkbox'a na formie
-  hMainForm->RunPluginCheckBox->Checked = AutoModeEnabled;
-  //Pokaznie okna
-  hMainForm->Show();
+  //Otwieranie okna ustawien wtyczki
+  OpenPluginSettings();
 
   return 0;
 }
