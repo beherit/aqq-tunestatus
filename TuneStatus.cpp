@@ -73,8 +73,7 @@ int UserTuneSendDelayChk;
 UnicodeString Status; //Pobrany z odtwarzaczy utwor i sformatowany na nowy opis
 UnicodeString StartStatus; //Opis startowy
 UnicodeString TempStatus; //Zapamietany opis
-UnicodeString UserTuneStatus; //Zmienna opisu do UserTune
-UnicodeString UserTuneStatusTMP; //Zmienna tymczasowa opisu do UserTune (do porownyawania zmian)
+UnicodeString UserTuneStatus; //Pobrany z odtwarzaczy utwor do UserTune
 UnicodeString SongLength;  //Dlugosc odtwarzanego utworu
 UnicodeString PluginSong; //Utwor przekazany przez wtyczki np. AQQ Radio
 bool JustEnabled = false; //Zasygnalizowanie dopiero co wlaczenia dzialania wtyczki
@@ -313,7 +312,7 @@ bool AllowChangeStatus()
 }
 //---------------------------------------------------------------------------
 
-//Sprawdzanie stanu glownego konta dla UserTune - czy rozny od rozlaczony/niewidoczny
+//Sprawdzanie stanu konta dla UserTune - czy rozny od rozlaczony/niewidoczny
 bool AllowChangeUserTuneStatus(int Account)
 {
   TPluginStateChange PluginStateChange;
@@ -1224,7 +1223,7 @@ void ChangeUserTuneStatus(bool Enabled)
   if((Enabled)&&(!UserTuneEnabled))
   {
 	//Przekazanie pustego odtwarzanego utworu
-	UserTuneStatusTMP = "";
+	UserTuneStatus = "";
 	//Wlaczenie wysylania informacji User Tune
 	UserTuneEnabled = true;
 	SetTimer(hTimerFrm,TIMER_USERTUNE,1000,(TIMERPROC)TimerFrmProc);
@@ -1237,7 +1236,7 @@ void ChangeUserTuneStatus(bool Enabled)
 	KillTimer(hTimerFrm,TIMER_USERTUNE);
 	KillTimer(hTimerFrm,TIMER_SETUSERTUNE);
 	//Przekazanie pustego odtwarzanego utworu
-	UserTuneStatusTMP = "";
+	UserTuneStatus = "";
 	//Wyslanie informacji o pustym odtwarzanym utworze
 	SetUserTune("","");
   }
@@ -1573,18 +1572,18 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	else if(wParam==TIMER_USERTUNE)
 	{
 	  //Uruchomienie automatycznego trybu pobierania odtwarzanego utworu
-	  UserTuneStatus = GetDataFromPlayers(true);
+	  UnicodeString PlayerData = GetDataFromPlayers(true);
 	  //Dane zostaly pobrane
-	  if(!UserTuneStatus.IsEmpty())
+	  if(!PlayerData.IsEmpty())
 	  {
 		//Aktualnie odtwarzany utwor jest rozny od poprzedniego
-		if(UserTuneStatus!=UserTuneStatusTMP)
+		if(PlayerData!=UserTuneStatus)
 		{
-		  //Zatrzymanie timera wyslania ifnormacji o odtwarzanym utworze
+		  //Zatrzymanie timera wyslania informacji o odtwarzanym utworze
 		  KillTimer(hTimerFrm,TIMER_SETUSERTUNE);
 		  //Przekazanie nowego odtwarzanego utworu
-		  UserTuneStatusTMP = UserTuneStatus;
-		  //Wlaczenie timera wyslania ifnormacji o odtwarzanym utworze
+		  UserTuneStatus = PlayerData;
+		  //Wlaczenie timera wyslania informacji o odtwarzanym utworze
 		  SetTimer(hTimerFrm,TIMER_SETUSERTUNE,UserTuneSendDelayChk,(TIMERPROC)TimerFrmProc);
 		}
 	  }
@@ -1592,24 +1591,24 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	  else
 	  {
 		//Poprzedni odtwazany utwor nie byl pusty
-		if(!UserTuneStatusTMP.IsEmpty())
+		if(!UserTuneStatus.IsEmpty())
 		{
-		  //Zatrzymanie timera wyslania ifnormacji o odtwarzanym utworze
+		  //Zatrzymanie timera wyslania informacji o odtwarzanym utworze
 		  KillTimer(hTimerFrm,TIMER_SETUSERTUNE);
 		  //Przekazanie pustego odtwarzanego utworu
-		  UserTuneStatusTMP = "";
+		  UserTuneStatus = "";
 		  //Wyslanie informacji o pustym odtwarzanym utworze
 		  SetUserTune("","");
 		}
 	  }
 	}
-	//Wyslanie ifnormacji o odtwarzanym utworze (User Tune)
+	//Wyslanie informacji o odtwarzanym utworze (User Tune)
 	else if(wParam==TIMER_SETUSERTUNE)
 	{
 	  //Zatrzymanie timera
 	  KillTimer(hTimerFrm,TIMER_SETUSERTUNE);
 	  //Wyslanie informacji o nowym odtwarzanym utworze
-	  SetUserTune(UserTuneStatusTMP,SongLength);
+	  SetUserTune(UserTuneStatus,SongLength);
 	}
 
 	return 0;
@@ -1747,6 +1746,7 @@ INT_PTR __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
 	//Blokowanie przy niewidocznym
 	if(NewState==6) SetTimer(hTimerFrm,TIMER_STATECHANGED,500,(TIMERPROC)TimerFrmProc);
   }
+  //
 
   return 0;
 }
