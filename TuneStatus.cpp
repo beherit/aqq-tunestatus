@@ -2050,7 +2050,7 @@ void LoadSettings()
 }
 //---------------------------------------------------------------------------
 
-extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
+extern "C" INT_PTR __declspec(dllexport) __stdcall Load(PPluginLink Link)
 {
   //Info o rozpoczeciu procedury ladowania
   LoadExecuted = true;
@@ -2153,7 +2153,7 @@ extern "C" int __declspec(dllexport) __stdcall Load(PPluginLink Link)
 //---------------------------------------------------------------------------
 
 //Otwieranie formy ustawien
-extern "C" int __declspec(dllexport)__stdcall Settings()
+extern "C" INT_PTR __declspec(dllexport)__stdcall Settings()
 {
   //Przypisanie uchwytu do formy
   if(!hMainForm)
@@ -2170,7 +2170,7 @@ extern "C" int __declspec(dllexport)__stdcall Settings()
 }
 //---------------------------------------------------------------------------
 
-extern "C" int __declspec(dllexport) __stdcall Unload()
+extern "C" INT_PTR __declspec(dllexport) __stdcall Unload()
 {
   //Wyladowanie timerow
   for(int TimerID=10;TimerID<=80;TimerID=TimerID+10) KillTimer(hTimerFrm,TimerID);
