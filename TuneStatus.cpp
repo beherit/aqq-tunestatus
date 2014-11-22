@@ -1755,16 +1755,16 @@ INT_PTR __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
   int NewState = StateChange.NewState;
   //Pobieranie stanu zalogowania na konto
   bool Authorized = StateChange.Authorized;
-  //Disconnected
-  if(!NewState)
+  //Disconnected of Invisible
+  if((!NewState)||(NewState==6))
   {
 	//Wylacznie wysylania informacji User Tune
 	if(UserTuneSendChk) TurnOffUserTune(StateChange.UserIdx);
 	//Blokowanie pokazywania notyfikacji User Tune
-	AllowUserTuneNotif[StateChange.UserIdx] = false;
+	if(NewState!=6) AllowUserTuneNotif[StateChange.UserIdx] = false;
   }
   //Connecting
-  else if((!Authorized)&&(NewState))
+  if((!Authorized)&&(NewState))
   {
 	//Ustawianie stanu polaczenia sieci
 	NetworkConnecting[StateChange.UserIdx] = true;
