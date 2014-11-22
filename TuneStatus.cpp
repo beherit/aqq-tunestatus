@@ -76,7 +76,8 @@ UnicodeString UserTuneStatus; //Pobrany z odtwarzaczy utwor do UserTune
 UnicodeString SongLength;  //Dlugosc odtwarzanego utworu
 UnicodeString PluginSong; //Utwor przekazany przez wtyczki np. AQQ Radio
 bool JustEnabled = false; //Zasygnalizowanie dopiero co wlaczenia dzialania wtyczki
-bool AllowUserTuneNotif = false; //Zezwalanie na notyfikacje UserTune
+bool AllowUserTuneNotif[10] = {false}; //Blokowanie/zezwolenie pokazywania notyfikacji UserTune
+bool NetworkConnecting[10] = {false}; //Stan polaczenia sieci
 bool AutoModeEnabled = false; //Dzialnie wtyczki wylaczone/wlaczone
 bool UserTuneEnabled = false; //User Tune wylaczone/wlaczone
 int GetStatusTimerInterval = 0; //Interwal timera pobieranie aktualnego opisu
@@ -85,14 +86,14 @@ TMemIniFile* ContactsNickList = new TMemIniFile(ChangeFileExt(Application->ExeNa
 DWORD ReplyListID = 0; //ID wywolania enumeracji listy kontaktow
 bool BlockUserTuneSend = false; //Blokada User Tune przez wtyczke Auto-Tune ShortCut
 //TIMERY---------------------------------------------------------------------
-#define TIMER_ALLOWUSERTUNENOTIFY 10
-#define TIMER_GETSTATUS 20
-#define TIMER_STATECHANGED 30
-#define TIMER_AUTOMODE 40
-#define TIMER_SETSTATUS 50
-#define TIMER_AUTOTURNOFF 60
-#define TIMER_USERTUNE 70
-#define TIMER_SETUSERTUNE 80
+#define TIMER_GETSTATUS 10
+#define TIMER_STATECHANGED 20
+#define TIMER_AUTOMODE 30
+#define TIMER_SETSTATUS 40
+#define TIMER_AUTOTURNOFF 50
+#define TIMER_USERTUNE 60
+#define TIMER_SETUSERTUNE 70
+#define TIMER_ALLOWUSERTUNENOTIFY 80
 //FORWARD-RETRIEVE-DATA-FROM-PLAYERS-----------------------------------------
 UnicodeString GetDataFromWinamp();
 UnicodeString GetDataFromFoobar();
@@ -112,7 +113,6 @@ UnicodeString GetDataFromSpotify();
 INT_PTR __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam);
 INT_PTR __stdcall OnCurrentSong(WPARAM wParam, LPARAM lParam);
 INT_PTR __stdcall OnListReady(WPARAM wParam, LPARAM lParam);
-INT_PTR __stdcall OnModulesLoaded(WPARAM wParam, LPARAM lParam);
 INT_PTR __stdcall OnPreSetNote(WPARAM wParam, LPARAM lParam);
 INT_PTR __stdcall OnReplyList(WPARAM wParam, LPARAM lParam);
 INT_PTR __stdcall OnStateChange(WPARAM wParam, LPARAM lParam);
@@ -1434,16 +1434,8 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 {
   if(uMsg==WM_TIMER)
   {
-	//Zezwalanie na pokazywanie notyfikacji User Tune
-	if(wParam==TIMER_ALLOWUSERTUNENOTIFY)
-	{
-	  //Zatrymanie timera
-	  KillTimer(hTimerFrm,TIMER_ALLOWUSERTUNENOTIFY);
-	  //Zezwalanie na pokazywanie notyfikacji User Tune
-	  AllowUserTuneNotif = true;
-	}
 	//Pobieranie aktualnego opisu
-	else if(wParam==TIMER_GETSTATUS)
+	if(wParam==TIMER_GETSTATUS)
 	{
       //Pobieranie aktualnego opisu
 	  StartStatus = GetStatus();
@@ -1609,6 +1601,23 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	  //Wyslanie informacji o nowym odtwarzanym utworze
 	  SetUserTune(UserTuneStatus,SongLength);
 	}
+	//Zezwolenie pokazywania notyfikacji User Tune
+	else if((wParam==TIMER_ALLOWUSERTUNENOTIFY)
+	||(wParam==TIMER_ALLOWUSERTUNENOTIFY+1)
+	||(wParam==TIMER_ALLOWUSERTUNENOTIFY+2)
+	||(wParam==TIMER_ALLOWUSERTUNENOTIFY+3)
+	||(wParam==TIMER_ALLOWUSERTUNENOTIFY+4)
+	||(wParam==TIMER_ALLOWUSERTUNENOTIFY+5)
+	||(wParam==TIMER_ALLOWUSERTUNENOTIFY+6)
+	||(wParam==TIMER_ALLOWUSERTUNENOTIFY+7)
+	||(wParam==TIMER_ALLOWUSERTUNENOTIFY+8)
+	||(wParam==TIMER_ALLOWUSERTUNENOTIFY+9))
+	{
+	  //Zatrymanie timera
+	  KillTimer(hTimerFrm,wParam);
+	  //Zezwolenie pokazywania notyfikacji User Tune
+	  AllowUserTuneNotif[wParam-TIMER_ALLOWUSERTUNENOTIFY] = true;
+    }
 
 	return 0;
   }
@@ -1670,16 +1679,6 @@ INT_PTR __stdcall OnListReady(WPARAM wParam, LPARAM lParam)
 }
 //---------------------------------------------------------------------------
 
-//Notyfikacja zaladowania wszystkich modulow w AQQ
-INT_PTR __stdcall OnModulesLoaded(WPARAM wParam, LPARAM lParam)
-{
-  //Wlaczenie timera
-  SetTimer(hTimerFrm,TIMER_ALLOWUSERTUNENOTIFY,20000,(TIMERPROC)TimerFrmProc);
-
-  return 0;
-}
-//---------------------------------------------------------------------------
-
 //Notyfikacja zmiany statusu
 INT_PTR __stdcall OnPreSetNote(WPARAM wParam, LPARAM lParam)
 {
@@ -1733,11 +1732,31 @@ INT_PTR __stdcall OnReplyList(WPARAM wParam, LPARAM lParam)
 //Notyfikacja zmiany stanu
 INT_PTR __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
 {
+  //Pobieranie danych
+  TPluginStateChange StateChange = *(PPluginStateChange)lParam;
+  //Blokowanie/Zezwalanie notyfikacji UserTune
+  //Definicja niezbednych zmiennych
+  int NewState = StateChange.NewState;
+  bool Authorized = StateChange.Authorized;
+  //Disconnected
+  if(!NewState)
+   //Blokowanie pokazywania notyfikacji User Tune
+   AllowUserTuneNotif[StateChange.UserIdx] = false;
+  //Connecting
+  else if((!Authorized)&&(NewState))
+   //Ustawianie stanu polaczenia sieci
+   NetworkConnecting[StateChange.UserIdx] = true;
+  //Connected
+  else if((NetworkConnecting[StateChange.UserIdx])&&(Authorized)&&(NewState))
+  {
+	//Wlaczenie timera zezwolenia pokazywania notyfikacji User Tune
+	SetTimer(hTimerFrm,TIMER_ALLOWUSERTUNENOTIFY+StateChange.UserIdx,3000,(TIMERPROC)TimerFrmProc);
+	//Ustawianie stanu polaczenia sieci
+	NetworkConnecting[StateChange.UserIdx] = false;
+  }
   //Jezeli dzialanie wtyczki jest wlaczone i zdefiniowany opis nie jest pusty
   if((AutoModeEnabled)&&(!Status.IsEmpty()))
   {
-	//Pobieranie danych
-	TPluginStateChange StateChange = *(PPluginStateChange)lParam;
 	//Pobranie nowego stanu konta
 	int NewState = StateChange.NewState;
 	//Blokowanie przy niewidocznym
@@ -1791,8 +1810,8 @@ INT_PTR __stdcall OnThemeChanged(WPARAM wParam, LPARAM lParam)
 //Notyfikacja otrzymywanych pakietow XML
 INT_PTR __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam)
 {
-  //Wlaczone powiadomienie o aktualnie sluchanym utworze + zezwolenie na notyfikacje
-  if((AllowUserTuneNotif)&&(UserTuneNotifChk))
+  //Wlaczone powiadomienie o aktualnie sluchanym utworze
+  if(UserTuneNotifChk)
   {
     //Pobranie pakietu XML
 	UnicodeString XML = (wchar_t*)wParam;
@@ -1801,114 +1820,118 @@ INT_PTR __stdcall OnXMLDebug(WPARAM wParam, LPARAM lParam)
 	{
 	  //Pobieranie danych nt. pakietu XML
 	  TPluginXMLChunk XMLChunk = *(PPluginXMLChunk)lParam;
-	  //Indeks konta
-	  UnicodeString XMLUserIdx = ":" + IntToStr(XMLChunk.UserIdx);
-	  //Nadawca pakietu
-	  UnicodeString XMLFrom = (wchar_t*)XMLChunk.From;
-	  //Odbiorca pakietu
-	  UnicodeString XMLTo = ReciveAccountJID(XMLChunk.UserIdx);
-	  //Odbiorca rozny od nadawcy
-	  if(XMLFrom!=XMLTo)
+	  //Zezwolono na notyfikacje
+	  if(AllowUserTuneNotif[XMLChunk.UserIdx])
 	  {
-        //Nadawca pakietu nie znajduje sie na liscie wyjatkow
-		if(UserTuneExceptions->IndexOf(XMLFrom)==-1)
+		//Indeks konta
+		UnicodeString XMLUserIdx = ":" + IntToStr(XMLChunk.UserIdx);
+		//Nadawca pakietu
+		UnicodeString XMLFrom = (wchar_t*)XMLChunk.From;
+		//Odbiorca pakietu
+		UnicodeString XMLTo = ReciveAccountJID(XMLChunk.UserIdx);
+		//Odbiorca rozny od nadawcy
+		if(XMLFrom!=XMLTo)
 		{
-          //Wczytanie pakietu XML do parsera
-		  _di_IXMLDocument XMLDoc = LoadXMLData(XML);
-		  _di_IXMLNode Nodes = XMLDoc->DocumentElement;
-		  //Sprawdzanie nazwy elementu
-		  if(Nodes->NodeName=="message")
+		  //Nadawca pakietu nie znajduje sie na liscie wyjatkow
+		  if(UserTuneExceptions->IndexOf(XMLFrom)==-1)
 		  {
-            //Pobranie pierwszego dziecka
-			Nodes = Nodes->ChildNodes->GetNode(0);
+			//Wczytanie pakietu XML do parsera
+			_di_IXMLDocument XMLDoc = LoadXMLData(XML);
+			_di_IXMLNode Nodes = XMLDoc->DocumentElement;
 			//Sprawdzanie nazwy elementu
-			if((Nodes->NodeName=="event")&&(Nodes->Attributes["xmlns"]=="http://jabber.org/protocol/pubsub#event"))
+			if(Nodes->NodeName=="message")
 			{
 			  //Pobranie pierwszego dziecka
 			  Nodes = Nodes->ChildNodes->GetNode(0);
 			  //Sprawdzanie nazwy elementu
-			  if((Nodes->NodeName=="items")&&(Nodes->Attributes["node"]=="http://jabber.org/protocol/tune"))
+			  if((Nodes->NodeName=="event")&&(Nodes->Attributes["xmlns"]=="http://jabber.org/protocol/pubsub#event"))
 			  {
-			    //Pobranie pierwszego dziecka
+				//Pobranie pierwszego dziecka
 				Nodes = Nodes->ChildNodes->GetNode(0);
 				//Sprawdzanie nazwy elementu
-				if(Nodes->NodeName=="item")
+				if((Nodes->NodeName=="items")&&(Nodes->Attributes["node"]=="http://jabber.org/protocol/tune"))
 				{
-                  //Pobranie pierwszego dziecka
+				  //Pobranie pierwszego dziecka
 				  Nodes = Nodes->ChildNodes->GetNode(0);
 				  //Sprawdzanie nazwy elementu
-				  if((Nodes->NodeName=="tune")&&(Nodes->Attributes["xmlns"]=="http://jabber.org/protocol/tune"))
+				  if(Nodes->NodeName=="item")
 				  {
-                    //Pobranie ilosci kolejnych dzieci
-					int ItemsCount = Nodes->ChildNodes->GetCount();
-					//Zmienne przechowujaca informacje o utworze
-					UnicodeString Artist, Title;
-					//Parsowanie kolejnych elementow
-					for(int Count=0;Count<ItemsCount;Count++)
+					//Pobranie pierwszego dziecka
+					Nodes = Nodes->ChildNodes->GetNode(0);
+					//Sprawdzanie nazwy elementu
+					if((Nodes->NodeName=="tune")&&(Nodes->Attributes["xmlns"]=="http://jabber.org/protocol/tune"))
 					{
-					  //Pobieranie zawartosci dziecka
-					  _di_IXMLNode ChildNodes = Nodes->ChildNodes->GetNode(Count);
-					  //Sprawdzanie nazwy elementu
-					  if(ChildNodes->NodeName=="artist") Artist = ChildNodes->Text;
-					  else if(ChildNodes->NodeName=="title") Title = ChildNodes->Text;
-					}
-					//Skladanie tytulu utworu
-					UnicodeString UserTuneSong;
-					if(Artist.IsEmpty()) UserTuneSong = Title;
-					else UserTuneSong = Artist + " - " + Title;
-					//Poprawa kodowania UTF8
-					UserTuneSong = UTF8ToUnicodeString(UserTuneSong.w_str());
-					UserTuneSong = StringReplace(UserTuneSong, "&apos;", "'", TReplaceFlags() << rfReplaceAll);
-					UserTuneSong = StringReplace(UserTuneSong, "&quot;", "\"", TReplaceFlags() << rfReplaceAll);
-					UserTuneSong = StringReplace(UserTuneSong, "&amp;", "&", TReplaceFlags() << rfReplaceAll);
-					UserTuneSong = StringReplace(UserTuneSong, "&gt;", ">", TReplaceFlags() << rfReplaceAll);
-					UserTuneSong = StringReplace(UserTuneSong, "&lt;", "<", TReplaceFlags() << rfReplaceAll);
-					//Usuwanie "*** "
-					if(UserTuneSong.Pos("*** ")>0)
-					{
-					  UserTuneSong.Delete(1, UserTuneSong.Pos("*** ") + 3);
-					  UserTuneSong = UserTuneSong.Trim();
-					}
-					//Usuwanie numeru piosenki
-					if((UserTuneSong.Pos(". ")>0)&&(UserTuneSong.Pos(". ")<7))
-					{
-					  UnicodeString TMP = UserTuneSong;
-					  TMP.Delete(UserTuneSong.Pos(". "), TMP.Length());
-					  if(TestDigit(TMP))
+					  //Pobranie ilosci kolejnych dzieci
+					  int ItemsCount = Nodes->ChildNodes->GetCount();
+					  //Zmienne przechowujaca informacje o utworze
+					  UnicodeString Artist, Title;
+					  //Parsowanie kolejnych elementow
+					  for(int Count=0;Count<ItemsCount;Count++)
 					  {
-						UserTuneSong.Delete(1, UserTuneSong.Pos(". "));
+						//Pobieranie zawartosci dziecka
+						_di_IXMLNode ChildNodes = Nodes->ChildNodes->GetNode(Count);
+						//Sprawdzanie nazwy elementu
+						if(ChildNodes->NodeName=="artist") Artist = ChildNodes->Text;
+						else if(ChildNodes->NodeName=="title") Title = ChildNodes->Text;
+					  }
+					  //Skladanie tytulu utworu
+					  UnicodeString UserTuneSong;
+					  if(Artist.IsEmpty()) UserTuneSong = Title;
+					  else UserTuneSong = Artist + " - " + Title;
+					  //Poprawa kodowania UTF8
+					  UserTuneSong = UTF8ToUnicodeString(UserTuneSong.w_str());
+					  UserTuneSong = StringReplace(UserTuneSong, "&apos;", "'", TReplaceFlags() << rfReplaceAll);
+					  UserTuneSong = StringReplace(UserTuneSong, "&quot;", "\"", TReplaceFlags() << rfReplaceAll);
+					  UserTuneSong = StringReplace(UserTuneSong, "&amp;", "&", TReplaceFlags() << rfReplaceAll);
+					  UserTuneSong = StringReplace(UserTuneSong, "&gt;", ">", TReplaceFlags() << rfReplaceAll);
+					  UserTuneSong = StringReplace(UserTuneSong, "&lt;", "<", TReplaceFlags() << rfReplaceAll);
+					  //Usuwanie "*** "
+					  if(UserTuneSong.Pos("*** ")>0)
+					  {
+						UserTuneSong.Delete(1, UserTuneSong.Pos("*** ") + 3);
 						UserTuneSong = UserTuneSong.Trim();
 					  }
+					  //Usuwanie numeru piosenki
+					  if((UserTuneSong.Pos(". ")>0)&&(UserTuneSong.Pos(". ")<7))
+					  {
+						UnicodeString TMP = UserTuneSong;
+						TMP.Delete(UserTuneSong.Pos(". "), TMP.Length());
+						if(TestDigit(TMP))
+						{
+						  UserTuneSong.Delete(1, UserTuneSong.Pos(". "));
+						  UserTuneSong = UserTuneSong.Trim();
+						}
+					  }
+					  //Usuwanie "Wtyczka AQQ Radio: "
+					  if(UserTuneSong.Pos("Wtyczka AQQ Radio: ")>0)
+					   UserTuneSong.Delete(1,UserTuneSong.Pos("Wtyczka AQQ Radio: ")+18);
+					  //Chmurka "kto slucha"
+					  TPluginShowInfo PluginShowInfo;
+					  PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
+					  PluginShowInfo.Event = tmePseudoMsgCap;
+					  PluginShowInfo.Text = GetContactNick(XMLFrom+XMLUserIdx).w_str();
+					  PluginShowInfo.ImagePath = (wchar_t*)PluginLink.CallService(AQQ_FUNCTION_GETPNG_FILEPATH,76,0);
+					  PluginShowInfo.TimeOut = 1000 * UserTuneCloudChk;
+					  PluginShowInfo.ActionID = L"";
+					  PluginShowInfo.Tick = 0;
+					  PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)&PluginShowInfo);
+					  //Chmurka "co slucha"
+					  PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
+					  PluginShowInfo.Event = tmeInfo;
+					  PluginShowInfo.Text = UserTuneSong.w_str();
+					  PluginShowInfo.ImagePath = L"";
+					  PluginShowInfo.TimeOut = 1000 * UserTuneCloudChk;
+					  PluginShowInfo.ActionID = L"";
+					  PluginShowInfo.Tick = 0;
+					  PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)&PluginShowInfo);
 					}
-					//Usuwanie "Wtyczka AQQ Radio: "
-					if(UserTuneSong.Pos("Wtyczka AQQ Radio: ")>0)
-					 UserTuneSong.Delete(1,UserTuneSong.Pos("Wtyczka AQQ Radio: ")+18);
-					//Chmurka "kto slucha"
-					TPluginShowInfo PluginShowInfo;
-					PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
-					PluginShowInfo.Event = tmePseudoMsgCap;
-					PluginShowInfo.Text = GetContactNick(XMLFrom+XMLUserIdx).w_str();
-					PluginShowInfo.ImagePath = (wchar_t*)PluginLink.CallService(AQQ_FUNCTION_GETPNG_FILEPATH,76,0);
-					PluginShowInfo.TimeOut = 1000 * UserTuneCloudChk;
-					PluginShowInfo.ActionID = L"";
-					PluginShowInfo.Tick = 0;
-					PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)&PluginShowInfo);
-					//Chmurka "co slucha"
-					PluginShowInfo.cbSize = sizeof(TPluginShowInfo);
-					PluginShowInfo.Event = tmeInfo;
-					PluginShowInfo.Text = UserTuneSong.w_str();
-					PluginShowInfo.ImagePath = L"";
-					PluginShowInfo.TimeOut = 1000 * UserTuneCloudChk;
-					PluginShowInfo.ActionID = L"";
-					PluginShowInfo.Tick = 0;
-					PluginLink.CallService(AQQ_FUNCTION_SHOWINFO,0,(LPARAM)&PluginShowInfo);
 				  }
-                }
-              }
-            }
+				}
+			  }
+			}
 		  }
-		}
-	  }
+	    }
+      }
     }
   }
 
@@ -2109,9 +2132,6 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Load(PPluginLink Link)
   PluginLink.HookEvent(AQQ_SYSTEM_CURRENTSONG,OnCurrentSong);
   //Hook na zakonczenie ladowania listy kontaktow przy starcie AQQ
   PluginLink.HookEvent(AQQ_CONTACTS_LISTREADY,OnListReady);
-  //Hook na zaladowanie wszystkich modolow
-  PluginLink.HookEvent(AQQ_SYSTEM_MODULESLOADED,OnModulesLoaded);
-  AllowUserTuneNotif = PluginLink.CallService(AQQ_SYSTEM_MODULESLOADED,0,0);
   //Hook na reczna zmiane opisu
   PluginLink.HookEvent(AQQ_WINDOW_PRESETNOTE_NOTE,OnPreSetNote);
   //Hook na enumeracje listy kontatkow
@@ -2122,6 +2142,15 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Load(PPluginLink Link)
   PluginLink.HookEvent(AQQ_SYSTEM_THEMECHANGED,OnThemeChanged);
   //Hook na przychodzace pakiety XML
   PluginLink.HookEvent(AQQ_SYSTEM_XMLDEBUG,OnXMLDebug);
+  //Wszystkie moduly zostaly zaladowane
+  if(PluginLink.CallService(AQQ_SYSTEM_MODULESLOADED,0,0))
+  {
+    //Pobieranie ilosci kont
+	int UserIdxCount = PluginLink.CallService(AQQ_FUNCTION_GETUSEREXCOUNT,0,0);
+	//Blokowanie/zezwolenie notyfikacji UserTune
+	for(int UserIdx=0;UserIdx<UserIdxCount;UserIdx++)
+	 AllowUserTuneNotif[UserIdx] = AllowChangeUserTuneStatus(UserIdx);
+  }
   //Odczyt ustawien
   LoadSettings();
   //Tworzenie interfejsu szybkiego dostepu do ustawien wtyczki
@@ -2207,7 +2236,6 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Unload()
   PluginLink.UnhookEvent(OnContactsUpdate);
   PluginLink.UnhookEvent(OnCurrentSong);
   PluginLink.UnhookEvent(OnListReady);
-  PluginLink.UnhookEvent(OnModulesLoaded);
   PluginLink.UnhookEvent(OnPreSetNote);
   PluginLink.UnhookEvent(OnReplyList);
   PluginLink.UnhookEvent(OnStateChange);
