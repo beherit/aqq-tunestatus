@@ -92,6 +92,8 @@ __published:	// IDE-managed Components
 		TsSkinManager *sSkinManager;
 		TsSkinProvider *sSkinProvider;
 		TButton *CancelButton;
+	TsCheckBox *AutoTurnOffUserTuneSendCheckBox;
+	TsSpinEdit *AutoTurnOffUserTuneSendSpinEdit;
 		void __fastcall SaveButtonClick(TObject *Sender);
 		void __fastcall FormShow(TObject *Sender);
 		void __fastcall aLoadSettingsExecute(TObject *Sender);
@@ -118,8 +120,6 @@ __published:	// IDE-managed Components
 		void __fastcall aAllowApplyExecute(TObject *Sender);
 		void __fastcall AutoModeCheckListBoxPreviewClick(TObject *Sender);
 		void __fastcall FormCreate(TObject *Sender);
-		void __fastcall OtherTabSheetShow(TObject *Sender);
-		void __fastcall UserTuneTabSheetShow(TObject *Sender);
 		void __fastcall sSkinManagerSysDlgInit(TacSysDlgData DlgData, bool &AllowSkinning);
 private:	// User declarations
 public:		// User declarations
