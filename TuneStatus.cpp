@@ -75,7 +75,7 @@ UnicodeString StartStatus; //Opis startowy
 UnicodeString UserTuneStatus; //Pobrany z odtwarzaczy utwor do UserTune
 UnicodeString SongLength;  //Dlugosc odtwarzanego utworu
 UnicodeString PluginSong; //Utwor przekazany przez wtyczki np. AQQ Radio
-bool JustEnabled = false; //Zasygnalizowanie dopiero co wlaczenia dzialania wtyczki
+bool JustEnabled = false; //Zasygnalizowanie dopiero co wlaczenia funkcji zmiany opisu
 bool AllowUserTuneNotif[10] = {false}; //Blokowanie/zezwolenie pokazywania notyfikacji UserTune
 bool NetworkConnecting[10] = {false}; //Stan polaczenia sieci
 bool AutoModeEnabled = false; //Funcja zmiany opisu wlaczona/wylaczona
@@ -1308,7 +1308,7 @@ void RefreshUserTuneException()
 }
 //---------------------------------------------------------------------------
 
-//Szybkie wlaczenie/wylaczenie dzialania wtyczki
+//Szybkie wlaczenie/wylaczenie funkcji zmiany opisu
 void FastOperation(bool FromForm)
 {
   //Funkcja zmiany opisu jest nieaktywna
@@ -1316,7 +1316,7 @@ void FastOperation(bool FromForm)
   {
 	//Pobranie opisu poczatkowego
 	StartStatus = GetStatus();
-	//Zasygnalizowanie dopiero co wlaczenia dzialania wtyczki
+	//Zasygnalizowanie dopiero co wlaczenia funkcji zmiany opisu
 	JustEnabled = true;
 	//Wlaczanie timera pobieranie odtwarzanego utworu w odtwarzaczach
 	AutoModeEnabled = true;
@@ -1347,7 +1347,7 @@ void FastOperation(bool FromForm)
 }
 //---------------------------------------------------------------------------
 
-//Serwis szybkiego wlaczenia/wylaczenia dzialania wtyczki
+//Serwis szybkiego wlaczenia/wylaczenia funkcji zmiany opisu
 INT_PTR __stdcall ServiceTuneStatusFastOperationItem(WPARAM wParam, LPARAM lParam)
 {
   FastOperation(false);
@@ -1380,7 +1380,7 @@ void UpdateTuneStatusFastOperation(bool Enabled)
 }
 //---------------------------------------------------------------------------
 
-//Usuwanie elementu szybkiego wlaczania/wylaczania dzialania wtyczki
+//Usuwanie elementu szybkiego wlaczania/wylaczania funkcji zmiany opisu
 void DestroyTuneStatusFastOperation()
 {
   TPluginAction BuildTuneStatusFastOperationItem;
@@ -1391,7 +1391,7 @@ void DestroyTuneStatusFastOperation()
 }
 //---------------------------------------------------------------------------
 
-//Tworzenie interfejsu szybkiego wlaczania/wylaczania dzialania wtyczki
+//Tworzenie interfejsu szybkiego wlaczania/wylaczania funkcji zmiany opisu
 void BuildTuneStatusFastOperation()
 {
   TPluginAction BuildTuneStatusFastOperationItem;
@@ -1461,7 +1461,7 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	  {
 		//Zatrzymanie timera
 		KillTimer(hTimerFrm,TIMER_GETSTATUS);
-		//Zasygnalizowanie dopiero co wlaczenia dzialania wtyczki
+		//Zasygnalizowanie dopiero co wlaczenia funkcji zmiany opisu
 		JustEnabled = true;
 		//Wlaczenie funkcji zmiany opisu
 		AutoModeEnabled = true;
@@ -1487,7 +1487,7 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		while(GetStatus()!=StartStatus)
 		 SetStatus(StartStatus);
 	  }
-	  //Zasygnalizowanie dopiero co wlaczenia dzialania wtyczki
+	  //Zasygnalizowanie dopiero co wlaczenia funkcji zmiany opisu
 	  JustEnabled = true;
 	  //Wlaczanie timera pobieranie odtwarzanego utworu w odtwarzaczach
 	  AutoModeEnabled = true;
@@ -1543,14 +1543,14 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	  //Opis jest inny niz obecny
 	  if(GetStatus()!=Status)
 	  {
-		//Zatrzymanie timera automatycznego wylaczania dzialania wtyczki
+		//Zatrzymanie timera automatycznego wylaczania funkcji zmiany opisu
 		KillTimer(hTimerFrm,TIMER_AUTOTURNOFF);
 		//Jezeli mozna ustawic nowy opis
 		if(AllowChangeStatus())
 		{
 		  //Ustawianie nowego opisu
 		  while(GetStatus()!=Status) SetStatus(Status);
-		  //Wlaczenie timera automatycznego wylaczania dzialania wtyczki
+		  //Wlaczenie timera automatycznego wylaczania funkcji zmiany opisu
 		  if(AutoTurnOffChk) SetTimer(hTimerFrm,TIMER_AUTOTURNOFF,AutoTurnOffDelayChk,(TIMERPROC)TimerFrmProc);
 		}
 		//Nie mozna ustawic nowego opisu
@@ -1559,7 +1559,7 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		 JustEnabled = true;
 	  }
 	}
-	//Automatyczne wylaczenie dzialania wtyczki
+	//Automatyczne wylaczenie funkcji zmiany opisu
 	else if(wParam==TIMER_AUTOTURNOFF)
 	{
 	  //Zatrzymanie wszystkich timerow
@@ -2051,13 +2051,13 @@ void LoadSettings()
   //Opoznienie ustawiania nowego opisu
   SetStatusDelayChk = 1000*Ini->ReadInteger("Settings", "SetStatusDelay", 5);
   if(SetStatusDelayChk<4000) SetStatusDelayChk = 4000;
-  //Wlaczanie dzialnia wtyczki wraz z uruchomieniem
+  //Wlaczanie funkcji zmiany opisu wraz z uruchomieniem
   EnableOnStartChk = Ini->ReadBool("Settings", "EnableOnStart", false);
-  //Pokazywanie przycisku szybkiego wlaczania/wylaczania dzialnia wtyczki
+  //Pokazywanie przycisku szybkiego wlaczania/wylaczania funkcji zmiany opisu
   FastAccessChk = Ini->ReadBool("Settings", "FastAccess", true);
-  //Automatyczne wylaczanie dzialania wtyczki przy bezczynnosci
+  //Automatyczne wylaczanie funkcji zmiany opisu przy bezczynnosci
   AutoTurnOffChk = Ini->ReadBool("Settings", "AutoTurnOff", false);
-  //Czas automatycznego wylaczania dzialania wtyczki przy bezczynnosci
+  //Czas automatycznego wylaczania funkcji zmiany opisu przy bezczynnosci
   AutoTurnOffDelayChk = 60000*Ini->ReadInteger("Settings", "AutoTurnOffDelay", 15);
   //User Tune - informowanie o aktualnym odtwarzanym przez nas utworze
   UserTuneSendChk = Ini->ReadBool("UserTune", "Send", false);
@@ -2176,7 +2176,7 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Load(PPluginLink Link)
   LoadSettings();
   //Tworzenie interfejsu szybkiego dostepu do ustawien wtyczki
   BuildTuneStatusFastSettings();
-  //Tworzenie interfejsu szybkiego wlaczania/wylaczania dzialania wtyczki
+  //Tworzenie interfejsu szybkiego wlaczania/wylaczania funkcji zmiany opisu
   if(FastAccessChk) BuildTuneStatusFastOperation();
   //Rejestowanie klasy okna timera
   WNDCLASSEX wincl;
@@ -2201,7 +2201,7 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Load(PPluginLink Link)
 	UserTuneEnabled = true;
 	SetTimer(hTimerFrm,TIMER_USERTUNE,1000,(TIMERPROC)TimerFrmProc);
   }
-  //Wlaczenie dzialania wtyczki przy starcie
+  //Wlaczenie funkcji zmiany opisu przy starcie
   if(EnableOnStartChk) SetTimer(hTimerFrm,TIMER_GETSTATUS,100,(TIMERPROC)TimerFrmProc);
   //Info o zakonczeniu procedury ladowania
   LoadExecuted = false;
@@ -2228,7 +2228,7 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Unload()
   DestroyWindow(hTimerFrm);
   //Wyrejestowanie klasy okna timera
   UnregisterClass(L"TTuneStatusTimer",HInstance);
-  //Przywracanie poczatkowego opisu jezeli dzialanie wtyczki jest wlaczone
+  //Przywracanie poczatkowego opisu jezeli funkcja zmiany opisu jest wlaczona
   if(AutoModeEnabled)
   {
 	//Jezeli opis startowy jest rozny od aktualnego
@@ -2245,9 +2245,9 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Unload()
   DestroyTuneStatusFastSettings();
   //Usuwanie serwisu dla szybkiego dostep do ustawien wtyczki
   PluginLink.DestroyServiceFunction(ServiceTuneStatusFastSettingsItem);
-  //Usuwanie elementu szybkiego wlaczania/wylaczania dzialania wtyczki
+  //Usuwanie elementu szybkiego wlaczania/wylaczania funkcji zmiany opisu
   DestroyTuneStatusFastOperation();
-  //Usuwanie serwisu dla szybkiego wlaczania/wylaczania dzialania wtyczki
+  //Usuwanie serwisu dla szybkiego wlaczania/wylaczania funkcji zmiany opisu
   PluginLink.DestroyServiceFunction(ServiceTuneStatusFastOperationItem);
   //Wyladowanie ikonek z intefejsu
   PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(FASTACCESS));
