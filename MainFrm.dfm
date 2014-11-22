@@ -194,10 +194,6 @@ object MainForm: TMainForm
       Caption = 'Obs'#322'uga'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object AutoModeInfoLabel: TsLabel
         Left = 21
         Top = 8
@@ -274,10 +270,6 @@ object MainForm: TMainForm
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object SetStatuslLabel: TsLabel
         Left = 150
         Top = 140
@@ -504,16 +496,11 @@ object MainForm: TMainForm
     object UserTuneTabSheet: TsTabSheet
       Caption = 'User Tune'
       ImageIndex = 3
-      OnShow = UserTuneTabSheetShow
       SkinData.CustomColor = False
       SkinData.CustomFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object UserTuneLabel: TsLabel
-        Left = 23
-        Top = 132
+        Left = 25
+        Top = 174
         Width = 242
         Height = 39
         Alignment = taCenter
@@ -531,7 +518,7 @@ object MainForm: TMainForm
         Font.Style = []
       end
       object UserTuneSendLabel: TsLabel
-        Left = 166
+        Left = 130
         Top = 43
         Width = 116
         Height = 13
@@ -539,12 +526,12 @@ object MainForm: TMainForm
       end
       object UserTuneNotificationCheckBox: TsCheckBox
         Left = 6
-        Top = 67
+        Top = 101
         Width = 194
         Height = 28
         Caption = 'Powiadamiaj o aktualnie s'#322'uchanych przez znajomych utworach'
         AutoSize = False
-        TabOrder = 2
+        TabOrder = 4
         OnClick = UserTuneNotificationCheckBoxClick
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -552,11 +539,11 @@ object MainForm: TMainForm
         WordWrap = True
       end
       object UserTuneNotificationSpin: TsSpinEdit
-        Left = 204
-        Top = 105
+        Left = 187
+        Top = 139
         Width = 38
         Height = 21
-        TabOrder = 4
+        TabOrder = 6
         Text = '6'
         OnChange = aAllowApplyExecute
         SkinData.SkinSection = 'EDIT'
@@ -590,7 +577,7 @@ object MainForm: TMainForm
         WordWrap = True
       end
       object UserTuneSendSpin: TsSpinEdit
-        Left = 122
+        Left = 86
         Top = 40
         Width = 38
         Height = 21
@@ -599,7 +586,7 @@ object MainForm: TMainForm
         OnChange = aAllowApplyExecute
         SkinData.SkinSection = 'EDIT'
         BoundLabel.Active = True
-        BoundLabel.Caption = 'Wysy'#322'aj informacj'#281' po'
+        BoundLabel.Caption = 'Informuj po'
         BoundLabel.Indent = 0
         BoundLabel.Font.Charset = EASTEUROPE_CHARSET
         BoundLabel.Font.Color = clWindowText
@@ -615,13 +602,55 @@ object MainForm: TMainForm
       end
       object UserTuneExceptionButton: TsButton
         Left = 206
-        Top = 71
+        Top = 105
         Width = 68
         Height = 20
         Caption = 'Wyj'#261'tki...'
-        TabOrder = 3
+        TabOrder = 5
         OnClick = UserTuneExceptionButtonClick
         SkinData.SkinSection = 'BUTTON'
+      end
+      object AutoTurnOffUserTuneSendCheckBox: TsCheckBox
+        Left = 22
+        Top = 67
+        Width = 159
+        Height = 28
+        Caption = 'Wy'#322#261'cz funkcj'#281' kiedy utw'#243'r nie zmienia si'#281' od (min)'
+        AutoSize = False
+        TabOrder = 2
+        OnClick = UserTuneSendCheckBoxClick
+        SkinData.SkinSection = 'CHECKBOX'
+        ImgChecked = 0
+        ImgUnchecked = 0
+        WordWrap = True
+      end
+      object AutoTurnOffUserTuneSendSpinEdit: TsSpinEdit
+        Left = 187
+        Top = 70
+        Width = 38
+        Height = 21
+        Font.Charset = EASTEUROPE_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 3
+        Text = '5'
+        OnChange = aAllowApplyExecute
+        SkinData.SkinSection = 'EDIT'
+        BoundLabel.Indent = 0
+        BoundLabel.Font.Charset = DEFAULT_CHARSET
+        BoundLabel.Font.Color = clWindowText
+        BoundLabel.Font.Height = -11
+        BoundLabel.Font.Name = 'Tahoma'
+        BoundLabel.Font.Style = []
+        BoundLabel.Layout = sclLeft
+        BoundLabel.MaxWidth = 0
+        BoundLabel.UseSkinColor = True
+        MaxValue = 60
+        MinValue = 5
+        Value = 5
       end
     end
   end

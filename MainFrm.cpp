@@ -376,35 +376,11 @@ void __fastcall TMainForm::UserTuneSendCheckBoxClick(TObject *Sender)
 {
   UserTuneSendLabel->Enabled = UserTuneSendCheckBox->Checked;
   UserTuneSendSpin->Enabled = UserTuneSendCheckBox->Checked;
+  AutoTurnOffUserTuneSendCheckBox->Enabled = UserTuneSendCheckBox->Checked;
+  AutoTurnOffUserTuneSendSpinEdit->Enabled = UserTuneSendCheckBox->Checked;
+  if(AutoTurnOffUserTuneSendCheckBox->Enabled) AutoTurnOffUserTuneSendSpinEdit->Enabled = AutoTurnOffUserTuneSendCheckBox->Checked;
   //Wlaczenie przycisku zastosuj
   SaveButton->Enabled = true;
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TMainForm::OtherTabSheetShow(TObject *Sender)
-{
-  //Poprawka do AlphaControls
-  if(!AutoTurnOffSpin->Enabled)
-  {
-	AutoTurnOffSpin->Enabled = true;
-	AutoTurnOffSpin->Enabled = false;
-  }
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TMainForm::UserTuneTabSheetShow(TObject *Sender)
-{
-  //Poprawka do AlphaControls
-  if(!UserTuneNotificationSpin->Enabled)
-  {
-	UserTuneNotificationSpin->Enabled = true;
-	UserTuneNotificationSpin->Enabled = false;
-  }
-  if(!UserTuneSendSpin->Enabled)
-  {
-	UserTuneSendSpin->Enabled = true;
-	UserTuneSendSpin->Enabled = false;
-  }
 }
 //---------------------------------------------------------------------------
 
@@ -452,19 +428,22 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
   PreviewStatusMemo->Text = DecodeBase64(Ini->ReadString("Settings", "Status64", "T2JlY25pZSBzxYJ1Y2hhbTogQ0NfVFVORVNUQVRVUw=="));
   //Opoznienie ustawiania nowego opisu
   SetStatusSpin->Value = Ini->ReadInteger("Settings", "SetStatusDelay", 5);
-  //Wlaczanie dzialnia wtyczki wraz z uruchomieniem
+  //Wlaczanie funkcji zmiany opisu wraz z uruchomieniem
   EnableOnStartCheckBox->Checked = Ini->ReadBool("Settings", "EnableOnStart", false);
-  ////Pokazywanie przycisku szybkiego wlaczania/wylaczania dzialnia wtyczki
+  ////Pokazywanie przycisku szybkiego wlaczania/wylaczania funkcji zmiany opisu
   FastAccessCheckBox->Checked = Ini->ReadBool("Settings", "FastAccess", true);
-  //Automatyczne wylaczanie dzialania wtyczki przy bezczynnosci
+  //Automatyczne funkcji zmiany opisu przy bezczynnosci
   AutoTurnOffCheckBox->Checked = Ini->ReadBool("Settings", "AutoTurnOff", false);
   AutoTurnOffSpin->Enabled = AutoTurnOffCheckBox->Checked;
-  //Czas automatycznego wylaczania dzialania wtyczki przy bezczynnosci
+  //Czas automatycznego wylaczania funkcji zmiany opisu przy bezczynnosci
   AutoTurnOffSpin->Value = Ini->ReadInteger("Settings", "AutoTurnOffDelay", 15);
   //User Tune - informowanie o aktualnym odtwarzanym przez nas utworze
   UserTuneSendCheckBox->Checked = Ini->ReadBool("UserTune", "Send", false);
   UserTuneSendLabel->Enabled = UserTuneSendCheckBox->Checked;
   UserTuneSendSpin->Enabled = UserTuneSendCheckBox->Checked;
+  //Automatyczne funkcji User Tune przy bezczynnosci
+  AutoTurnOffUserTuneSendCheckBox->Checked = Ini->ReadBool("UserTune", "AutoTurnOff", false);
+  AutoTurnOffUserTuneSendSpinEdit->Value = Ini->ReadInteger("UserTune", "AutoTurnOffDelay", 15);
   //User Tune - opoznienie wysylania nowego odtwarzanego utworu
   UserTuneSendSpin->Value = Ini->ReadInteger("UserTune", "SendDelay", 5);
   if(UserTuneSendSpin->Value<4) UserTuneSendSpin->Value = 4;
@@ -527,6 +506,10 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
   Ini->WriteBool("UserTune", "Send", UserTuneSendCheckBox->Checked);
   //SendDelay
   Ini->WriteInteger("UserTune", "SendDelay", UserTuneSendSpin->Value);
+  //AutoTurnOff
+  Ini->WriteBool("UserTune", "AutoTurnOff", AutoTurnOffUserTuneSendCheckBox->Checked);
+  //AutoTurnOffDelay
+  Ini->WriteInteger("UserTune", "AutoTurnOffDelay", AutoTurnOffUserTuneSendSpinEdit->Value);
   //Notification
   Ini->WriteBool("UserTune", "Notification", UserTuneNotificationCheckBox->Checked);
   //Cloud
