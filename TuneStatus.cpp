@@ -64,11 +64,13 @@ bool EnableOnStartChk;
 bool FastAccessChk;
 bool AutoTurnOffChk;
 int AutoTurnOffDelayChk;
+bool UserTuneSendChk;
+int UserTuneSendDelayChk;
+bool AutoTurnOffUserTuneChk;
+int AutoTurnOffUserTuneDelayChk;
 bool UserTuneNotifChk;
 TStringList *UserTuneExceptions = new TStringList;
 int UserTuneCloudChk;
-bool UserTuneSendChk;
-int UserTuneSendDelayChk;
 //Inne-----------------------------------------------------------------------
 UnicodeString Status; //Pobrany z odtwarzaczy utwor i sformatowany na nowy opis
 UnicodeString StartStatus; //Opis startowy
@@ -93,7 +95,8 @@ bool BlockUserTuneSend = false; //Blokada User Tune przez wtyczke Auto-Tune Shor
 #define TIMER_AUTOTURNOFF 50
 #define TIMER_USERTUNE 60
 #define TIMER_SETUSERTUNE 70
-#define TIMER_ALLOWUSERTUNENOTIFY 80
+#define TIMER_AUTOTURNOFF_USERTUNE 80
+#define TIMER_ALLOWUSERTUNENOTIFY 90
 //FORWARD-RETRIEVE-DATA-FROM-PLAYERS-----------------------------------------
 UnicodeString GetDataFromWinamp();
 UnicodeString GetDataFromFoobar();
@@ -1617,7 +1620,17 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	  KillTimer(hTimerFrm,TIMER_SETUSERTUNE);
 	  //Wyslanie informacji o nowym odtwarzanym utworze
 	  SetUserTune(UserTuneStatus,SongLength);
+	  //Wlaczenie timera automatycznego wylaczania informowania User Tune przy bezczynnosci
+	  if(AutoTurnOffUserTuneChk) SetTimer(hTimerFrm,TIMER_AUTOTURNOFF_USERTUNE,AutoTurnOffUserTuneDelayChk,(TIMERPROC)TimerFrmProc);
 	}
+	//Automatyczne wylaczenie informowania User Tune przy bezczynnosci
+	else if(wParam==TIMER_AUTOTURNOFF_USERTUNE)
+	{
+	  //Zatrzymanie timera
+	  KillTimer(hTimerFrm,TIMER_AUTOTURNOFF_USERTUNE);
+	  //Wyslanie informacji o pustym odtwarzanym utworze
+	  SetUserTune("","");
+    }
 	//Zezwolenie pokazywania notyfikacji User Tune
 	else if((wParam==TIMER_ALLOWUSERTUNENOTIFY)
 	||(wParam==TIMER_ALLOWUSERTUNENOTIFY+1)
@@ -2066,6 +2079,9 @@ void LoadSettings()
   //User Tune - opoznienie wysylania nowego odtwarzanego utworu
   UserTuneSendDelayChk = 1000*Ini->ReadInteger("UserTune", "SendDelay", 5);
   if(UserTuneSendDelayChk<4000) UserTuneSendDelayChk = 4000;
+  //Automatyczne informowania User Tune przy bezczynnosci
+  AutoTurnOffUserTuneChk = Ini->ReadBool("UserTune", "AutoTurnOff", false);
+  AutoTurnOffUserTuneDelayChk = 60000*Ini->ReadInteger("UserTune", "AutoTurnOffDelay", 15);
   //User Tune - powiadomienie o aktualnych sluchanych utworach przez inne kontakty
   UserTuneNotifChk = Ini->ReadBool("UserTune", "Notification", false);
   //User Tune - wyjatki wylaczone z powiadomienia
