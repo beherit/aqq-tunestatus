@@ -1473,7 +1473,7 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 	  }
 	  else GetStatusTimerInterval++;
 	}
-	//Zmiana opisu + ponowne wlaczenie dzialania wtyczki
+	//Zmiana opisu + ponowne wlaczenie funkcji zmiany opisu
 	else if(wParam==TIMER_STATECHANGED)
 	{
 	  //Zatrzymanie timera
@@ -1758,11 +1758,11 @@ INT_PTR __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
   //Disconnected of Invisible
   if((!NewState)||(NewState==6))
   {
-    //Funkcja zmiany opisu jest aktywna i zdefiniowany opis nie jest pusty
+	//Funkcja zmiany opisu jest aktywna i zdefiniowany opis nie jest pusty
 	if((AutoModeEnabled)&&(!Status.IsEmpty()))
 	{
-	  //Blokowanie przy niewidocznym
-	  if(NewState==6) SetTimer(hTimerFrm,TIMER_STATECHANGED,500,(TIMERPROC)TimerFrmProc);
+	  //Notyfikacja dotyczy glownego konta i stanu niewidocznego
+	  if((NewState==6)&&(StateChange.UserIdx==0)) SetTimer(hTimerFrm,TIMER_STATECHANGED,500,(TIMERPROC)TimerFrmProc);
     }
 	//Wylacznie wysylania informacji User Tune
 	if(UserTuneSendChk) TurnOffUserTune(StateChange.UserIdx);
