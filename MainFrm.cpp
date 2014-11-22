@@ -441,7 +441,7 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
   UserTuneSendCheckBox->Checked = Ini->ReadBool("UserTune", "Send", false);
   UserTuneSendLabel->Enabled = UserTuneSendCheckBox->Checked;
   UserTuneSendSpin->Enabled = UserTuneSendCheckBox->Checked;
-  //Automatyczne funkcji User Tune przy bezczynnosci
+  //Automatyczne informowania User Tune przy bezczynnosci
   AutoTurnOffUserTuneSendCheckBox->Checked = Ini->ReadBool("UserTune", "AutoTurnOff", false);
   AutoTurnOffUserTuneSendSpinEdit->Value = Ini->ReadInteger("UserTune", "AutoTurnOffDelay", 15);
   //User Tune - opoznienie wysylania nowego odtwarzanego utworu
