@@ -78,7 +78,7 @@ UnicodeString PluginSong; //Utwor przekazany przez wtyczki np. AQQ Radio
 bool JustEnabled = false; //Zasygnalizowanie dopiero co wlaczenia dzialania wtyczki
 bool AllowUserTuneNotif[10] = {false}; //Blokowanie/zezwolenie pokazywania notyfikacji UserTune
 bool NetworkConnecting[10] = {false}; //Stan polaczenia sieci
-bool AutoModeEnabled = false; //Dzialnie wtyczki wylaczone/wlaczone
+bool AutoModeEnabled = false; //Funcja zmiany opisu wlaczona/wylaczona
 bool UserTuneEnabled = false; //User Tune wylaczone/wlaczone
 int GetStatusTimerInterval = 0; //Interwal timera pobieranie aktualnego opisu
 UnicodeString iTunesPath; //Sciezka do procesu iTunes
@@ -1758,6 +1758,12 @@ INT_PTR __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
   //Disconnected of Invisible
   if((!NewState)||(NewState==6))
   {
+    //Funkcja zmiany opisu jest aktywna i zdefiniowany opis nie jest pusty
+	if((AutoModeEnabled)&&(!Status.IsEmpty()))
+	{
+	  //Blokowanie przy niewidocznym
+	  if(NewState==6) SetTimer(hTimerFrm,TIMER_STATECHANGED,500,(TIMERPROC)TimerFrmProc);
+    }
 	//Wylacznie wysylania informacji User Tune
 	if(UserTuneSendChk) TurnOffUserTune(StateChange.UserIdx);
 	//Blokowanie pokazywania notyfikacji User Tune
@@ -1776,14 +1782,6 @@ INT_PTR __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
 	SetTimer(hTimerFrm,TIMER_ALLOWUSERTUNENOTIFY+StateChange.UserIdx,3000,(TIMERPROC)TimerFrmProc);
 	//Ustawianie stanu polaczenia sieci
 	NetworkConnecting[StateChange.UserIdx] = false;
-  }
-  //Jezeli dzialanie wtyczki jest wlaczone i zdefiniowany opis nie jest pusty
-  if((AutoModeEnabled)&&(!Status.IsEmpty()))
-  {
-	//Pobranie nowego stanu konta
-	int NewState = StateChange.NewState;
-	//Blokowanie przy niewidocznym
-	if(NewState==6) SetTimer(hTimerFrm,TIMER_STATECHANGED,500,(TIMERPROC)TimerFrmProc);
   }
 
   return 0;
