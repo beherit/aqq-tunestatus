@@ -613,9 +613,9 @@ object MainForm: TMainForm
       object AutoTurnOffUserTuneSendCheckBox: TsCheckBox
         Left = 22
         Top = 67
-        Width = 159
+        Width = 167
         Height = 28
-        Caption = 'Wy'#322#261'cz funkcj'#281' kiedy utw'#243'r nie zmienia si'#281' od (min)'
+        Caption = 'Wy'#322#261'cz informowanie kiedy utw'#243'r nie zmienia si'#281' od (min)'
         AutoSize = False
         TabOrder = 2
         OnClick = UserTuneSendCheckBoxClick
@@ -625,7 +625,7 @@ object MainForm: TMainForm
         WordWrap = True
       end
       object AutoTurnOffUserTuneSendSpinEdit: TsSpinEdit
-        Left = 187
+        Left = 195
         Top = 70
         Width = 38
         Height = 21
