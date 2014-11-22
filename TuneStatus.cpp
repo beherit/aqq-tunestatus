@@ -1225,10 +1225,27 @@ void SetUserTune(UnicodeString Tune, UnicodeString Time)
 	  PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)&PluginStateChange,Account);
 	  UnicodeString JID = ((UnicodeString)(wchar_t*)PluginStateChange.JID) + "/" + ((UnicodeString)(wchar_t*)PluginStateChange.Resource);
 	  XML = StringReplace(XML, "CC_JID", JID, TReplaceFlags());
-      //Wyslanie pakietu XML
+	  //Wyslanie pakietu XML
 	  PluginLink.CallService(AQQ_SYSTEM_SENDXML,(WPARAM)XML.w_str(),Account);
 	}
   }
+}
+//---------------------------------------------------------------------------
+
+//Wylaczenia User Tune dla podanego konta
+void TurnOffUserTune(int UserIdx)
+{
+  //Definicja pakietu XML
+  UnicodeString XML = "<iq type=\"set\" from=\"CC_JID\" id=\"CC_SESSION\"><pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"http://jabber.org/protocol/tune\"><item><tune xmlns=\"http://jabber.org/protocol/tune\"/></item></publish></pubsub></iq>";
+  //Zamiana CC_SESSION na wygenerowany ID
+  XML = StringReplace(XML, "CC_SESSION", ((wchar_t*)(PluginLink.CallService(AQQ_FUNCTION_GETSTRID,0,0))), TReplaceFlags());
+  //Zamiania CC_JID na JID konta
+  TPluginStateChange PluginStateChange;
+  PluginLink.CallService(AQQ_FUNCTION_GETNETWORKSTATE,(WPARAM)&PluginStateChange,UserIdx);
+  UnicodeString JID = ((UnicodeString)(wchar_t*)PluginStateChange.JID) + "/" + ((UnicodeString)(wchar_t*)PluginStateChange.Resource);
+  XML = StringReplace(XML, "CC_JID", JID, TReplaceFlags());
+  //Wyslanie pakietu XML
+  PluginLink.CallService(AQQ_SYSTEM_SENDXML,(WPARAM)XML.w_str(),UserIdx);
 }
 //---------------------------------------------------------------------------
 
@@ -1734,18 +1751,24 @@ INT_PTR __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
 {
   //Pobieranie danych
   TPluginStateChange StateChange = *(PPluginStateChange)lParam;
-  //Blokowanie/Zezwalanie notyfikacji UserTune
-  //Definicja niezbednych zmiennych
+  //Pobranie nowego stanu konta
   int NewState = StateChange.NewState;
+  //Pobieranie stanu zalogowania na konto
   bool Authorized = StateChange.Authorized;
   //Disconnected
   if(!NewState)
-   //Blokowanie pokazywania notyfikacji User Tune
-   AllowUserTuneNotif[StateChange.UserIdx] = false;
+  {
+	//Wylacznie wysylania informacji User Tune
+	if(UserTuneSendChk) TurnOffUserTune(StateChange.UserIdx);
+	//Blokowanie pokazywania notyfikacji User Tune
+	AllowUserTuneNotif[StateChange.UserIdx] = false;
+  }
   //Connecting
   else if((!Authorized)&&(NewState))
-   //Ustawianie stanu polaczenia sieci
-   NetworkConnecting[StateChange.UserIdx] = true;
+  {
+	//Ustawianie stanu polaczenia sieci
+	NetworkConnecting[StateChange.UserIdx] = true;
+  }
   //Connected
   else if((NetworkConnecting[StateChange.UserIdx])&&(Authorized)&&(NewState))
   {
