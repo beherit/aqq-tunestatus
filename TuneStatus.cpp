@@ -50,7 +50,6 @@ int FASTACCESS_OFF;
 //UCHWYTY-DO-OKIEN-----------------------------------------------------------
 HWND hTimerFrm; //Uchwyt do okna timera
 HWND VLCWindowHwnd; //Uchwyt do okna VLC media player
-HWND LastfmWindowHwnd; //Uchwyt do okna Last.fm Player
 HWND ScreamerRadioWindowHwnd; //Uchwyt do okna Screamer Radio
 HWND aTunesWindowHwnd; //Uchwyt do okna iTunes
 //LOAD/UNLOAD-PLUGIN---------------------------------------------------------
@@ -109,7 +108,6 @@ UnicodeString GetDataFromALSong();
 UnicodeString GetDataFromPlugins();
 UnicodeString GetDataFromScreamerRadio();
 UnicodeString GetDataFromaTunes();
-UnicodeString GetDataFromLastFM();
 UnicodeString GetDataFromVLC();
 UnicodeString GetDataFromSpotify();
 //FORWARD-AQQ-HOOKS----------------------------------------------------------
@@ -505,61 +503,6 @@ bool CALLBACK FindVLC(HWND hWnd, LPARAM lParam)
 	  {
 		//Przypisanie uchwytu
 		VLCWindowHwnd = hWnd;
-		return false;
-	  }
-	}
-  }
-  return true;
-}
-//---------------------------------------------------------------------------
-
-//Szukanie okna Last.fm
-bool CALLBACK FindLastfm(HWND hWnd, LPARAM lParam)
-{
-  //Pobranie klasy okna
-  wchar_t WindowCaptionNameW[512];
-  GetClassNameW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
-  UnicodeString WindowCaptionName = WindowCaptionNameW;
-  //Sprawdenie klasy okna
-  if(WindowCaptionName=="QWidget")
-  {
-	//Pobranie sciezki procesu
-	UnicodeString PlayerPath = GetPathOfProces(hWnd);
-	//Sprawdzenie nazwy procesu
-	if(ExtractFileName(PlayerPath)=="LastFM.exe")
-	{
-	  //Pobranie tekstu okna
-	  GetWindowTextW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
-	  WindowCaptionName = WindowCaptionNameW;
-	  //Sprawdzenie tekstu okna
-	  if((WindowCaptionName!="LastFM")
-	  &&(WindowCaptionName!="Diagnostyka")
-	  &&(WindowCaptionName!="Diagnostics")
-	  &&(WindowCaptionName!="Poleæ")
-	  &&(WindowCaptionName!="Share")
-	  &&(WindowCaptionName!="Zaloguj")
-	  &&(WindowCaptionName!="Kreator automatycznej aktualizacji")
-	  &&(WindowCaptionName!="Kreator ustawieñ")
-	  &&(WindowCaptionName!="Opcje programu Last.fm")
-	  &&(WindowCaptionName!="Dodaj u¿ytkownika")
-	  &&(WindowCaptionName!="Aktualne")
-	  &&(WindowCaptionName!="Last.fm — Informacje")
-	  &&(WindowCaptionName!="Form")
-	  &&(WindowCaptionName!="volume")
-	  &&(WindowCaptionName!="recommendTypeBox")
-	  &&(WindowCaptionName!="label")
-	  &&(WindowCaptionName!="label_2")
-	  &&(WindowCaptionName!="label_3")
-	  &&(WindowCaptionName!="messageEdit")
-	  &&(WindowCaptionName!="userEdit")
-	  &&(WindowCaptionName!="buttonBox")
-	  &&(WindowCaptionName!="qt_scrollarea_hcontainer")
-	  &&(WindowCaptionName!="qt_scrollarea_vcontainer")
-	  &&(WindowCaptionName!="qt_scrollarea_viewport")
-	  &&(WindowCaptionName!=""))
-	  {
-		//Przypisanie uchwytu
-		LastfmWindowHwnd = hWnd;
 		return false;
 	  }
 	}
@@ -992,33 +935,6 @@ UnicodeString GetDataFromaTunes()
 }
 //---------------------------------------------------------------------------
 
-//Pobieranie danych z Last.fm Player
-UnicodeString GetDataFromLastFM()
-{
-  //Pobieranie uchwytu do okna odtwarzacza
-  if(!LastfmWindowHwnd) EnumWindows((WNDENUMPROC)FindLastfm,0);
-  //Okno odtwarzacza istnieje
-  if(LastfmWindowHwnd)
-  {
-	//Okno jest oknem :D
-	if(IsWindow(LastfmWindowHwnd))
-	{
-	  //Pobranie tekstu okna
-	  wchar_t PlayerCaptionW[512];
-	  GetWindowTextW(LastfmWindowHwnd, PlayerCaptionW, sizeof(PlayerCaptionW));
-	  UnicodeString PlayerCaption = PlayerCaptionW;
-	  //Pomijanie "Last.fm"
-	  if(PlayerCaption.Pos("Last.fm")) return "";
-	  //Zwrocenie odtwarzanego utworu
-	  return PlayerCaption;
-	}
-	else LastfmWindowHwnd = NULL;
-	return "";
-  }
-  return "";
-}
-//---------------------------------------------------------------------------
-
 //Pobieranie danych z VLC media player
 UnicodeString GetDataFromVLC()
 {
@@ -1111,8 +1027,6 @@ UnicodeString GetDataFromPlayers(bool UserTune)
 	 Text = GetDataFromScreamerRadio();
 	else if(SupportedPlayers->Strings[Count]=="aTunes")
 	 Text = GetDataFromaTunes();
-	else if(SupportedPlayers->Strings[Count]=="Last.fm Player")
-	 Text = GetDataFromLastFM();
 	else if(SupportedPlayers->Strings[Count]=="VLC media player")
 	 Text = GetDataFromVLC();
     else if(SupportedPlayers->Strings[Count]=="Spotify")
@@ -2059,7 +1973,7 @@ void LoadSettings()
 		else if(StrToInt(PlayerID)==10) PlayerID = "Screamer Radio";
 		else if(StrToInt(PlayerID)==11) PlayerID = "aTunes";
 		else if(StrToInt(PlayerID)==12) PlayerID = "";
-		else if(StrToInt(PlayerID)==13) PlayerID = "Last.fm Player";
+		else if(StrToInt(PlayerID)==13) PlayerID = "";
 		else if(StrToInt(PlayerID)==14) PlayerID = "VLC media player";
 		else if(StrToInt(PlayerID)==15) PlayerID = "Spotify";
 		//Dodawnie odtwarzacza do listy

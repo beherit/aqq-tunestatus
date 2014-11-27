@@ -140,8 +140,6 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
    AutoModeCheckListBoxPreview->Items->Add("Screamer Radio");
   if(AutoModeCheckListBoxPreview->Items->IndexOf("aTunes")==-1)
    AutoModeCheckListBoxPreview->Items->Add("aTunes");
-  if(AutoModeCheckListBoxPreview->Items->IndexOf("Last.fm Player")==-1)
-   AutoModeCheckListBoxPreview->Items->Add("Last.fm Player");
   //Dodanie tekstu do TagsBox i ustawienie go jako element pokazywany
   TagsBox->Items->Add("Wybierz tag do wstawienia");
   TagsBox->ItemIndex = 6;
@@ -408,7 +406,7 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
 	  else if(StrToInt(PlayerID)==10) PlayerID = "Screamer Radio";
 	  else if(StrToInt(PlayerID)==11) PlayerID = "aTunes";
 	  else if(StrToInt(PlayerID)==12) PlayerID = "FREE_ID";
-	  else if(StrToInt(PlayerID)==13) PlayerID = "Last.fm Player";
+	  else if(StrToInt(PlayerID)==13) PlayerID = "FREE_ID";
 	  else if(StrToInt(PlayerID)==14) PlayerID = "VLC media player";
 	  else if(StrToInt(PlayerID)==15) PlayerID = "Spotify";
 	  //Dodawnie odtwarzacza do listy
@@ -416,8 +414,8 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
 	  AutoModeCheckListBoxPreview->Checked[Count] = StrToBool(Enabled);
 	}
   }
-  //Pozostalosci po Songbird
-  if(AutoModeCheckListBoxPreview->Items->IndexOf("FREE_ID")!=-1)
+  //Pozostalosci po usunietych odtwarzaczach
+  while(AutoModeCheckListBoxPreview->Items->IndexOf("FREE_ID")!=-1)
    AutoModeCheckListBoxPreview->Items->Delete(AutoModeCheckListBoxPreview->Items->IndexOf("FREE_ID"));
   //Zapisywanie nowego stanu obslugiwanych odtwarzaczy
   AutoModeListText = AutoModeCheckListBoxPreview->Items->Text;
@@ -458,7 +456,7 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
   TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
   //Zapis ustawien trybu automatycznego
   Ini->EraseSection("AutoMode");
-  for(int Count=0;Count<14;Count++)
+  for(int Count=0;Count<AutoModeCheckListBoxPreview->Items->Count;Count++)
   {
 	UnicodeString Player = AutoModeCheckListBoxPreview->Items->Strings[Count];
 	if(Player=="Winamp/AIMP/KMPlayer") Player = 1;
@@ -473,7 +471,7 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 	else if(Player=="Screamer Radio") Player = 10;
 	else if(Player=="aTunes") Player = 11;
 	//else if(Player=="FREE_ID") Player = 12;
-	else if(Player=="Last.fm Player") Player = 13;
+	//else if(Player=="FREE_ID") Player = 13;
 	else if(Player=="VLC media player") Player = 14;
 	else if(Player=="Spotify") Player = 15;
 	int Enabled = AutoModeCheckListBoxPreview->Checked[Count];
@@ -524,11 +522,10 @@ void __fastcall TMainForm::aResetSettingsExecute(TObject *Sender)
   AutoModeCheckListBoxPreview->Items->Add("Wtyczki (np. AQQ Radio)");
   AutoModeCheckListBoxPreview->Items->Add("Screamer Radio");
   AutoModeCheckListBoxPreview->Items->Add("aTunes");
-  AutoModeCheckListBoxPreview->Items->Add("Last.fm Player");
   //Zaznaczanie/odznaczanie odpowiednich checkbox'ow
   for(int Count=0;Count<11;Count++)
    AutoModeCheckListBoxPreview->Checked[Count] = true;
-  for(int Count=11;Count<14;Count++)
+  for(int Count=11;Count<13;Count++)
    AutoModeCheckListBoxPreview->Checked[Count] = false;
   //Wlaczenie przycisku zastosuj
   SaveButton->Enabled = true;
