@@ -161,34 +161,30 @@ void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
 
 void __fastcall TMainForm::SaveButtonClick(TObject *Sender)
 {
-  //Zapis ustawien
-  aSaveSettings->Execute();
-  //Odczyt ustawien w rdzeniu wtyczki
-  LoadSettings();
-  //Wlaczenie/wylaczenie obslugi User Tune
-  ChangeUserTuneStatus(UserTuneSendCheckBox->Checked);
-  //Wymuszenie natychmiastowego ustawienienia w opisie dokonanych zmian
-  ForceChangeStatus();
-  //Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
-  TagsBox->Items->Delete(6);
-  //Wylaczenie przycisku zastosuj
+  //Wylaczenie przyciskow
   SaveButton->Enabled = false;
+  CancelButton->Enabled = false;
+  OkButton->Enabled = false;
+  //Zapisywanie ustawien
+  aSaveSettingsW->Execute();
+  //Wlaczenie przyciskow
+  CancelButton->Enabled = true;
+  OkButton->Enabled = true;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::OKButtonClick(TObject *Sender)
+void __fastcall TMainForm::OkButtonClick(TObject *Sender)
 {
-  //Zapis ustawien
-  aSaveSettings->Execute();
-  //Odczyt ustawien w rdzeniu wtyczki
-  LoadSettings();
-  //Wlaczenie/wylaczenie obslugi User Tune
-  ChangeUserTuneStatus(UserTuneSendCheckBox->Checked);
-  //Wymuszenie natychmiastowego ustawienienia w opisie dokonanych zmian
-  ForceChangeStatus();
-  //Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
-  TagsBox->Items->Delete(6);
-  //Ukrywanie formy
+  //Wylaczenie przyciskow
+  SaveButton->Enabled = false;
+  CancelButton->Enabled = false;
+  OkButton->Enabled = false;
+  //Zapisywanie ustawien
+  aSaveSettingsW->Execute();
+  //Wlaczenie przyciskow
+  CancelButton->Enabled = true;
+  OkButton->Enabled = true;
+  //Zamkniecie formy
   Close();
 }
 //---------------------------------------------------------------------------
@@ -201,10 +197,10 @@ void __fastcall TMainForm::RunPluginCheckBoxClick(TObject *Sender)
 
 void __fastcall TMainForm::AutoModeCheckListBoxPreviewClick(TObject *Sender)
 {
-  //Gdy stan komponentu ulegl zmianie
+  //Stan komponentu ulegl zmianie
   if(AutoModeCheckListBoxPreview->Items->Text!=AutoModeListText)
   {
-	//Przekazanie nowego stanu kontrolki
+	//Zapisywanie nowego stanu obslugiwanych odtwarzaczy
 	AutoModeListText = AutoModeCheckListBoxPreview->Items->Text;
 	//Wlaczenie przycisku zastosuj
 	SaveButton->Enabled = true;
@@ -398,7 +394,7 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
 	  //Pobieranie statusu wlaczenia elementu
 	  UnicodeString Enabled = PlayerID;
 	  Enabled = Enabled.Delete(1,Enabled.Pos(";"));
-	  ////Odkodowywanie ID odtwarzacza
+	  //Odkodowywanie ID odtwarzacza
 	  PlayerID = PlayerID.Delete(PlayerID.Pos(";"),PlayerID.Length());
 	  if(PlayerID==1) PlayerID = "Winamp/AIMP/KMPlayer";
 	  else if(StrToInt(PlayerID)==2) PlayerID = "Foobar2000";
@@ -423,35 +419,30 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
   //Pozostalosci po Songbird
   if(AutoModeCheckListBoxPreview->Items->IndexOf("FREE_ID")!=-1)
    AutoModeCheckListBoxPreview->Items->Delete(AutoModeCheckListBoxPreview->Items->IndexOf("FREE_ID"));
+  //Zapisywanie nowego stanu obslugiwanych odtwarzaczy
   AutoModeListText = AutoModeCheckListBoxPreview->Items->Text;
   //Wyglad opisu
   PreviewStatusMemo->Text = DecodeBase64(Ini->ReadString("Settings", "Status64", "T2JlY25pZSBzxYJ1Y2hhbTogQ0NfVFVORVNUQVRVUw=="));
-  //Opoznienie ustawiania nowego opisu
+  //Opoznienie w funkcji zmiany opisu
   SetStatusSpin->Value = Ini->ReadInteger("Settings", "SetStatusDelay", 5);
+  //Automatyczne wylaczenie funkcji zmiany opisu przy bezczynnosci
+  AutoTurnOffCheckBox->Checked = Ini->ReadBool("Settings", "AutoTurnOff", false);
+  AutoTurnOffSpin->Value = Ini->ReadInteger("Settings", "AutoTurnOffDelay", 15);
   //Wlaczanie funkcji zmiany opisu wraz z uruchomieniem
   EnableOnStartCheckBox->Checked = Ini->ReadBool("Settings", "EnableOnStart", false);
-  ////Pokazywanie przycisku szybkiego wlaczania/wylaczania funkcji zmiany opisu
+  //Pokazywanie przycisku szybkiego wlaczania/wylaczania funkcji zmiany opisu
   FastAccessCheckBox->Checked = Ini->ReadBool("Settings", "FastAccess", true);
-  //Automatyczne funkcji zmiany opisu przy bezczynnosci
-  AutoTurnOffCheckBox->Checked = Ini->ReadBool("Settings", "AutoTurnOff", false);
-  AutoTurnOffSpin->Enabled = AutoTurnOffCheckBox->Checked;
-  //Czas automatycznego wylaczania funkcji zmiany opisu przy bezczynnosci
-  AutoTurnOffSpin->Value = Ini->ReadInteger("Settings", "AutoTurnOffDelay", 15);
-  //User Tune - informowanie o aktualnym odtwarzanym przez nas utworze
+  //Informowanie o aktualnym odtwarzanym utworze poprzez User Tune
   UserTuneSendCheckBox->Checked = Ini->ReadBool("UserTune", "Send", false);
-  UserTuneSendLabel->Enabled = UserTuneSendCheckBox->Checked;
-  UserTuneSendSpin->Enabled = UserTuneSendCheckBox->Checked;
-  //Automatyczne informowania User Tune przy bezczynnosci
-  AutoTurnOffUserTuneSendCheckBox->Checked = Ini->ReadBool("UserTune", "AutoTurnOff", false);
-  AutoTurnOffUserTuneSendSpinEdit->Value = Ini->ReadInteger("UserTune", "AutoTurnOffDelay", 15);
-  //User Tune - opoznienie wysylania nowego odtwarzanego utworu
+  //Opoznienie informowania poprzez User Tune
   UserTuneSendSpin->Value = Ini->ReadInteger("UserTune", "SendDelay", 5);
   if(UserTuneSendSpin->Value<4) UserTuneSendSpin->Value = 4;
-  //User Tune - powiadomienie o aktualnych sluchanych utworach przez inne kontakty
+  //Automatyczne wylaczenie informowania poprzez User Tune przy bezczynnosci
+  AutoTurnOffUserTuneSendCheckBox->Checked = Ini->ReadBool("UserTune", "AutoTurnOff", false);
+  AutoTurnOffUserTuneSendSpinEdit->Value = Ini->ReadInteger("UserTune", "AutoTurnOffDelay", 15);
+  //Powiadomienie o notyfikacji User Tune od kontaktow
   UserTuneNotificationCheckBox->Checked = Ini->ReadBool("UserTune", "Notification", false);
-  UserTuneNotificationSpin->Enabled = UserTuneNotificationCheckBox->Checked;
-  UserTuneExceptionButton->Enabled = UserTuneNotificationCheckBox->Checked;
-  //User Tune - czas wyswietlania chmurki informacyjnej
+  //Czas wyswietlania chmurki informacyjnej
   UserTuneNotificationSpin->Value = Ini->ReadInteger("UserTune", "Cloud", 6);
 
   delete Ini;
@@ -488,31 +479,27 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 	int Enabled = AutoModeCheckListBoxPreview->Checked[Count];
 	Ini->WriteString("AutoMode", ("Player"+IntToStr(Count+1)), (Player+";"+IntToStr(Enabled)));
   }
-  //Status
+  //Wyglad opisu
   Ini->WriteString("Settings", "Status64", EncodeBase64(PreviewStatusMemo->Text));
-  //EnableOnStart
-  Ini->WriteBool("Settings", "EnableOnStart", EnableOnStartCheckBox->Checked);
-  //FastAccess
-  Ini->WriteBool("Settings", "FastAccess", FastAccessCheckBox->Checked);
-  DestroyTuneStatusFastOperation();
-  if(FastAccessCheckBox->Checked) BuildTuneStatusFastOperation();
-  //SetStatusDelay
+  //Opoznienie w funkcji zmiany opisu
   Ini->WriteInteger("Settings", "SetStatusDelay", SetStatusSpin->Value);
-  //AutoTurnOff
+  //Automatyczne wylaczenie funkcji zmiany opisu przy bezczynnosci
   Ini->WriteBool("Settings", "AutoTurnOff", AutoTurnOffCheckBox->Checked);
-  //AutoTurnOffDelay
   Ini->WriteInteger("Settings", "AutoTurnOffDelay", AutoTurnOffSpin->Value);
-  //Send
+  //Wlaczanie funkcji zmiany opisu wraz z uruchomieniem
+  Ini->WriteBool("Settings", "EnableOnStart", EnableOnStartCheckBox->Checked);
+  //Pokazywanie przycisku szybkiego wlaczania/wylaczania funkcji zmiany opisu
+  Ini->WriteBool("Settings", "FastAccess", FastAccessCheckBox->Checked);
+  //Informowanie o aktualnym odtwarzanym utworze poprzez User Tune
   Ini->WriteBool("UserTune", "Send", UserTuneSendCheckBox->Checked);
-  //SendDelay
+  //Opoznienie informowania poprzez User Tune
   Ini->WriteInteger("UserTune", "SendDelay", UserTuneSendSpin->Value);
-  //AutoTurnOff
+  //Automatyczne wylaczenie informowania poprzez User Tune przy bezczynnosci
   Ini->WriteBool("UserTune", "AutoTurnOff", AutoTurnOffUserTuneSendCheckBox->Checked);
-  //AutoTurnOffDelay
   Ini->WriteInteger("UserTune", "AutoTurnOffDelay", AutoTurnOffUserTuneSendSpinEdit->Value);
-  //Notification
+  //Powiadomienie o notyfikacji User Tune od kontaktow
   Ini->WriteBool("UserTune", "Notification", UserTuneNotificationCheckBox->Checked);
-  //Cloud
+  //Czas wyswietlania chmurki informacyjnej
   Ini->WriteInteger("UserTune", "Cloud", UserTuneNotificationSpin->Value);
   //Zwolnienie pliku INI
   delete Ini;
@@ -572,6 +559,25 @@ void __fastcall TMainForm::aSelectAllExecute(TObject *Sender)
 void __fastcall TMainForm::sSkinManagerSysDlgInit(TacSysDlgData DlgData, bool &AllowSkinning)
 {
   AllowSkinning = false;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::aSaveSettingsWExecute(TObject *Sender)
+{
+  //Usuwanie elementow z interfejsu AQQ
+  DestroyTuneStatusFastOperation();
+  //Zapis ustawien
+  aSaveSettings->Execute();
+  //Odczytywanie ustawien w rdzeniu wtyczki
+  LoadSettings();
+  //Tworzenie elementow w interfejsie AQQ
+  BuildTuneStatusFastOperation();
+  //Wlaczenie/wylaczenie informowania User Tune
+  ChangeUserTuneStatus(UserTuneSendCheckBox->Checked);
+  //Wymuszenie natychmiastowego ustawienienia w opisie dokonanych zmian
+  ForceChangeStatus();
+  //Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
+  TagsBox->Items->Delete(6);
 }
 //---------------------------------------------------------------------------
 
