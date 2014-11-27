@@ -22,6 +22,7 @@
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #include <inifiles.hpp>
+#include <Clipbrd.hpp>
 #pragma hdrstop
 #include "MainFrm.h"
 #include "UserTuneExceptionFrm.h"
@@ -44,7 +45,9 @@
 TMainForm *MainForm;
 //---------------------------------------------------------------------------
 __declspec(dllimport)UnicodeString GetPluginUserDir();
+__declspec(dllimport)UnicodeString GetPluginUserDirW();
 __declspec(dllimport)UnicodeString GetThemeSkinDir();
+__declspec(dllimport)PluginShowMessage(UnicodeString Text);
 __declspec(dllimport)bool ChkSkinEnabled();
 __declspec(dllimport)bool ChkThemeAnimateWindows();
 __declspec(dllimport)bool ChkThemeGlowing();
@@ -575,6 +578,13 @@ void __fastcall TMainForm::aSaveSettingsWExecute(TObject *Sender)
   ForceChangeStatus();
   //Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
   TagsBox->Items->Delete(6);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TMainForm::iTunesPluginPathClick(TObject *Sender)
+{
+  Clipboard()->SetTextBuf((GetPluginUserDirW() + "\\TuneStatus\\iTunes.txt").w_str());
+  PluginShowMessage("Œcie¿ka niezbêdna do ustawienia pluginu w iTunes zosta³a skopiowana do schowka.");
 }
 //---------------------------------------------------------------------------
 
