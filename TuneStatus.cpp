@@ -82,7 +82,6 @@ bool NetworkConnecting[10] = {false}; //Stan polaczenia sieci
 bool AutoModeEnabled = false; //Funcja zmiany opisu wlaczona/wylaczona
 bool UserTuneEnabled = false; //User Tune wylaczone/wlaczone
 int GetStatusTimerInterval = 0; //Interwal timera pobieranie aktualnego opisu
-UnicodeString iTunesPath; //Sciezka do procesu iTunes
 TMemIniFile* ContactsNickList = new TMemIniFile(ChangeFileExt(Application->ExeName, ".INI")); //Lista JID wraz z nickami
 DWORD ReplyListID = 0; //ID wywolania enumeracji listy kontaktow
 bool BlockUserTuneSend = false; //Blokada User Tune przez wtyczke Auto-Tune ShortCut
@@ -133,6 +132,11 @@ UnicodeString GetPluginUserDir()
   return StringReplace((wchar_t*)PluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,0,0), "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
 }
 //---------------------------------------------------------------------------
+UnicodeString GetPluginUserDirW()
+{
+  return (wchar_t*)PluginLink.CallService(AQQ_FUNCTION_GETPLUGINUSERDIR,0,0);
+}
+//---------------------------------------------------------------------------
 
 //Pobieranie sciezki do skorki kompozycji
 UnicodeString GetThemeSkinDir()
@@ -145,6 +149,12 @@ UnicodeString GetThemeSkinDir()
 UnicodeString GetPluginDir()
 {
   return StringReplace((wchar_t*)PluginLink.CallService(AQQ_FUNCTION_GETPLUGINDIR,(WPARAM)(HInstance),0), "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
+}
+//---------------------------------------------------------------------------
+
+PluginShowMessage(UnicodeString Text)
+{
+  PluginLink.CallService(AQQ_FUNCTION_SHOWMESSAGE,0,(LPARAM)Text.w_str());
 }
 //---------------------------------------------------------------------------
 
@@ -795,18 +805,6 @@ UnicodeString GetDataFromiTunes()
   //Okno odtwarzacza istnieje
   if(PlayerHwnd)
   {
-	//Ustalanie sciezki do procesu iTunes
-	if(iTunesPath.IsEmpty())
-	{
-	  iTunesPath = GetPathOfProces(PlayerHwnd);
-	  //Udalo sie pobrac sciezke do procesu
-	  if(!iTunesPath.IsEmpty())
-	  {
-		iTunesPath = StringReplace(iTunesPath, "\\", "\\\\", TReplaceFlags() << rfReplaceAll);
-		iTunesPath = ExtractFilePath(iTunesPath) + "TuneStatus.txt";
-	  }
-	  else return "";
-	}
 	//Pobieranie odtwarzanego utworu z pliku
 	try
 	{
@@ -818,13 +816,12 @@ UnicodeString GetDataFromiTunes()
 		hMainForm = new TMainForm(Application);
 	  }
 	  //Odczyt danych z pliku
-	  hMainForm->SongFromFile->Lines->LoadFromFile(iTunesPath);
+	  hMainForm->SongFromFile->Lines->LoadFromFile(GetPluginUserDir() + "\\\\TuneStatus\\\\iTunes.txt");
 	  //Zwrocenie odtwarzanego utworu
 	  return hMainForm->SongFromFile->Text.Trim();
     }
 	catch(...) { return ""; }
   }
-  else iTunesPath = "";
   return "";
 }
 //---------------------------------------------------------------------------

@@ -95,6 +95,8 @@ __published:	// IDE-managed Components
 		TsCheckBox *AutoTurnOffUserTuneSendCheckBox;
 		TsSpinEdit *AutoTurnOffUserTuneSendSpinEdit;
 	TAction *aSaveSettingsW;
+	TMenuItem *N1;
+	TMenuItem *iTunesPluginPath;
 		void __fastcall SaveButtonClick(TObject *Sender);
 		void __fastcall FormShow(TObject *Sender);
 		void __fastcall aLoadSettingsExecute(TObject *Sender);
@@ -123,6 +125,7 @@ __published:	// IDE-managed Components
 		void __fastcall FormCreate(TObject *Sender);
 		void __fastcall sSkinManagerSysDlgInit(TacSysDlgData DlgData, bool &AllowSkinning);
 	void __fastcall aSaveSettingsWExecute(TObject *Sender);
+	void __fastcall iTunesPluginPathClick(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
 		__fastcall TMainForm(TComponent* Owner);
