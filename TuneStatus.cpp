@@ -1362,23 +1362,27 @@ INT_PTR __stdcall ServiceTuneStatusFastOperationItem(WPARAM wParam, LPARAM lPara
 //Aktulizacja stanu buttona szybkiego wlaczania/wylaczania
 void UpdateTuneStatusFastOperation(bool Enabled)
 {
-  if(Enabled)
+  //Interfejs jest stworzony
+  if(FastAccessChk)
   {
-	TPluginAction BuildTuneStatusFastOperationItem;
-	ZeroMemory(&BuildTuneStatusFastOperationItem, sizeof(TPluginAction));
-	BuildTuneStatusFastOperationItem.cbSize = sizeof(TPluginAction);
-	BuildTuneStatusFastOperationItem.pszName = L"TuneStatusFastOperationItemButton";
-	BuildTuneStatusFastOperationItem.IconIndex = FASTACCESS_ON;
-	PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)&BuildTuneStatusFastOperationItem);
-  }
-  else
-  {
-	TPluginAction BuildTuneStatusFastOperationItem;
-	ZeroMemory(&BuildTuneStatusFastOperationItem, sizeof(TPluginAction));
-	BuildTuneStatusFastOperationItem.cbSize = sizeof(TPluginAction);
-	BuildTuneStatusFastOperationItem.pszName = L"TuneStatusFastOperationItemButton";
-	BuildTuneStatusFastOperationItem.IconIndex = FASTACCESS_OFF;
-	PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)&BuildTuneStatusFastOperationItem);
+	if(Enabled)
+	{
+	  TPluginAction BuildTuneStatusFastOperationItem;
+	  ZeroMemory(&BuildTuneStatusFastOperationItem, sizeof(TPluginAction));
+	  BuildTuneStatusFastOperationItem.cbSize = sizeof(TPluginAction);
+	  BuildTuneStatusFastOperationItem.pszName = L"TuneStatusFastOperationItemButton";
+	  BuildTuneStatusFastOperationItem.IconIndex = FASTACCESS_ON;
+	  PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)&BuildTuneStatusFastOperationItem);
+	}
+	else
+	{
+	  TPluginAction BuildTuneStatusFastOperationItem;
+	  ZeroMemory(&BuildTuneStatusFastOperationItem, sizeof(TPluginAction));
+	  BuildTuneStatusFastOperationItem.cbSize = sizeof(TPluginAction);
+	  BuildTuneStatusFastOperationItem.pszName = L"TuneStatusFastOperationItemButton";
+	  BuildTuneStatusFastOperationItem.IconIndex = FASTACCESS_OFF;
+	  PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_UPDATEBUTTON,0,(LPARAM)&BuildTuneStatusFastOperationItem);
+	}
   }
 }
 //---------------------------------------------------------------------------
@@ -1397,17 +1401,21 @@ void DestroyTuneStatusFastOperation()
 //Tworzenie interfejsu szybkiego wlaczania/wylaczania funkcji zmiany opisu
 void BuildTuneStatusFastOperation()
 {
-  TPluginAction BuildTuneStatusFastOperationItem;
-  ZeroMemory(&BuildTuneStatusFastOperationItem, sizeof(TPluginAction));
-  BuildTuneStatusFastOperationItem.cbSize = sizeof(TPluginAction);
-  BuildTuneStatusFastOperationItem.pszName = L"TuneStatusFastOperationItemButton";
-  BuildTuneStatusFastOperationItem.Position = 999;
-  if(AutoModeEnabled)
-   BuildTuneStatusFastOperationItem.IconIndex = FASTACCESS_ON;
-  else
-   BuildTuneStatusFastOperationItem.IconIndex = FASTACCESS_OFF;
-  BuildTuneStatusFastOperationItem.pszService = L"sTuneStatusFastOperationItem";
-  PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_CREATEBUTTON,0,(LPARAM)&BuildTuneStatusFastOperationItem);
+  //Interfejs ma byc stworzony
+  if(FastAccessChk)
+  {
+	TPluginAction BuildTuneStatusFastOperationItem;
+	ZeroMemory(&BuildTuneStatusFastOperationItem, sizeof(TPluginAction));
+	BuildTuneStatusFastOperationItem.cbSize = sizeof(TPluginAction);
+	BuildTuneStatusFastOperationItem.pszName = L"TuneStatusFastOperationItemButton";
+	BuildTuneStatusFastOperationItem.Position = 999;
+	if(AutoModeEnabled)
+	 BuildTuneStatusFastOperationItem.IconIndex = FASTACCESS_ON;
+	else
+	 BuildTuneStatusFastOperationItem.IconIndex = FASTACCESS_OFF;
+	BuildTuneStatusFastOperationItem.pszService = L"sTuneStatusFastOperationItem";
+	PluginLink.CallService(AQQ_CONTROLS_TOOLBAR "ToolDown" AQQ_CONTROLS_CREATEBUTTON,0,(LPARAM)&BuildTuneStatusFastOperationItem);
+  }
 }
 //---------------------------------------------------------------------------
 
@@ -2193,7 +2201,7 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Load(PPluginLink Link)
   //Tworzenie interfejsu szybkiego dostepu do ustawien wtyczki
   BuildTuneStatusFastSettings();
   //Tworzenie interfejsu szybkiego wlaczania/wylaczania funkcji zmiany opisu
-  if(FastAccessChk) BuildTuneStatusFastOperation();
+  BuildTuneStatusFastOperation();
   //Rejestowanie klasy okna timera
   WNDCLASSEX wincl;
   wincl.cbSize = sizeof (WNDCLASSEX);

@@ -654,14 +654,14 @@ object MainForm: TMainForm
       end
     end
   end
-  object OKButton: TsButton
+  object OkButton: TsButton
     Left = 68
     Top = 316
     Width = 75
     Height = 25
     Caption = 'OK'
     TabOrder = 3
-    OnClick = OKButtonClick
+    OnClick = OkButtonClick
     SkinData.SkinSection = 'BUTTON'
   end
   object CancelButton: TButton
@@ -683,6 +683,10 @@ object MainForm: TMainForm
     object aSaveSettings: TAction
       Caption = 'aSaveSettings'
       OnExecute = aSaveSettingsExecute
+    end
+    object aSaveSettingsW: TAction
+      Caption = 'aSaveSettingsW'
+      OnExecute = aSaveSettingsWExecute
     end
     object aResetSettings: TAction
       Caption = 'Resetuj'

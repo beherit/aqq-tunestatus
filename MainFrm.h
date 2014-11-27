@@ -87,13 +87,14 @@ __published:	// IDE-managed Components
 		TAction *aExit;
 		TsButton *UserTuneExceptionButton;
 		TAction *aSelectAll;
-		TsButton *OKButton;
+	TsButton *OkButton;
 		TAction *aAllowApply;
 		TsSkinManager *sSkinManager;
 		TsSkinProvider *sSkinProvider;
 		TButton *CancelButton;
-	TsCheckBox *AutoTurnOffUserTuneSendCheckBox;
-	TsSpinEdit *AutoTurnOffUserTuneSendSpinEdit;
+		TsCheckBox *AutoTurnOffUserTuneSendCheckBox;
+		TsSpinEdit *AutoTurnOffUserTuneSendSpinEdit;
+	TAction *aSaveSettingsW;
 		void __fastcall SaveButtonClick(TObject *Sender);
 		void __fastcall FormShow(TObject *Sender);
 		void __fastcall aLoadSettingsExecute(TObject *Sender);
@@ -116,11 +117,12 @@ __published:	// IDE-managed Components
 		void __fastcall aExitExecute(TObject *Sender);
 		void __fastcall UserTuneExceptionButtonClick(TObject *Sender);
 		void __fastcall aSelectAllExecute(TObject *Sender);
-		void __fastcall OKButtonClick(TObject *Sender);
+		void __fastcall OkButtonClick(TObject *Sender);
 		void __fastcall aAllowApplyExecute(TObject *Sender);
 		void __fastcall AutoModeCheckListBoxPreviewClick(TObject *Sender);
 		void __fastcall FormCreate(TObject *Sender);
 		void __fastcall sSkinManagerSysDlgInit(TacSysDlgData DlgData, bool &AllowSkinning);
+	void __fastcall aSaveSettingsWExecute(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
 		__fastcall TMainForm(TComponent* Owner);
