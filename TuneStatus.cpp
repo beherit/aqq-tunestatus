@@ -28,6 +28,7 @@
 #include <Registry.hpp>
 #include <tlhelp32.h>
 #include <XMLDoc.hpp>
+#include <fstream.h>
 #include <PluginAPI.h>
 #include "MainFrm.h"
 #include <IdHashMessageDigest.hpp>
@@ -808,18 +809,15 @@ UnicodeString GetDataFromiTunes()
 	//Pobieranie odtwarzanego utworu z pliku
 	try
 	{
-	  //Jezeli uchwytu do formy nie jest przypisany
-	  if(!hMainForm)
-	  {
-		//Przypisanie uchwytu do formy
-		Application->Handle = (HWND)MainForm;
-		hMainForm = new TMainForm(Application);
-	  }
 	  //Odczyt danych z pliku
-	  hMainForm->SongFromFile->Lines->LoadFromFile(GetPluginUserDir() + "\\\\TuneStatus\\\\iTunes.txt");
+	  char FileBuffer[512];
+	  ifstream file;
+	  file.open((GetPluginUserDir()+"\\\\TuneStatus\\\\iTunes.txt").w_str());
+	  file.getline(FileBuffer, 512);
+	  file.close();
 	  //Zwrocenie odtwarzanego utworu
-	  return hMainForm->SongFromFile->Text.Trim();
-    }
+	  return FileBuffer;
+	}
 	catch(...) { return ""; }
   }
   return "";
