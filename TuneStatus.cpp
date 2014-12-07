@@ -28,7 +28,7 @@
 #include <Registry.hpp>
 #include <tlhelp32.h>
 #include <XMLDoc.hpp>
-#include <fstream.h>
+#include <fstream>
 #include <PluginAPI.h>
 #include "MainFrm.h"
 #include <IdHashMessageDigest.hpp>
@@ -153,7 +153,7 @@ UnicodeString GetPluginDir()
 }
 //---------------------------------------------------------------------------
 
-PluginShowMessage(UnicodeString Text)
+void PluginShowMessage(UnicodeString Text)
 {
   PluginLink.CallService(AQQ_FUNCTION_SHOWMESSAGE,0,(LPARAM)Text.w_str());
 }
@@ -2204,7 +2204,7 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
 {
   PluginInfo.cbSize = sizeof(TPluginInfo);
   PluginInfo.ShortName = L"TuneStatus";
-  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,5,2,0);
+  PluginInfo.Version = PLUGIN_MAKE_VERSION(2,6,0,0);
   PluginInfo.Description = L"Wtyczka s³u¿y do informowania naszych znajomych o tym co aktualnie s³uchamy w odtwarzaczu plików audio. Informowanie odbywa siê poprzez zmianê naszego opisu oraz opcjonalnie poprzez wysy³anie notyfikacji User Tune (XEP-0118) w sieci Jabber.";
   PluginInfo.Author = L"Krzysztof Grochocki";
   PluginInfo.AuthorMail = L"kontakt@beherit.pl";

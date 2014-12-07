@@ -194,6 +194,10 @@ object MainForm: TMainForm
       Caption = 'Obs'#322'uga'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object AutoModeInfoLabel: TsLabel
         Left = 21
         Top = 8
@@ -270,6 +274,10 @@ object MainForm: TMainForm
       ImageIndex = 1
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object SetStatuslLabel: TsLabel
         Left = 150
         Top = 140
