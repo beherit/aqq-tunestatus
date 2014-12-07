@@ -1981,27 +1981,26 @@ void LoadSettings()
   //Opoznienie ustawiania nowego opisu
   SetStatusDelayChk = 1000*Ini->ReadInteger("Settings", "SetStatusDelay", 5);
   if(SetStatusDelayChk<4000) SetStatusDelayChk = 4000;
+  //Automatyczne wylaczenie funkcji zmiany opisu przy bezczynnosci
+  AutoTurnOffChk = Ini->ReadBool("Settings", "AutoTurnOff", false);
+  AutoTurnOffDelayChk = 60000*Ini->ReadInteger("Settings", "AutoTurnOffDelay", 15);
   //Wlaczanie funkcji zmiany opisu wraz z uruchomieniem
   EnableOnStartChk = Ini->ReadBool("Settings", "EnableOnStart", false);
   //Pokazywanie przycisku szybkiego wlaczania/wylaczania funkcji zmiany opisu
   FastAccessChk = Ini->ReadBool("Settings", "FastAccess", true);
-  //Automatyczne wylaczanie funkcji zmiany opisu przy bezczynnosci
-  AutoTurnOffChk = Ini->ReadBool("Settings", "AutoTurnOff", false);
-  //Czas automatycznego wylaczania funkcji zmiany opisu przy bezczynnosci
-  AutoTurnOffDelayChk = 60000*Ini->ReadInteger("Settings", "AutoTurnOffDelay", 15);
-  //User Tune - informowanie o aktualnym odtwarzanym przez nas utworze
+  //Informowanie o aktualnym odtwarzanym utworze poprzez User Tune
   UserTuneSendChk = Ini->ReadBool("UserTune", "Send", false);
   //Wylaczanie obslugi User Tune w rdzeniu AQQ
   if(UserTuneSendChk) TurnOffCoreUserTune();
-  //User Tune - opoznienie wysylania nowego odtwarzanego utworu
+  //Opoznienie informowania poprzez User Tune
   UserTuneSendDelayChk = 1000*Ini->ReadInteger("UserTune", "SendDelay", 5);
   if(UserTuneSendDelayChk<4000) UserTuneSendDelayChk = 4000;
-  //Automatyczne informowania User Tune przy bezczynnosci
+  //Automatyczne wylaczenie informowania poprzez User Tune przy bezczynnosci
   AutoTurnOffUserTuneChk = Ini->ReadBool("UserTune", "AutoTurnOff", false);
   AutoTurnOffUserTuneDelayChk = 60000*Ini->ReadInteger("UserTune", "AutoTurnOffDelay", 15);
-  //User Tune - powiadomienie o aktualnych sluchanych utworach przez inne kontakty
+  //Powiadomienie o notyfikacji User Tune od kontaktow
   UserTuneNotifChk = Ini->ReadBool("UserTune", "Notification", false);
-  //User Tune - wyjatki wylaczone z powiadomienia
+  //Wyjatki wylaczone z notyfikacji User Tune od kontaktow
   UserTuneExceptions->Clear();
   TStringList *JIDList = new TStringList;
   Ini->ReadSection("UserTuneEx",JIDList);
@@ -2015,7 +2014,7 @@ void LoadSettings()
 	  if(!JID.IsEmpty()) UserTuneExceptions->Add(JID);
 	}
   }
-  //User Tune - czas wyswietlania chmurki informacyjnej
+  //Czas wyswietlania chmurki informacyjnej
   UserTuneCloudChk = Ini->ReadInteger("UserTune", "Cloud", 6);
   //Wszystkie moduly zostaly zaladowane
   if(PluginLink.CallService(AQQ_SYSTEM_MODULESLOADED,0,0))
