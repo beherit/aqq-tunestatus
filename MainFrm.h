@@ -56,7 +56,6 @@ __published:	// IDE-managed Components
 		TsComboBox *TagsBox;
 		TsMemo *PreviewStatusMemo;
 		TsLabel *SetStatuslLabel;
-		TsMemo *SongFromFile;
 		TsLabel *AutoModeInfoLabel;
 		TsButton *ResetButton;
 		TAction *aResetSettings;

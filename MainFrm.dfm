@@ -320,33 +320,6 @@ object MainForm: TMainForm
           '--------Tylko dla wybranych odtwarzaczy--------'
           'CC_SONGLENGTH       (d'#322'ugo'#347#263' utworu [mm:ss])')
       end
-      object SongFromFile: TsMemo
-        Left = 18
-        Top = 106
-        Width = 256
-        Height = 25
-        TabStop = False
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        ReadOnly = True
-        TabOrder = 3
-        Visible = False
-        WordWrap = False
-        BoundLabel.Indent = 0
-        BoundLabel.Font.Charset = DEFAULT_CHARSET
-        BoundLabel.Font.Color = clWindowText
-        BoundLabel.Font.Height = -11
-        BoundLabel.Font.Name = 'Tahoma'
-        BoundLabel.Font.Style = []
-        BoundLabel.Layout = sclLeft
-        BoundLabel.MaxWidth = 0
-        BoundLabel.UseSkinColor = True
-        SkinData.SkinSection = 'EDIT'
-      end
       object PreviewStatusMemo: TsMemo
         Left = 18
         Top = 59
@@ -387,7 +360,7 @@ object MainForm: TMainForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 4
+        TabOrder = 3
         Text = '5'
         OnChange = aAllowApplyExecute
         SkinData.SkinSection = 'EDIT'
@@ -412,7 +385,7 @@ object MainForm: TMainForm
         Width = 211
         Height = 20
         Caption = 'Aktywuj funkcj'#281' zmian'#281' opisu na starcie'
-        TabOrder = 7
+        TabOrder = 6
         OnClick = aAllowApplyExecute
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -429,7 +402,7 @@ object MainForm: TMainForm
         AutoSize = False
         Checked = True
         State = cbChecked
-        TabOrder = 8
+        TabOrder = 7
         OnClick = aAllowApplyExecute
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -443,7 +416,7 @@ object MainForm: TMainForm
         Height = 28
         Caption = 'Wy'#322#261'cz funkcj'#281' zmiany opisu kiedy utw'#243'r nie zmienia si'#281' od (min)'
         AutoSize = False
-        TabOrder = 5
+        TabOrder = 4
         OnClick = AutoTurnOffCheckBoxClick
         SkinData.SkinSection = 'CHECKBOX'
         ImgChecked = 0
@@ -461,7 +434,7 @@ object MainForm: TMainForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 6
+        TabOrder = 5
         Text = '5'
         OnChange = aAllowApplyExecute
         SkinData.SkinSection = 'EDIT'
@@ -498,6 +471,10 @@ object MainForm: TMainForm
       ImageIndex = 3
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object UserTuneLabel: TsLabel
         Left = 25
         Top = 174
