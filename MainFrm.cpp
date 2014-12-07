@@ -47,7 +47,7 @@ TMainForm *MainForm;
 __declspec(dllimport)UnicodeString GetPluginUserDir();
 __declspec(dllimport)UnicodeString GetPluginUserDirW();
 __declspec(dllimport)UnicodeString GetThemeSkinDir();
-__declspec(dllimport)PluginShowMessage(UnicodeString Text);
+__declspec(dllimport)void PluginShowMessage(UnicodeString Text);
 __declspec(dllimport)bool ChkSkinEnabled();
 __declspec(dllimport)bool ChkThemeAnimateWindows();
 __declspec(dllimport)bool ChkThemeGlowing();

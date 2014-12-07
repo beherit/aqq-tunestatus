@@ -1,3 +1,26 @@
+2.6.0.0
+-----
+* Pełne wsparcie kolorystyki stylizacji okien.
+* Opcja automatycznego wyłączania informowania o słuchanym utworze przez notyfikację User Tune przy bezczynności.
+* Usunięcie konwersji starej wersji ustawień wyglądu opisu.
+* Poprawne wczytywanie domyślnego wyglądu opisu.
+* Usunięcie literówek w kodzie dla odtwarzacza VLC media player.
+* Poprawne zapisywanie pseudonimów kontaktów na potrzeby notyfikacji User Tune.
+* Pobieranie pseudonimów kontaktów tylko, gdy notyfikacja User Tune jest włączona.
+* Poprawienie stylu chmurek notyfikacji User Tune.
+* Usunięcie drobnego błędu w odczycie ustawień.
+* Usunięcie błędu AV z formy wyjątków notyfikacji User Tune.
+* Prawidłowe parsowanie pakietów XML zawierających informację User Tune.
+* Ulepszone blokowanie/zezwalanie notyfikacji User Tune dla poszczególnych kont.
+* Wysyłanie pakietu wyłączającego User Tune przy rozłączaniu się z siecią lub po wejściu na stan niewidoczny.
+* Drobna optymalizacja funkcjonalności zmiany opisu oraz User Tune.
+* Optymalizacja przywracania startowego opisu po zmianie stanu konta na niewidoczny.
+* Małe kosmetyczne zmiany i optymalizacje w kodzie.
+* Usunięcie obsługi Last.fm Player (odtwarzacz już nie istnieje).
+* Zmiana ścieżki pliku do pobierania informacji o odtwarzanym utworze w iTunes.
+* Optymalizacja pobierania odtwarzanego utworu w iTunes.
+* Aktualizacja komponentów AlphaControls do nowszej wersji (9.18).
+
 2.5.2.0
 -----
 * Nieskórkowanie systemowych okien dialogowych niepochodzących z wtyczki.
