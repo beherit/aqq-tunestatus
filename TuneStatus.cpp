@@ -30,7 +30,7 @@
 #include <XMLDoc.hpp>
 #include <fstream>
 #include <PluginAPI.h>
-#include "MainFrm.h"
+#include "SettingsFrm.h"
 #include <IdHashMessageDigest.hpp>
 
 int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved)
@@ -40,7 +40,7 @@ int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved
 //---------------------------------------------------------------------------
 
 //Uchwyt-do-formy-ustawien---------------------------------------------------
-TMainForm *hMainForm;
+TSettingsForm *hSettingsForm;
 //Struktury-glowne-----------------------------------------------------------
 TPluginLink PluginLink;
 TPluginInfo PluginInfo;
@@ -220,15 +220,15 @@ int GetBrightness()
 void OpenPluginSettings()
 {
 	//Przypisanie uchwytu do formy
-	if(!hMainForm)
+	if(!hSettingsForm)
 	{
-		Application->Handle = (HWND)MainForm;
-		hMainForm = new TMainForm(Application);
+		Application->Handle = (HWND)SettingsForm;
+		hSettingsForm = new TSettingsForm(Application);
 	}
 	//Zmiana statusu checkbox'a na formie
-	hMainForm->RunPluginCheckBox->Checked = AutoModeEnabled;
+	hSettingsForm->RunPluginCheckBox->Checked = AutoModeEnabled;
 	//Pokaznie okna
-	hMainForm->Show();
+	hSettingsForm->Show();
 }
 //---------------------------------------------------------------------------
 
@@ -1236,7 +1236,7 @@ void FastOperation(bool FromForm)
 		//Aktualizacja przycisku
 		UpdateTuneStatusFastOperation(true);
 		//Zmiana statusu checkbox'a na formie
-		if((hMainForm)&&(hMainForm->Visible)&&(!FromForm)) hMainForm->RunPluginCheckBox->Checked = true;
+		if((hSettingsForm)&&(hSettingsForm->Visible)&&(!FromForm)) hSettingsForm->RunPluginCheckBox->Checked = true;
 	}
 	//Funkcja zmiany opisu jest aktywna
 	else
@@ -1248,7 +1248,7 @@ void FastOperation(bool FromForm)
 		//Aktualizacja przycisku
 		UpdateTuneStatusFastOperation(false);
 		//Zmiana statusu checkbox'a na formie
-		if((hMainForm)&&(hMainForm->Visible)&&(!FromForm)) hMainForm->RunPluginCheckBox->Checked = false;
+		if((hSettingsForm)&&(hSettingsForm->Visible)&&(!FromForm)) hSettingsForm->RunPluginCheckBox->Checked = false;
 		//Przywrocenie poczatkowego opisu
 		if(GetStatus()!=StartStatus)
 		{
@@ -1387,7 +1387,7 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 				AutoModeEnabled = true;
 				SetTimer(hTimerFrm,TIMER_AUTOMODE,1000,(TIMERPROC)TimerFrmProc);
 				//Zmiana statusu checkbox'a na formie
-				if(hMainForm) hMainForm->RunPluginCheckBox->Checked = true;
+				if(hSettingsForm) hSettingsForm->RunPluginCheckBox->Checked = true;
 				//Aktualizacja przycisku
 				if(FastAccessChk) UpdateTuneStatusFastOperation(true);
 			}
@@ -1722,7 +1722,7 @@ INT_PTR __stdcall OnStateChange(WPARAM wParam, LPARAM lParam)
 INT_PTR __stdcall OnThemeChanged(WPARAM wParam, LPARAM lParam)
 {
 	//Okno ustawien zostalo juz stworzone
-	if(hMainForm)
+	if(hSettingsForm)
 	{
 		//Wlaczona zaawansowana stylizacja okien
 		if(ChkSkinEnabled())
@@ -1734,24 +1734,24 @@ INT_PTR __stdcall OnThemeChanged(WPARAM wParam, LPARAM lParam)
 			{
 				//Dane pliku zaawansowanej stylizacji okien
 				ThemeSkinDir = StringReplace(ThemeSkinDir, "\\\\", "\\", TReplaceFlags() << rfReplaceAll);
-				hMainForm->sSkinManager->SkinDirectory = ThemeSkinDir;
-				hMainForm->sSkinManager->SkinName = "Skin.asz";
+				hSettingsForm->sSkinManager->SkinDirectory = ThemeSkinDir;
+				hSettingsForm->sSkinManager->SkinName = "Skin.asz";
 				//Ustawianie animacji AlphaControls
-				if(ChkThemeAnimateWindows()) hMainForm->sSkinManager->AnimEffects->FormShow->Time = 200;
-				else hMainForm->sSkinManager->AnimEffects->FormShow->Time = 0;
-				hMainForm->sSkinManager->Effects->AllowGlowing = ChkThemeGlowing();
+				if(ChkThemeAnimateWindows()) hSettingsForm->sSkinManager->AnimEffects->FormShow->Time = 200;
+				else hSettingsForm->sSkinManager->AnimEffects->FormShow->Time = 0;
+				hSettingsForm->sSkinManager->Effects->AllowGlowing = ChkThemeGlowing();
 				//Zmiana kolorystyki AlphaControls
-				hMainForm->sSkinManager->HueOffset = GetHUE();
-				hMainForm->sSkinManager->Saturation = GetSaturation();
-				hMainForm->sSkinManager->Brightness = GetBrightness();
+				hSettingsForm->sSkinManager->HueOffset = GetHUE();
+				hSettingsForm->sSkinManager->Saturation = GetSaturation();
+				hSettingsForm->sSkinManager->Brightness = GetBrightness();
 				//Aktywacja skorkowania AlphaControls
-				hMainForm->sSkinManager->Active = true;
+				hSettingsForm->sSkinManager->Active = true;
 			}
 			//Brak pliku zaawansowanej stylizacji okien
-			else hMainForm->sSkinManager->Active = false;
+			else hSettingsForm->sSkinManager->Active = false;
 		}
 		//Zaawansowana stylizacja okien wylaczona
-		else hMainForm->sSkinManager->Active = false;
+		else hSettingsForm->sSkinManager->Active = false;
 	}
 
 	return 0;

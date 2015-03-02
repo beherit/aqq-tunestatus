@@ -23,7 +23,7 @@
 #include <vcl.h>
 #pragma hdrstop
 #include "UserTuneExceptionFrm.h"
-#include "MainFrm.h"
+#include "SettingsFrm.h"
 #include <inifiles.hpp>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)

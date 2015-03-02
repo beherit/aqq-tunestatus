@@ -24,7 +24,7 @@
 #include <inifiles.hpp>
 #include <Clipbrd.hpp>
 #pragma hdrstop
-#include "MainFrm.h"
+#include "SettingsFrm.h"
 #include "UserTuneExceptionFrm.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -42,7 +42,7 @@
 #pragma link "sSkinProvider"
 #pragma link "sSpinEdit"
 #pragma resource "*.dfm"
-TMainForm *MainForm;
+TSettingsForm *SettingsForm;
 //---------------------------------------------------------------------------
 __declspec(dllimport)UnicodeString GetPluginUserDir();
 __declspec(dllimport)UnicodeString GetPluginUserDirW();
@@ -67,20 +67,20 @@ __declspec(dllimport)void ForceChangeStatus();
 UnicodeString AutoModeListText;
 //---------------------------------------------------------------------------
 
-__fastcall TMainForm::TMainForm(TComponent* Owner)
+__fastcall TSettingsForm::TSettingsForm(TComponent* Owner)
 	: TForm(Owner)
 {
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::WMTransparency(TMessage &Message)
+void __fastcall TSettingsForm::WMTransparency(TMessage &Message)
 {
 	Application->ProcessMessages();
 	if(sSkinManager->Active) sSkinProvider->BorderForm->UpdateExBordersPos(true,(int)Message.LParam);
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::FormCreate(TObject *Sender)
+void __fastcall TSettingsForm::FormCreate(TObject *Sender)
 {
 	//Wlaczona zaawansowana stylizacja okien
 	if(ChkSkinEnabled())
@@ -112,7 +112,7 @@ void __fastcall TMainForm::FormCreate(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::FormShow(TObject *Sender)
+void __fastcall TSettingsForm::FormShow(TObject *Sender)
 {
 	//Odczyt ustawien
 	aLoadSettings->Execute();
@@ -153,14 +153,14 @@ void __fastcall TMainForm::FormShow(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::FormClose(TObject *Sender, TCloseAction &Action)
+void __fastcall TSettingsForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
 	//Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
 	TagsBox->Items->Delete(6);
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::SaveButtonClick(TObject *Sender)
+void __fastcall TSettingsForm::SaveButtonClick(TObject *Sender)
 {
 	//Wylaczenie przyciskow
 	SaveButton->Enabled = false;
@@ -174,7 +174,7 @@ void __fastcall TMainForm::SaveButtonClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::OkButtonClick(TObject *Sender)
+void __fastcall TSettingsForm::OkButtonClick(TObject *Sender)
 {
 	//Wylaczenie przyciskow
 	SaveButton->Enabled = false;
@@ -190,13 +190,13 @@ void __fastcall TMainForm::OkButtonClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::RunPluginCheckBoxClick(TObject *Sender)
+void __fastcall TSettingsForm::RunPluginCheckBoxClick(TObject *Sender)
 {
 	if(RunPluginCheckBox->Focused()) FastOperation(true);
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::AutoModeCheckListBoxPreviewClick(TObject *Sender)
+void __fastcall TSettingsForm::AutoModeCheckListBoxPreviewClick(TObject *Sender)
 {
 	//Stan komponentu ulegl zmianie
 	if(AutoModeCheckListBoxPreview->Items->Text!=AutoModeListText)
@@ -209,7 +209,7 @@ void __fastcall TMainForm::AutoModeCheckListBoxPreviewClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::AutoModeCheckListBoxPreviewDragDrop(
+void __fastcall TSettingsForm::AutoModeCheckListBoxPreviewDragDrop(
 		TObject *Sender, TObject *Source, int X, int Y)
 {
 	//Komponent docelowy i zrodlowy jest taki sam
@@ -230,7 +230,7 @@ void __fastcall TMainForm::AutoModeCheckListBoxPreviewDragDrop(
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::AutoModeCheckListBoxPreviewDragOver(
+void __fastcall TSettingsForm::AutoModeCheckListBoxPreviewDragOver(
 		TObject *Sender, TObject *Source, int X, int Y, TDragState State,
 		bool &Accept)
 {
@@ -239,7 +239,7 @@ void __fastcall TMainForm::AutoModeCheckListBoxPreviewDragOver(
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::AutoModeCheckListBoxPreviewMouseMove(
+void __fastcall TSettingsForm::AutoModeCheckListBoxPreviewMouseMove(
 		TObject *Sender, TShiftState Shift, int X, int Y)
 {
 	TPoint Point;
@@ -280,25 +280,25 @@ void __fastcall TMainForm::AutoModeCheckListBoxPreviewMouseMove(
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::FoobarDownloadClick(TObject *Sender)
+void __fastcall TSettingsForm::FoobarDownloadClick(TObject *Sender)
 {
 	ShellExecute(NULL, L"open", L"http://beherit.pl/download/tunestatus-addon-foobar2000/", NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::WMPDownloadClick(TObject *Sender)
+void __fastcall TSettingsForm::WMPDownloadClick(TObject *Sender)
 {
 	ShellExecute(NULL, L"open", L"http://beherit.pl/download/tunestatus-addon-wmp/", NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::iTunesDownloadClick(TObject *Sender)
+void __fastcall TSettingsForm::iTunesDownloadClick(TObject *Sender)
 {
 	ShellExecute(NULL, L"open", L"http://beherit.pl/download/tunestatus-addon-itunes/", NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::TagsBoxCloseUp(TObject *Sender)
+void __fastcall TSettingsForm::TagsBoxCloseUp(TObject *Sender)
 {
 	//Dodanie tekstu do TagsBox i ustawienie go jako element pokazywany
 	if(TagsBox->Text.IsEmpty())
@@ -310,14 +310,14 @@ void __fastcall TMainForm::TagsBoxCloseUp(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::TagsBoxDropDown(TObject *Sender)
+void __fastcall TSettingsForm::TagsBoxDropDown(TObject *Sender)
 {
 	//Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
 	TagsBox->Items->Delete(6);
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::TagsBoxSelect(TObject *Sender)
+void __fastcall TSettingsForm::TagsBoxSelect(TObject *Sender)
 {
 	//Pobranie tekstu wybranego elementu
 	UnicodeString Tag = TagsBox->Text;
@@ -343,7 +343,7 @@ void __fastcall TMainForm::TagsBoxSelect(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::AutoTurnOffCheckBoxClick(TObject *Sender)
+void __fastcall TSettingsForm::AutoTurnOffCheckBoxClick(TObject *Sender)
 {
 	AutoTurnOffSpin->Enabled = AutoTurnOffCheckBox->Checked;
 	//Wlaczenie przycisku zastosuj
@@ -351,7 +351,7 @@ void __fastcall TMainForm::AutoTurnOffCheckBoxClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::UserTuneNotificationCheckBoxClick(TObject *Sender)
+void __fastcall TSettingsForm::UserTuneNotificationCheckBoxClick(TObject *Sender)
 {
 	UserTuneNotificationSpin->Enabled = UserTuneNotificationCheckBox->Checked;
 	UserTuneExceptionButton->Enabled = UserTuneNotificationCheckBox->Checked;
@@ -360,7 +360,7 @@ void __fastcall TMainForm::UserTuneNotificationCheckBoxClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::UserTuneExceptionButtonClick(TObject *Sender)
+void __fastcall TSettingsForm::UserTuneExceptionButtonClick(TObject *Sender)
 {
 	UserTuneExceptionForm = new TUserTuneExceptionForm(Application);
 	UserTuneExceptionForm->SkinManagerEnabled = sSkinManager->Active;
@@ -369,7 +369,7 @@ void __fastcall TMainForm::UserTuneExceptionButtonClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::UserTuneSendCheckBoxClick(TObject *Sender)
+void __fastcall TSettingsForm::UserTuneSendCheckBoxClick(TObject *Sender)
 {
 	UserTuneSendLabel->Enabled = UserTuneSendCheckBox->Checked;
 	UserTuneSendSpin->Enabled = UserTuneSendCheckBox->Checked;
@@ -381,7 +381,7 @@ void __fastcall TMainForm::UserTuneSendCheckBoxClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
+void __fastcall TSettingsForm::aLoadSettingsExecute(TObject *Sender)
 {
 	TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
 	//Obslugiwane odtwarzacze
@@ -450,7 +450,7 @@ void __fastcall TMainForm::aLoadSettingsExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
+void __fastcall TSettingsForm::aSaveSettingsExecute(TObject *Sender)
 {
 	//Ustawianie domyslnego opisu
 	if(!PreviewStatusMemo->Text.Pos("CC_TUNESTATUS"))
@@ -507,7 +507,7 @@ void __fastcall TMainForm::aSaveSettingsExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::aResetSettingsExecute(TObject *Sender)
+void __fastcall TSettingsForm::aResetSettingsExecute(TObject *Sender)
 {
 	//Usuwanie wszystkich elementow
 	AutoModeCheckListBoxPreview->Clear();
@@ -535,34 +535,34 @@ void __fastcall TMainForm::aResetSettingsExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::aAllowApplyExecute(TObject *Sender)
+void __fastcall TSettingsForm::aAllowApplyExecute(TObject *Sender)
 {
 	//Wlaczenie przycisku zastosuj
 	SaveButton->Enabled = true;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::aExitExecute(TObject *Sender)
+void __fastcall TSettingsForm::aExitExecute(TObject *Sender)
 {
 	//Zamkniecie formy
 	Close();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::aSelectAllExecute(TObject *Sender)
+void __fastcall TSettingsForm::aSelectAllExecute(TObject *Sender)
 {
 	//Zaznaczenie calego tekstu w polu
 	PreviewStatusMemo->SelectAll();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::sSkinManagerSysDlgInit(TacSysDlgData DlgData, bool &AllowSkinning)
+void __fastcall TSettingsForm::sSkinManagerSysDlgInit(TacSysDlgData DlgData, bool &AllowSkinning)
 {
 	AllowSkinning = false;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::aSaveSettingsWExecute(TObject *Sender)
+void __fastcall TSettingsForm::aSaveSettingsWExecute(TObject *Sender)
 {
 	//Usuwanie elementow z interfejsu AQQ
 	DestroyTuneStatusFastOperation();
@@ -581,7 +581,7 @@ void __fastcall TMainForm::aSaveSettingsWExecute(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TMainForm::iTunesPluginPathClick(TObject *Sender)
+void __fastcall TSettingsForm::iTunesPluginPathClick(TObject *Sender)
 {
 	Clipboard()->SetTextBuf((GetPluginUserDirW() + "\\TuneStatus\\iTunes.txt").w_str());
 	PluginShowMessage("Œcie¿ka niezbêdna do ustawienia pluginu w iTunes zosta³a skopiowana do schowka.");
