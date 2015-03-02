@@ -1033,6 +1033,12 @@ UnicodeString GetDataFromPlayers(bool UserTune)
 		//aTunes
 		else if(SupportedPlayers->Strings[Count]==11)
 			Text = GetDataFromaTunes();
+		//FREE_ID
+		//else if(SupportedPlayers->Strings[Count]==12)
+		//	Text = GetDataFromXXX();
+		//FREE_ID
+		//else if(SupportedPlayers->Strings[Count]==13)
+		//	Text = GetDataFromXXX();
 		//VLC media player
 		else if(SupportedPlayers->Strings[Count]==14)
 			Text = GetDataFromVLC();
