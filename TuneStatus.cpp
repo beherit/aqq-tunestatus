@@ -21,17 +21,16 @@
 
 #include <vcl.h>
 #include <windows.h>
-#pragma hdrstop
-#pragma argsused
 #include <stdio.h>
 #include <inifiles.hpp>
 #include <Registry.hpp>
 #include <tlhelp32.h>
 #include <XMLDoc.hpp>
 #include <fstream>
-#include <PluginAPI.h>
-#include "SettingsFrm.h"
 #include <IdHashMessageDigest.hpp>
+#include <PluginAPI.h>
+#pragma hdrstop
+#include "SettingsFrm.h"
 
 int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved)
 {
