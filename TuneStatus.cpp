@@ -1000,31 +1000,44 @@ UnicodeString GetDataFromPlayers(bool UserTune)
 	for(int Count=0;Count<SupportedPlayers->Count;Count++)
 	{
 		//Uruchomienie pobierania utworu z danego odtwarzacza
-		if(SupportedPlayers->Strings[Count]=="Winamp/AIMP/KMPlayer")
+		//Winamp/AIMP/KMPlayer
+		if(SupportedPlayers->Strings[Count]==1)
 			Text = GetDataFromWinamp();
-		else if(SupportedPlayers->Strings[Count]=="Foobar2000")
+		//Foobar2000
+		else if(SupportedPlayers->Strings[Count]==2)
 			Text = GetDataFromFoobar();
-		else if(SupportedPlayers->Strings[Count]=="Windows Media Player")
+		//Windows Media Player
+		else if(SupportedPlayers->Strings[Count]==3)
 			Text = GetDataFromWMP();
-		else if(SupportedPlayers->Strings[Count]=="VUPlayer")
+		//VUPlayer
+		else if(SupportedPlayers->Strings[Count]==4)
 			Text = GetDataFromVUPlayer();
-		else if(SupportedPlayers->Strings[Count]=="XMPlay")
+		//XMPlay
+		else if(SupportedPlayers->Strings[Count]==5)
 			Text = GetDataFromXMPlay();
-		else if(SupportedPlayers->Strings[Count]=="Media Player Classic")
+		//Media Player Classic
+		else if(SupportedPlayers->Strings[Count]==6)
 			Text = GetDataFromMPC();
-		else if(SupportedPlayers->Strings[Count]=="iTunes")
+		//iTunes
+		else if(SupportedPlayers->Strings[Count]==7)
 			Text = GetDataFromiTunes();
-		else if(SupportedPlayers->Strings[Count]=="ALSong")
+		//ALSong
+		else if(SupportedPlayers->Strings[Count]==8)
 			Text = GetDataFromALSong();
-		else if(SupportedPlayers->Strings[Count]=="Wtyczki (np. AQQ Radio)")
+		//Wtyczki (np. AQQ Radio)
+		else if(SupportedPlayers->Strings[Count]==9)
 			Text = GetDataFromPlugins();
-		else if(SupportedPlayers->Strings[Count]=="Screamer Radio")
+		//Screamer Radio
+		else if(SupportedPlayers->Strings[Count]==10)
 			Text = GetDataFromScreamerRadio();
-		else if(SupportedPlayers->Strings[Count]=="aTunes")
+		//aTunes
+		else if(SupportedPlayers->Strings[Count]==11)
 			Text = GetDataFromaTunes();
-		else if(SupportedPlayers->Strings[Count]=="VLC media player")
+		//VLC media player
+		else if(SupportedPlayers->Strings[Count]==14)
 			Text = GetDataFromVLC();
-		else if(SupportedPlayers->Strings[Count]=="Spotify")
+		//Spotify
+		else if(SupportedPlayers->Strings[Count]==15)
 			Text = GetDataFromSpotify();
 		//Zablokowanie plikow filmowych
 		if(!Text.IsEmpty())
@@ -1951,23 +1964,8 @@ void LoadSettings()
 			//Sprawdzanie czy element jest wlaczony
 			if(StrToBool(Enabled))
 			{
-				//Odkodowywanie ID odtwarzacza
+				//Pobieranie ID odtwarzacza
 				PlayerID = PlayerID.Delete(PlayerID.Pos(";"),PlayerID.Length());
-				if(StrToInt(PlayerID)==1) PlayerID = "Winamp/AIMP/KMPlayer";
-				else if(StrToInt(PlayerID)==2) PlayerID = "Foobar2000";
-				else if(StrToInt(PlayerID)==3) PlayerID = "Windows Media Player";
-				else if(StrToInt(PlayerID)==4) PlayerID = "VUPlayer";
-				else if(StrToInt(PlayerID)==5) PlayerID = "XMPlay";
-				else if(StrToInt(PlayerID)==6) PlayerID = "Media Player Classic";
-				else if(StrToInt(PlayerID)==7) PlayerID = "iTunes";
-				else if(StrToInt(PlayerID)==8) PlayerID = "ALSong";
-				else if(StrToInt(PlayerID)==9) PlayerID = "Wtyczki (np. AQQ Radio)";
-				else if(StrToInt(PlayerID)==10) PlayerID = "Screamer Radio";
-				else if(StrToInt(PlayerID)==11) PlayerID = "aTunes";
-				else if(StrToInt(PlayerID)==12) PlayerID = "";
-				else if(StrToInt(PlayerID)==13) PlayerID = "";
-				else if(StrToInt(PlayerID)==14) PlayerID = "VLC media player";
-				else if(StrToInt(PlayerID)==15) PlayerID = "Spotify";
 				//Dodawnie odtwarzacza do listy
 				if(!PlayerID.IsEmpty()) SupportedPlayers->Add(PlayerID);
 			}
