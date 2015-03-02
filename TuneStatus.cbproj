@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{9A846A45-87B1-40C8-9C71-0260FC830FA7}</ProjectGuid>
-        <ProjectVersion>16.0</ProjectVersion>
+        <ProjectVersion>16.1</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Release</Config>
@@ -167,10 +167,10 @@
             <ResourceType>DATA</ResourceType>
             <ResourceId>FASTACCESS_ON</ResourceId>
         </RcItem>
-        <CppCompile Include="MainFrm.cpp">
-            <Form>MainForm</Form>
+        <CppCompile Include="SettingsFrm.cpp">
+            <Form>SettingsForm</Form>
             <FormType>dfm</FormType>
-            <DependentOn>MainFrm.h</DependentOn>
+            <DependentOn>SettingsFrm.h</DependentOn>
             <BuildOrder>6</BuildOrder>
         </CppCompile>
         <CppCompile Include="TuneStatus.cpp">
@@ -185,7 +185,7 @@
             <DependentOn>UserTuneExceptionFrm.h</DependentOn>
             <BuildOrder>7</BuildOrder>
         </CppCompile>
-        <FormResources Include="MainFrm.dfm"/>
+        <FormResources Include="SettingsFrm.dfm"/>
         <FormResources Include="UserTuneExceptionFrm.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
