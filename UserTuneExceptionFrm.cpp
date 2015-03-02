@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-// Copyright (C) 2009-2013 Krzysztof Grochocki
+// Copyright (C) 2009-2015 Krzysztof Grochocki
 //
 // This file is part of TuneStatus
 //
@@ -47,96 +47,96 @@ __fastcall TUserTuneExceptionForm::TUserTuneExceptionForm(TComponent* Owner)
 
 void __fastcall TUserTuneExceptionForm::WMTransparency(TMessage &Message)
 {
-  Application->ProcessMessages();
-  if(SkinManagerEnabled) sSkinProvider->BorderForm->UpdateExBordersPos(true,(int)Message.LParam);
+	Application->ProcessMessages();
+	if(SkinManagerEnabled) sSkinProvider->BorderForm->UpdateExBordersPos(true,(int)Message.LParam);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TUserTuneExceptionForm::FormShow(TObject *Sender)
 {
-  //Odczyt ustawien
-  aLoadSettings->Execute();
+	//Odczyt ustawien
+	aLoadSettings->Execute();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TUserTuneExceptionForm::aExitExecute(TObject *Sender)
 {
-  Close();
+	Close();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TUserTuneExceptionForm::SaveButtonClick(TObject *Sender)
 {
-  //Zapis ustawien
-  aSaveSettings->Execute();
-  //Odswiezenie wyjatkow w rdzeniu wtyczki
-  RefreshUserTuneException();
-  //Zamkniecie formy
-  Close();
+	//Zapis ustawien
+	aSaveSettings->Execute();
+	//Odswiezenie wyjatkow w rdzeniu wtyczki
+	RefreshUserTuneException();
+	//Zamkniecie formy
+	Close();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TUserTuneExceptionForm::AddButtonClick(TObject *Sender)
 {
-  UnicodeString JID;
-  if(InputQuery("Nowy wyj¹tek","Identyfikator kontaktu:",JID))
-  {
-	if(!JID.IsEmpty())
+	UnicodeString JID;
+	if(InputQuery("Nowy wyj¹tek","Identyfikator kontaktu:",JID))
 	{
-	  JIDListBox->Items->Add(JID);
-	  SaveButton->Enabled = true;
+		if(!JID.IsEmpty())
+		{
+			JIDListBox->Items->Add(JID);
+			SaveButton->Enabled = true;
+		}
 	}
-  }
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TUserTuneExceptionForm::JIDListBoxClick(TObject *Sender)
 {
-  if(JIDListBox->ItemIndex!=-1)
-   DeleteButton->Enabled = true;
-  else
-   DeleteButton->Enabled = false;
+	if(JIDListBox->ItemIndex!=-1)
+		DeleteButton->Enabled = true;
+	else
+		DeleteButton->Enabled = false;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TUserTuneExceptionForm::DeleteButtonClick(TObject *Sender)
 {
-  //Usuniecie zaznaczonego elementu
-  JIDListBox->DeleteSelected();
-  //Wylaczenie przycisku
-  DeleteButton->Enabled = false;
-  //Wlaczenie mozlisci zapisu ustawien
-  SaveButton->Enabled = true;
+	//Usuniecie zaznaczonego elementu
+	JIDListBox->DeleteSelected();
+	//Wylaczenie przycisku
+	DeleteButton->Enabled = false;
+	//Wlaczenie mozlisci zapisu ustawien
+	SaveButton->Enabled = true;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TUserTuneExceptionForm::aLoadSettingsExecute(TObject *Sender)
 {
-  JIDListBox->Clear();
-  TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
-  TStringList *JIDList = new TStringList;
-  Ini->ReadSection("UserTuneEx",JIDList);
-  int JIDListCount = JIDList->Count;
-  delete JIDList;
-  if(JIDListCount>0)
-  {
-	for(int Count=0;Count<JIDListCount;Count++)
+	JIDListBox->Clear();
+	TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
+	TStringList *JIDList = new TStringList;
+	Ini->ReadSection("UserTuneEx",JIDList);
+	int JIDListCount = JIDList->Count;
+	delete JIDList;
+	if(JIDListCount>0)
 	{
-	  UnicodeString JID = Ini->ReadString("UserTuneEx",("JID"+IntToStr(Count+1)), "");
-	  if(!JID.IsEmpty()) JIDListBox->Items->Add(JID);
-    }
-  }
-  delete Ini;
+		for(int Count=0;Count<JIDListCount;Count++)
+		{
+			UnicodeString JID = Ini->ReadString("UserTuneEx",("JID"+IntToStr(Count+1)), "");
+			if(!JID.IsEmpty()) JIDListBox->Items->Add(JID);
+		}
+	}
+	delete Ini;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TUserTuneExceptionForm::aSaveSettingsExecute(TObject *Sender)
 {
-  TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
-  Ini->EraseSection("UserTuneEx");
-  if(JIDListBox->Count!=0)
-   for(int Count=0;Count<JIDListBox->Count;Count++)
+	TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
+	Ini->EraseSection("UserTuneEx");
+	if(JIDListBox->Count!=0)
+		for(int Count=0;Count<JIDListBox->Count;Count++)
 	Ini->WriteString("UserTuneEx",("JID"+IntToStr(Count+1)),JIDListBox->Items->Strings[Count]);
-  delete Ini;
+	delete Ini;
 }
 //---------------------------------------------------------------------------
