@@ -79,9 +79,9 @@
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <IncludePath>$(BDSINCLUDE)\windows\vcl;$(IncludePath)</IncludePath>
         <VerInfo_MajorVer>2</VerInfo_MajorVer>
-        <VerInfo_Keys>FileVersion=2.6.0.0;ProductName=TuneStatus;ProductVersion=2.0.0.0;CompanyName=Beherit Development;LegalCopyright=Krzysztof Grochocki;LegalTrademarks=Krzysztof Grochocki</VerInfo_Keys>
+        <VerInfo_Keys>FileVersion=2.7.0.0;ProductName=TuneStatus;ProductVersion=2.0.0.0;CompanyName=Beherit Development;LegalCopyright=Krzysztof Grochocki;LegalTrademarks=Krzysztof Grochocki</VerInfo_Keys>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_MinorVer>6</VerInfo_MinorVer>
+        <VerInfo_MinorVer>7</VerInfo_MinorVer>
         <PackageImports>acnt_R;adortl;bcbie;bcbsmp;bdertl;bindcomp;bindcompdbx;bindcompfmx;bindcompvcl;bindengine;CustomIPTransport;DataSnapFireDAC;dbexpress;dbrtl;dbxcds;DbxClientDriver;DbxCommonDriver;DBXInterBaseDriver;DBXMySQLDriver;DBXSqliteDriver;dsnap;dsnapcon;FireDAC;FireDACADSDriver;FireDACASADriver;FireDACCommon;FireDACCommonDriver;FireDACDb2Driver;FireDACDBXDriver;FireDACDSDriver;FireDACIBDriver;FireDACInfxDriver;FireDACMSAccDriver;FireDACMSSQLDriver;FireDACMySQLDriver;FireDACODBCDriver;FireDACOracleDriver;FireDACPgDriver;FireDACSqliteDriver;fmx;fmxase;fmxdae;fmxFireDAC;fmxobj;FMXTee;FmxTeeUI;IndyCore;IndyIPClient;IndyIPCommon;IndyIPServer;IndyProtocols;IndySystem;inet;inetdb;inetdbbde;inetdbxpress;MetropolisUILiveTile;RESTBackendComponents;RESTComponents;rtl;soapmidas;soaprtl;soapserver;svn;Tee;TeeDB;TeeUI;tethering;vcl;vclactnband;vcldb;vcldbx;vcldsnap;vclFireDAC;vclie;vclimg;VCLRESTComponents;vclribbon;VclSmp;vcltouch;vclx;xmlrtl;$(PackageImports)</PackageImports>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
@@ -90,8 +90,8 @@
         <IncludePath>$(BDSINCLUDE)\windows\vcl;$(IncludePath)</IncludePath>
         <BCC_PCHName_Clang>TuneStatus.h</BCC_PCHName_Clang>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>FileVersion=2.6.0.0;ProductName=TuneStatus;ProductVersion=2.0.0.0;CompanyName=Beherit Development;LegalCopyright=Krzysztof Grochocki;LegalTrademarks=Krzysztof Grochocki</VerInfo_Keys>
-        <VerInfo_MinorVer>6</VerInfo_MinorVer>
+        <VerInfo_Keys>FileVersion=2.7.0.0;ProductName=TuneStatus;ProductVersion=2.0.0.0;CompanyName=Beherit Development;LegalCopyright=Krzysztof Grochocki;LegalTrademarks=Krzysztof Grochocki</VerInfo_Keys>
+        <VerInfo_MinorVer>7</VerInfo_MinorVer>
         <PackageImports>acnt_R;adortl;bindcomp;bindcompdbx;bindcompfmx;bindcompvcl;bindengine;CustomIPTransport;DataSnapFireDAC;dbexpress;dbrtl;dbxcds;DbxClientDriver;DbxCommonDriver;DBXInterBaseDriver;DBXMySQLDriver;DBXSqliteDriver;dsnap;dsnapcon;FireDAC;FireDACADSDriver;FireDACASADriver;FireDACCommon;FireDACCommonDriver;FireDACDb2Driver;FireDACDBXDriver;FireDACDSDriver;FireDACIBDriver;FireDACInfxDriver;FireDACMSAccDriver;FireDACMSSQLDriver;FireDACMySQLDriver;FireDACODBCDriver;FireDACOracleDriver;FireDACPgDriver;FireDACSqliteDriver;fmx;fmxase;fmxdae;fmxFireDAC;fmxobj;FMXTee;FmxTeeUI;IndyCore;IndyIPClient;IndyIPCommon;IndyIPServer;IndyProtocols;IndySystem;inet;inetdb;inetdbxpress;MetropolisUILiveTile;RESTBackendComponents;RESTComponents;rtl;soapmidas;soaprtl;soapserver;Tee;TeeDB;TeeUI;tethering;vcl;vclactnband;vcldb;vcldsnap;vclFireDAC;vclie;vclimg;VCLRESTComponents;vclribbon;VclSmp;vcltouch;vclx;xmlrtl;$(PackageImports)</PackageImports>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
@@ -118,16 +118,16 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_MinorVer>6</VerInfo_MinorVer>
+        <VerInfo_MinorVer>7</VerInfo_MinorVer>
         <VerInfo_MajorVer>2</VerInfo_MajorVer>
-        <VerInfo_Keys>FileVersion=2.6.0.0;ProductName=TuneStatus;ProductVersion=2.0.0.0;CompanyName=Beherit Development;LegalCopyright=Krzysztof Grochocki;LegalTrademarks=Krzysztof Grochocki</VerInfo_Keys>
+        <VerInfo_Keys>FileVersion=2.7.0.0;ProductName=TuneStatus;ProductVersion=2.0.0.0;CompanyName=Beherit Development;LegalCopyright=Krzysztof Grochocki;LegalTrademarks=Krzysztof Grochocki</VerInfo_Keys>
         <LinkPackageImports>rtl.bpi;vcl.bpi;IndyProtocols.bpi;IndyCore.bpi;IndySystem.bpi</LinkPackageImports>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MajorVer>2</VerInfo_MajorVer>
-        <VerInfo_Keys>FileVersion=2.6.0.0;ProductName=TuneStatus;ProductVersion=2.0.0.0;CompanyName=Beherit Development;LegalCopyright=Krzysztof Grochocki;LegalTrademarks=Krzysztof Grochocki</VerInfo_Keys>
-        <VerInfo_MinorVer>6</VerInfo_MinorVer>
+        <VerInfo_Keys>FileVersion=2.7.0.0;ProductName=TuneStatus;ProductVersion=2.0.0.0;CompanyName=Beherit Development;LegalCopyright=Krzysztof Grochocki;LegalTrademarks=Krzysztof Grochocki</VerInfo_Keys>
+        <VerInfo_MinorVer>7</VerInfo_MinorVer>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <Defines>NDEBUG;$(Defines)</Defines>
@@ -136,8 +136,8 @@
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <LinkPackageStatics>rtl.lib;vcl.lib;IndyProtocols.lib;IndyCore.lib;IndySystem.lib;acnt_R.lib;vclimg.lib;vclx.lib;xmlrtl.lib</LinkPackageStatics>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>FileVersion=2.6.0.0;ProductName=TuneStatus;ProductVersion=2.0.0.0;CompanyName=Beherit Development;LegalCopyright=Krzysztof Grochocki;LegalTrademarks=Krzysztof Grochocki</VerInfo_Keys>
-        <VerInfo_MinorVer>6</VerInfo_MinorVer>
+        <VerInfo_Keys>FileVersion=2.7.0.0;ProductName=TuneStatus;ProductVersion=2.0.0.0;CompanyName=Beherit Development;LegalCopyright=Krzysztof Grochocki;LegalTrademarks=Krzysztof Grochocki</VerInfo_Keys>
+        <VerInfo_MinorVer>7</VerInfo_MinorVer>
         <VerInfo_MajorVer>2</VerInfo_MajorVer>
         <ILINK_LibraryPath>$(BDS)\lib\win32\release\;C:\Users\Public\Documents\Embarcadero\Studio\15.0\Dcp\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
     </PropertyGroup>
@@ -146,9 +146,9 @@
         <ILINK_LibraryPath>C:\Users\Public\Documents\Embarcadero\Studio\15.0\Dcp\Win64\;$(BDS)\lib\win64\release\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MajorVer>2</VerInfo_MajorVer>
-        <VerInfo_MinorVer>6</VerInfo_MinorVer>
+        <VerInfo_MinorVer>7</VerInfo_MinorVer>
         <BCC_PCHName_Clang>TuneStatus.h</BCC_PCHName_Clang>
-        <VerInfo_Keys>FileVersion=2.6.0.0;ProductName=TuneStatus;ProductVersion=2.0.0.0;CompanyName=Beherit Development;LegalCopyright=Krzysztof Grochocki;LegalTrademarks=Krzysztof Grochocki</VerInfo_Keys>
+        <VerInfo_Keys>FileVersion=2.7.0.0;ProductName=TuneStatus;ProductVersion=2.0.0.0;CompanyName=Beherit Development;LegalCopyright=Krzysztof Grochocki;LegalTrademarks=Krzysztof Grochocki</VerInfo_Keys>
     </PropertyGroup>
     <ItemGroup>
         <RcItem Include="Data\TuneStatus.dll.png">

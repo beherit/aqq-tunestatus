@@ -2321,7 +2321,7 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
 {
 	PluginInfo.cbSize = sizeof(TPluginInfo);
 	PluginInfo.ShortName = L"TuneStatus";
-	PluginInfo.Version = PLUGIN_MAKE_VERSION(2,6,0,0);
+	PluginInfo.Version = PLUGIN_MAKE_VERSION(2,7,0,0);
 	PluginInfo.Description = L"Informuje naszych znajomych o tym, co aktualnie s³uchamy w odtwarzaczu plików audio. Informowanie odbywa siê poprzez zmianê naszego opisu oraz opcjonalnie poprzez wysy³anie notyfikacji User Tune (XEP-0118) w sieci XMPP.";
 	PluginInfo.Author = L"Krzysztof Grochocki";
 	PluginInfo.AuthorMail = L"kontakt@beherit.pl";
