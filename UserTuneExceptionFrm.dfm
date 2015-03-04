@@ -1,4 +1,5 @@
 object UserTuneExceptionForm: TUserTuneExceptionForm
+  Tag = 1
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]
@@ -14,6 +15,7 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
   Font.Style = []
   OldCreateOrder = False
   Position = poOwnerFormCenter
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -27,6 +29,7 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
     ExplicitTop = 177
   end
   object SaveButton: TsButton
+    Tag = 2
     Left = 153
     Top = 181
     Width = 75
@@ -52,6 +55,7 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
     TabOrder = 1
     SkinData.SkinSection = 'PAGECONTROL'
     object InfoLabel: TsLabel
+      Tag = 4
       Left = 29
       Top = 8
       Width = 161
@@ -78,6 +82,7 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
       SkinData.SkinSection = 'EDIT'
     end
     object AddButton: TsButton
+      Tag = 5
       Left = 8
       Top = 129
       Width = 75
@@ -100,6 +105,7 @@ object UserTuneExceptionForm: TUserTuneExceptionForm
     end
   end
   object CancelButton: TsButton
+    Tag = 3
     Left = 72
     Top = 181
     Width = 75

@@ -1,4 +1,5 @@
 object SettingsForm: TSettingsForm
+  Tag = 1
   Left = 0
   Top = 0
   ActiveControl = AutoModeCheckListBoxPreview
@@ -166,6 +167,7 @@ object SettingsForm: TSettingsForm
     ExplicitWidth = 309
   end
   object SaveButton: TsButton
+    Tag = 2
     Left = 230
     Top = 316
     Width = 75
@@ -177,6 +179,7 @@ object SettingsForm: TSettingsForm
     SkinData.SkinSection = 'BUTTON'
   end
   object PageControl: TsPageControl
+    Tag = 6
     AlignWithMargins = True
     Left = 6
     Top = 6
@@ -186,20 +189,27 @@ object SettingsForm: TSettingsForm
     Margins.Top = 6
     Margins.Right = 6
     Margins.Bottom = 6
-    ActivePage = HandlingTabSheet
+    ActivePage = PlayersTabSheet
     Align = alClient
     TabOrder = 0
     SkinData.SkinSection = 'PAGECONTROL'
-    object HandlingTabSheet: TsTabSheet
-      Caption = 'Obs'#322'uga'
+    object PlayersTabSheet: TsTabSheet
+      Tag = 5
+      Caption = 'Odtwarzacze'
       SkinData.CustomColor = False
       SkinData.CustomFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object AutoModeInfoLabel: TsLabel
-        Left = 21
+        Tag = 8
+        Left = 7
         Top = 8
-        Width = 252
+        Width = 277
         Height = 39
         Alignment = taCenter
+        AutoSize = False
         Caption = 
           'Wybierz odtwarzacze, kt'#243're ma obs'#322'ugiwa'#263' wtyczka, oraz okre'#347'l ic' +
           'h kolejno'#347#263' przy u'#380'yciu metody przeci'#261'gania, co zdecyduje o ich ' +
@@ -256,16 +266,19 @@ object SettingsForm: TSettingsForm
         OnClickCheck = aAllowApplyExecute
       end
       object ResetButton: TsButton
+        Tag = 9
         Left = 57
         Top = 237
         Width = 75
         Height = 25
-        Action = aResetSettings
+        Caption = 'Resetuj'
         TabOrder = 1
+        OnClick = aResetSettingsExecute
         SkinData.SkinSection = 'BUTTON'
       end
     end
     object StatusTabSheet: TsTabSheet
+      Tag = 6
       Caption = 'Zmiana opisu'
       ImageIndex = 1
       SkinData.CustomColor = False
@@ -275,6 +288,7 @@ object SettingsForm: TSettingsForm
       ExplicitWidth = 0
       ExplicitHeight = 0
       object SetStatuslLabel: TsLabel
+        Tag = 14
         Left = 150
         Top = 140
         Width = 116
@@ -288,7 +302,8 @@ object SettingsForm: TSettingsForm
         Font.Style = []
       end
       object TagsBox: TsComboBox
-        Left = 17
+        Tag = 11
+        Left = 18
         Top = 32
         Width = 256
         Height = 21
@@ -304,27 +319,17 @@ object SettingsForm: TSettingsForm
         BoundLabel.UseSkinColor = True
         SkinData.SkinSection = 'COMBOBOX'
         VerticalAlignment = taAlignTop
-        Style = csDropDownList
-        Font.Charset = EASTEUROPE_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
+        Style = csOwnerDrawFixed
+        ItemHeight = 15
         ItemIndex = -1
-        ParentFont = False
         TabOrder = 1
         OnCloseUp = TagsBoxCloseUp
         OnSelect = TagsBoxSelect
+        OnDrawItem = TagsBoxDrawItem
         OnDropDown = TagsBoxDropDown
-        Items.Strings = (
-          'CC_TUNESTATUS        (pobrany utw'#243'r)'
-          'CC_STARTSTATUS      (opis pocz'#261'tkowy)'
-          'CC_PLUGINVERSION   (wersja TuneStatus)'
-          'CC_AQQVERSION        (wersja AQQ)'
-          '--------Tylko dla wybranych odtwarzaczy--------'
-          'CC_SONGLENGTH       (d'#322'ugo'#347#263' utworu [mm:ss])')
       end
       object PreviewStatusMemo: TsMemo
+        Tag = 12
         Left = 18
         Top = 59
         Width = 256
@@ -354,6 +359,7 @@ object SettingsForm: TSettingsForm
         SkinData.SkinSection = 'EDIT'
       end
       object SetStatusSpin: TsSpinEdit
+        Tag = 13
         Left = 106
         Top = 137
         Width = 38
@@ -384,11 +390,12 @@ object SettingsForm: TSettingsForm
         Value = 5
       end
       object EnableOnStartCheckBox: TsCheckBox
+        Tag = 16
         Left = 6
         Top = 198
         Width = 211
         Height = 20
-        Caption = 'Aktywuj funkcj'#281' zmian'#281' opisu na starcie'
+        Caption = 'Aktywuj funkcj'#281' zmiany opisu na starcie'
         TabOrder = 6
         OnClick = aAllowApplyExecute
         SkinData.SkinSection = 'CHECKBOX'
@@ -396,6 +403,7 @@ object SettingsForm: TSettingsForm
         ImgUnchecked = 0
       end
       object FastAccessCheckBox: TsCheckBox
+        Tag = 17
         Left = 6
         Top = 224
         Width = 260
@@ -414,11 +422,12 @@ object SettingsForm: TSettingsForm
         WordWrap = True
       end
       object AutoTurnOffCheckBox: TsCheckBox
+        Tag = 15
         Left = 6
         Top = 164
         Width = 190
         Height = 28
-        Caption = 'Wy'#322#261'cz funkcj'#281' zmiany opisu kiedy utw'#243'r nie zmienia si'#281' od (min)'
+        Caption = 'Wy'#322#261'cz funkcj'#281' zmiany opisu, gdy utw'#243'r nie zmienia si'#281' od (min)'
         AutoSize = False
         TabOrder = 4
         OnClick = AutoTurnOffCheckBoxClick
@@ -456,11 +465,12 @@ object SettingsForm: TSettingsForm
         Value = 5
       end
       object RunPluginCheckBox: TsCheckBox
+        Tag = 10
         Left = 18
         Top = 6
         Width = 256
         Height = 20
-        Caption = 'W'#322#261'cz/wy'#322#261'cz funkcj'#281' zmiany opisu'
+        Caption = 'W'#322#261'cz funkcj'#281' zmiany opisu'
         AutoSize = False
         TabOrder = 0
         OnClick = RunPluginCheckBoxClick
@@ -471,6 +481,7 @@ object SettingsForm: TSettingsForm
       end
     end
     object UserTuneTabSheet: TsTabSheet
+      Tag = 7
       Caption = 'User Tune'
       ImageIndex = 3
       SkinData.CustomColor = False
@@ -480,15 +491,17 @@ object SettingsForm: TSettingsForm
       ExplicitWidth = 0
       ExplicitHeight = 0
       object UserTuneLabel: TsLabel
-        Left = 25
+        Tag = 25
+        Left = 14
         Top = 174
-        Width = 242
+        Width = 264
         Height = 39
         Alignment = taCenter
+        AutoSize = False
         Caption = 
           'Obs'#322'uga User Tune (XEP-0118) jest przeznaczona tylko i wy'#322#261'cznie' +
-          ' dla sieci Jabber. Funkcja jest niezale'#380'na od aktywacji funkcji ' +
-          'zmiany opisu!'
+          ' dla sieci XMPP. Funkcja jest niezale'#380'na od aktywacji funkcji zm' +
+          'iany opisu.'
         Enabled = False
         ParentFont = False
         WordWrap = True
@@ -499,6 +512,7 @@ object SettingsForm: TSettingsForm
         Font.Style = []
       end
       object UserTuneSendLabel: TsLabel
+        Tag = 20
         Left = 130
         Top = 43
         Width = 116
@@ -506,6 +520,7 @@ object SettingsForm: TSettingsForm
         Caption = 's od rozpocz'#281'cia utworu'
       end
       object UserTuneNotificationCheckBox: TsCheckBox
+        Tag = 22
         Left = 6
         Top = 101
         Width = 194
@@ -520,6 +535,7 @@ object SettingsForm: TSettingsForm
         WordWrap = True
       end
       object UserTuneNotificationSpin: TsSpinEdit
+        Tag = 24
         Left = 187
         Top = 139
         Width = 38
@@ -544,9 +560,10 @@ object SettingsForm: TSettingsForm
         Value = 6
       end
       object UserTuneSendCheckBox: TsCheckBox
+        Tag = 18
         Left = 6
         Top = 6
-        Width = 227
+        Width = 208
         Height = 28
         Caption = 'Informuj znajomych o aktualnie s'#322'uchanym utworze muzycznym'
         AutoSize = False
@@ -558,6 +575,7 @@ object SettingsForm: TSettingsForm
         WordWrap = True
       end
       object UserTuneSendSpin: TsSpinEdit
+        Tag = 19
         Left = 86
         Top = 40
         Width = 38
@@ -582,16 +600,18 @@ object SettingsForm: TSettingsForm
         Value = 5
       end
       object UserTuneExceptionButton: TsButton
+        Tag = 23
         Left = 206
         Top = 105
         Width = 68
         Height = 20
-        Caption = 'Wyj'#261'tki...'
+        Caption = 'Wyj'#261'tki'
         TabOrder = 5
         OnClick = UserTuneExceptionButtonClick
         SkinData.SkinSection = 'BUTTON'
       end
       object AutoTurnOffUserTuneSendCheckBox: TsCheckBox
+        Tag = 21
         Left = 22
         Top = 67
         Width = 167
@@ -636,6 +656,7 @@ object SettingsForm: TSettingsForm
     end
   end
   object OkButton: TsButton
+    Tag = 4
     Left = 68
     Top = 316
     Width = 75
@@ -645,7 +666,8 @@ object SettingsForm: TSettingsForm
     OnClick = OkButtonClick
     SkinData.SkinSection = 'BUTTON'
   end
-  object CancelButton: TButton
+  object CancelButton: TsButton
+    Tag = 3
     Left = 149
     Top = 316
     Width = 75
@@ -653,10 +675,11 @@ object SettingsForm: TSettingsForm
     Caption = 'Anuluj'
     TabOrder = 2
     OnClick = aExitExecute
+    SkinData.SkinSection = 'BUTTON'
   end
   object ActionList: TActionList
-    Left = 187
-    Top = 272
+    Left = 219
+    Top = 288
     object aLoadSettings: TAction
       Caption = 'aLoadSettings'
       OnExecute = aLoadSettingsExecute
@@ -690,24 +713,27 @@ object SettingsForm: TSettingsForm
   end
   object FoobarPopupMenu: TPopupMenu
     Left = 280
-    Top = 256
+    Top = 192
     object FoobarDownload: TMenuItem
-      Caption = 'Pobierz wtyczk'#281
+      Tag = 26
+      Caption = 'Pobierz plugin'
       OnClick = FoobarDownloadClick
     end
   end
   object WMPPopupMenu: TPopupMenu
     Left = 280
-    Top = 192
+    Top = 224
     object WMPDownload: TMenuItem
+      Tag = 26
       Caption = 'Pobierz plugin'
       OnClick = WMPDownloadClick
     end
   end
   object iTunesPopupMenu: TPopupMenu
     Left = 280
-    Top = 224
+    Top = 256
     object iTunesDownload: TMenuItem
+      Tag = 26
       Caption = 'Pobierz plugin'
       OnClick = iTunesDownloadClick
     end
@@ -715,6 +741,7 @@ object SettingsForm: TSettingsForm
       Caption = '-'
     end
     object iTunesPluginPath: TMenuItem
+      Tag = 27
       Caption = #346'cie'#380'ka dla pluginu'
       OnClick = iTunesPluginPathClick
     end
@@ -756,8 +783,8 @@ object SettingsForm: TSettingsForm
     ThirdParty.ThirdStaticText = ' '
     ThirdParty.ThirdNativePaint = ' '
     OnSysDlgInit = sSkinManagerSysDlgInit
-    Left = 256
-    Top = 272
+    Left = 280
+    Top = 288
   end
   object sSkinProvider: TsSkinProvider
     AddedTitle.Font.Charset = DEFAULT_CHARSET
@@ -767,7 +794,7 @@ object SettingsForm: TSettingsForm
     AddedTitle.Font.Style = []
     SkinData.SkinSection = 'FORM'
     TitleButtons = <>
-    Left = 224
-    Top = 272
+    Left = 248
+    Top = 288
   end
 end
