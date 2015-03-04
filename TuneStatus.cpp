@@ -510,9 +510,7 @@ bool CALLBACK FindVLC(HWND hWnd, LPARAM lParam)
 			GetWindowTextW(hWnd, WindowCaptionNameW, sizeof(WindowCaptionNameW));
 			WindowCaptionName = WindowCaptionNameW;
 			//Sprawdzenie tekstu okna
-			if((WindowCaptionName!="vlc")
-			&&(WindowCaptionName!="O programie")
-			&&(WindowCaptionName!=""))
+			if(WindowCaptionName.Pos("VLC media player"))
 			{
 				//Przypisanie uchwytu
 				VLCWindowHwnd = hWnd;
