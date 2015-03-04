@@ -111,6 +111,7 @@ UnicodeString GetDataFromaTunes();
 UnicodeString GetDataFromVLC();
 UnicodeString GetDataFromSpotify();
 //FORWARD-AQQ-HOOKS----------------------------------------------------------
+INT_PTR __stdcall OnColorChange(WPARAM wParam, LPARAM lParam);
 INT_PTR __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam);
 INT_PTR __stdcall OnCurrentSong(WPARAM wParam, LPARAM lParam);
 INT_PTR __stdcall OnLangCodeChanged(WPARAM wParam, LPARAM lParam);
@@ -1593,6 +1594,26 @@ LRESULT CALLBACK TimerFrmProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 }
 //---------------------------------------------------------------------------
 
+//Hook na zmiane kolorystyki AlphaControls
+INT_PTR __stdcall OnColorChange(WPARAM wParam, LPARAM lParam)
+{
+	//Okno ustawien zostalo juz stworzone
+	if(hSettingsForm)
+	{
+		//Wlaczona zaawansowana stylizacja okien
+		if(ChkSkinEnabled())
+		{
+			TPluginColorChange ColorChange = *(PPluginColorChange)wParam;
+			hSettingsForm->sSkinManager->HueOffset = ColorChange.Hue;
+			hSettingsForm->sSkinManager->Saturation = ColorChange.Saturation;
+			hSettingsForm->sSkinManager->Brightness = ColorChange.Brightness;
+		}
+	}
+
+	return 0;
+}
+//---------------------------------------------------------------------------
+
 //Hook na zmianê stanu kontaktu
 INT_PTR __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam)
 {
@@ -2171,6 +2192,8 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Load(PPluginLink Link)
 	PluginLink.CreateServiceFunction(L"sTuneStatusFastSettingsItem",ServiceTuneStatusFastSettingsItem);
 	//Tworzenie serwisu dla szybkiego dostep do ustawien wtyczki
 	PluginLink.CreateServiceFunction(L"sTuneStatusFastOperationItem",ServiceTuneStatusFastOperationItem);
+	//Hook na zmiane kolorystyki AlphaControls
+	PluginLink.HookEvent(AQQ_SYSTEM_COLORCHANGEV2,OnColorChange);
 	//Hook na zmianê stanu kontaktu
 	PluginLink.HookEvent(AQQ_CONTACTS_UPDATE,OnContactsUpdate);
 	//Hook na przekazywanie utworu przez wtyczki np. AQQ Radio
@@ -2280,6 +2303,7 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Unload()
 	PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(FASTACCESS_OFF));
 	PluginLink.CallService(AQQ_ICONS_DESTROYPNGICON,0,(LPARAM)(FASTACCESS_ON));
 	//Wyladowanie hookow
+	PluginLink.UnhookEvent(OnColorChange);
 	PluginLink.UnhookEvent(OnContactsUpdate);
 	PluginLink.UnhookEvent(OnCurrentSong);
 	PluginLink.UnhookEvent(OnLangCodeChanged);
