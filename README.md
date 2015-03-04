@@ -1,5 +1,5 @@
 # TuneStatus
-TuneStatus jest wtyczką do komunikatora [AQQ](http://www.aqq.eu/pl.php). Służy do informowania naszych znajomych o tym co aktualnie słuchamy w odtwarzaczu plików audio. Informowanie odbywa się poprzez zmianę naszego opisu oraz opcjonalnie poprzez wysyłanie notyfikacji User Tune (XEP-0118) w sieci Jabber.
+TuneStatus jest wtyczką do komunikatora [AQQ](http://www.aqq.eu/pl.php). Informuje naszych znajomych o tym, co aktualnie słuchamy w odtwarzaczu plików audio. Informowanie odbywa się poprzez zmianę naszego opisu oraz opcjonalnie poprzez wysyłanie notyfikacji User Tune (XEP-0118) w sieci XMPP.
 
 ### Wymagania
 Do skompilowania wtyczki potrzebne jest:
@@ -20,7 +20,7 @@ Wtyczka TuneStatus objęta jest licencją [GNU General Public License 3](http://
 
 ~~~~
 TuneStatus
-Copyright (C) 2009-2014  Krzysztof Grochocki
+Copyright (C) 2009-2015  Krzysztof Grochocki
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

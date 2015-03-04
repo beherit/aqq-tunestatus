@@ -1,1 +1,4 @@
-Wtyczka s³u¿y do informowania naszych znajomych o tym co aktualnie s³uchamy w odtwarzaczu plików audio. Informowanie odbywa siê poprzez zmianê naszego opisu oraz opcjonalnie poprzez wysy³anie notyfikacji User Tune (XEP-0118) w sieci Jabber.
+PL:
+Informuje naszych znajomych o tym, co aktualnie s³uchamy w odtwarzaczu plików audio. Informowanie odbywa siê poprzez zmianê naszego opisu oraz opcjonalnie poprzez wysy³anie notyfikacji User Tune (XEP-0118) w sieci XMPP.
+EN:
+Informs your friends about what currently you listen to in audio player. Informing is done by changing the status and optionally by sending notification User Tune (XEP-0118) in XMPP network.
