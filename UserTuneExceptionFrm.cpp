@@ -22,6 +22,7 @@
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #include <inifiles.hpp>
+#include <LangAPI.hpp>
 #pragma hdrstop
 #include "UserTuneExceptionFrm.h"
 #include "SettingsFrm.h"
@@ -52,6 +53,13 @@ void __fastcall TUserTuneExceptionForm::WMTransparency(TMessage &Message)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TUserTuneExceptionForm::FormCreate(TObject *Sender)
+{
+  //Lokalizowanie formy
+	LangForm(this);
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TUserTuneExceptionForm::FormShow(TObject *Sender)
 {
 	//Odczyt ustawien
@@ -79,7 +87,7 @@ void __fastcall TUserTuneExceptionForm::SaveButtonClick(TObject *Sender)
 void __fastcall TUserTuneExceptionForm::AddButtonClick(TObject *Sender)
 {
 	UnicodeString JID;
-	if(InputQuery("Nowy wyj¹tek","Identyfikator kontaktu:",JID))
+	if(InputQuery(GetLangStr("NewException"),GetLangStr("ContactJID"),JID))
 	{
 		if(!JID.IsEmpty())
 		{
@@ -140,3 +148,4 @@ void __fastcall TUserTuneExceptionForm::aSaveSettingsExecute(TObject *Sender)
 	delete Ini;
 }
 //---------------------------------------------------------------------------
+

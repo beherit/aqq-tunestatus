@@ -1,0 +1,9 @@
+DefaultStatus=I currently listening to: CC_TUNESTATUS
+NewException=New exception
+ContactJID=Contact JID:
+TagInfo=Select a tag to insert
+Plugins=Plugins (eg. AQQ Radio)
+FoobarInfo=For better performance it's recommended to install the plugin in Foobar2000
+WMPInfo=Needed to install the plugin in WMP
+iTunesInfo=Needed to install the plugin in iTunes
+iTunesPath=Path, needed to set plugin in iTunes, has been copied to clipboard.

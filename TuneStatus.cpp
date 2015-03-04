@@ -29,6 +29,7 @@
 #include <fstream>
 #include <IdHashMessageDigest.hpp>
 #include <PluginAPI.h>
+#include <LangAPI.hpp>
 #pragma hdrstop
 #include "SettingsFrm.h"
 
@@ -112,6 +113,7 @@ UnicodeString GetDataFromSpotify();
 //FORWARD-AQQ-HOOKS----------------------------------------------------------
 INT_PTR __stdcall OnContactsUpdate(WPARAM wParam, LPARAM lParam);
 INT_PTR __stdcall OnCurrentSong(WPARAM wParam, LPARAM lParam);
+INT_PTR __stdcall OnLangCodeChanged(WPARAM wParam, LPARAM lParam);
 INT_PTR __stdcall OnListReady(WPARAM wParam, LPARAM lParam);
 INT_PTR __stdcall OnPreSetNote(WPARAM wParam, LPARAM lParam);
 INT_PTR __stdcall OnReplyList(WPARAM wParam, LPARAM lParam);
@@ -1629,6 +1631,48 @@ INT_PTR __stdcall OnCurrentSong(WPARAM wParam, LPARAM lParam)
 }
 //---------------------------------------------------------------------------
 
+//Hook na zmiane lokalizacji
+INT_PTR __stdcall OnLangCodeChanged(WPARAM wParam, LPARAM lParam)
+{
+	//Zapamietanie starej stalej
+	UnicodeString PluginsStr = GetLangStr("Plugins");
+	//Czyszczenie cache lokalizacji
+	ClearLngCache();
+	//Pobranie sciezki do katalogu prywatnego uzytkownika
+	UnicodeString PluginUserDir = GetPluginUserDir();
+	//Ustawienie sciezki lokalizacji wtyczki
+	UnicodeString LangCode = (wchar_t*)lParam;
+	LangPath = PluginUserDir + "\\\\Languages\\\\TuneStatus\\\\" + LangCode + "\\\\";
+	if(!DirectoryExists(LangPath))
+	{
+		LangCode = (wchar_t*)PluginLink.CallService(AQQ_FUNCTION_GETDEFLANGCODE,0,0);
+		LangPath = PluginUserDir + "\\\\Languages\\\\TuneStatus\\\\" + LangCode + "\\\\";
+	}
+	//Aktualizacja lokalizacji form wtyczki
+	for(int i=0;i<Screen->FormCount;i++)
+		LangForm(Screen->Forms[i]);
+	//Zmiana stalych w komponentach na formie ustawien
+	if(hSettingsForm)
+	{
+    //Aktualizacja pozycji na liscie odtwarzaczy
+		if(hSettingsForm->AutoModeCheckListBoxPreview->Items->IndexOf(PluginsStr))
+			hSettingsForm->AutoModeCheckListBoxPreview->Items->Strings[hSettingsForm->AutoModeCheckListBoxPreview->Items->IndexOf(PluginsStr)] = GetLangStr("Plugins");
+		//Aktualizacja tekstu "Wybierz tag do wstawienia" w TagsBox
+		hSettingsForm->TagsBox->Items->Delete(5);
+		hSettingsForm->TagsBox->Items->Add(GetLangStr("TagInfo"));
+		hSettingsForm->TagsBox->ItemIndex = 5;
+	}
+	//Otwarcie pliku ustawien
+	TIniFile *Ini = new TIniFile(GetPluginUserDir() + "\\\\TuneStatus\\\\TuneStatus.ini");
+	//Ponowne wczytanie wygladu opisu
+	StatusLook = DecodeBase64(Ini->ReadString("Settings", "Status64", EncodeBase64(GetLangStr("DefaultStatus"))));
+	//Zamkniecie pliku ustawien
+	delete Ini;
+
+	return 0;
+}
+//---------------------------------------------------------------------------
+
 INT_PTR __stdcall OnListReady(WPARAM wParam, LPARAM lParam)
 {
 	//Wlaczono notyfikacje User Tune
@@ -1977,7 +2021,7 @@ void LoadSettings()
 		}
 	}
 	//Wyglad opisu
-	StatusLook = DecodeBase64(Ini->ReadString("Settings", "Status64", "T2JlY25pZSBzxYJ1Y2hhbTogQ0NfVFVORVNUQVRVUw=="));
+	StatusLook = DecodeBase64(Ini->ReadString("Settings", "Status64", EncodeBase64(GetLangStr("DefaultStatus"))));
 	//Opoznienie ustawiania nowego opisu
 	SetStatusDelayChk = 1000*Ini->ReadInteger("Settings", "SetStatusDelay", 5);
 	if(SetStatusDelayChk<4000) SetStatusDelayChk = 4000;
@@ -2042,6 +2086,54 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Load(PPluginLink Link)
 	PluginLink = *Link;
 	//Sciezka katalogu prywatnego wtyczek
 	UnicodeString PluginUserDir = GetPluginUserDir();
+	//Tworzenie katalogow lokalizacji
+	if(!DirectoryExists(PluginUserDir+"\\\\Languages"))
+		CreateDir(PluginUserDir+"\\\\Languages");
+	if(!DirectoryExists(PluginUserDir+"\\\\Languages\\\\TuneStatus"))
+		CreateDir(PluginUserDir+"\\\\Languages\\\\TuneStatus");
+	if(!DirectoryExists(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN"))
+		CreateDir(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN");
+	if(!DirectoryExists(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL"))
+		CreateDir(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL");
+	//Wypakowanie plikow lokalizacji
+	//E600EE7B1B41D263A0AED3C9445E2A66
+	if(!FileExists(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN\\\\Const.lng"))
+		ExtractRes((PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN\\\\Const.lng").w_str(),L"EN_CONST",L"DATA");
+	else if(MD5File(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN\\\\Const.lng")!="E600EE7B1B41D263A0AED3C9445E2A66")
+		ExtractRes((PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN\\\\Const.lng").w_str(),L"EN_CONST",L"DATA");
+	//A1279286CFA998598D331FAA8252B858
+	if(!FileExists(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN\\\\TSettingsForm.lng"))
+		ExtractRes((PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN\\\\TSettingsForm.lng").w_str(),L"EN_SETTINGSFRM",L"DATA");
+	else if(MD5File(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN\\\\TSettingsForm.lng")!="A1279286CFA998598D331FAA8252B858")
+		ExtractRes((PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN\\\\TSettingsForm.lng").w_str(),L"EN_SETTINGSFRM",L"DATA");
+	//6F6FDFB1BB8CCF2589A80FD431647FCD
+	if(!FileExists(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN\\\\TUserTuneExceptionForm.lng"))
+		ExtractRes((PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN\\\\TUserTuneExceptionForm.lng").w_str(),L"EN_USERTUNEEXCEPTIONFRM",L"DATA");
+	else if(MD5File(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN\\\\TUserTuneExceptionForm.lng")!="6F6FDFB1BB8CCF2589A80FD431647FCD")
+		ExtractRes((PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\EN\\\\TUserTuneExceptionForm.lng").w_str(),L"EN_USERTUNEEXCEPTIONFRM",L"DATA");
+	//081BBFA107B2945BA7ABA590114DBA2B
+	if(!FileExists(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL\\\\Const.lng"))
+		ExtractRes((PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL\\\\Const.lng").w_str(),L"PL_CONST",L"DATA");
+	else if(MD5File(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL\\\\Const.lng")!="081BBFA107B2945BA7ABA590114DBA2B")
+		ExtractRes((PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL\\\\Const.lng").w_str(),L"PL_CONST",L"DATA");
+	//ADDC54B458564AEE6406307992C29C02
+	if(!FileExists(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL\\\\TSettingsForm.lng"))
+		ExtractRes((PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL\\\\TSettingsForm.lng").w_str(),L"PL_SETTINGSFRM",L"DATA");
+	else if(MD5File(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL\\\\TSettingsForm.lng")!="ADDC54B458564AEE6406307992C29C02")
+		ExtractRes((PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL\\\\TSettingsForm.lng").w_str(),L"PL_SETTINGSFRM",L"DATA");
+	//50AF8AD865F6E47816178A9E9337CF42
+	if(!FileExists(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL\\\\TUserTuneExceptionForm.lng"))
+		ExtractRes((PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL\\\\TUserTuneExceptionForm.lng").w_str(),L"PL_USERTUNEEXCEPTIONFRM",L"DATA");
+	else if(MD5File(PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL\\\\TUserTuneExceptionForm.lng")!="50AF8AD865F6E47816178A9E9337CF42")
+		ExtractRes((PluginUserDir+"\\\\Languages\\\\TuneStatus\\\\PL\\\\TUserTuneExceptionForm.lng").w_str(),L"PL_USERTUNEEXCEPTIONFRM",L"DATA");
+	//Ustawienie sciezki lokalizacji wtyczki
+	UnicodeString LangCode = (wchar_t*)PluginLink.CallService(AQQ_FUNCTION_GETLANGCODE,0,0);
+	LangPath = PluginUserDir + "\\\\Languages\\\\TuneStatus\\\\" + LangCode + "\\\\";
+	if(!DirectoryExists(LangPath))
+	{
+		LangCode = (wchar_t*)PluginLink.CallService(AQQ_FUNCTION_GETDEFLANGCODE,0,0);
+		LangPath = PluginUserDir + "\\\\Languages\\\\TuneStatus\\\\" + LangCode + "\\\\";
+	}
 	//Tworzenie folderu wtyczki
 	if(!DirectoryExists(PluginUserDir + "\\\\TuneStatus"))
 		CreateDir(PluginUserDir + "\\\\TuneStatus");
@@ -2083,6 +2175,8 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Load(PPluginLink Link)
 	PluginLink.HookEvent(AQQ_CONTACTS_UPDATE,OnContactsUpdate);
 	//Hook na przekazywanie utworu przez wtyczki np. AQQ Radio
 	PluginLink.HookEvent(AQQ_SYSTEM_CURRENTSONG,OnCurrentSong);
+	//Hook na zmiane lokalizacji
+	PluginLink.HookEvent(AQQ_SYSTEM_LANGCODE_CHANGED,OnLangCodeChanged);
 	//Hook na zakonczenie ladowania listy kontaktow przy starcie AQQ
 	PluginLink.HookEvent(AQQ_CONTACTS_LISTREADY,OnListReady);
 	//Hook na reczna zmiane opisu
@@ -2188,6 +2282,7 @@ extern "C" INT_PTR __declspec(dllexport) __stdcall Unload()
 	//Wyladowanie hookow
 	PluginLink.UnhookEvent(OnContactsUpdate);
 	PluginLink.UnhookEvent(OnCurrentSong);
+	PluginLink.UnhookEvent(OnLangCodeChanged);
 	PluginLink.UnhookEvent(OnListReady);
 	PluginLink.UnhookEvent(OnPreSetNote);
 	PluginLink.UnhookEvent(OnReplyList);

@@ -23,6 +23,7 @@
 #include <vcl.h>
 #include <inifiles.hpp>
 #include <Clipbrd.hpp>
+#include <LangAPI.hpp>
 #pragma hdrstop
 #include "SettingsFrm.h"
 #include "UserTuneExceptionFrm.h"
@@ -82,6 +83,8 @@ void __fastcall TSettingsForm::WMTransparency(TMessage &Message)
 
 void __fastcall TSettingsForm::FormCreate(TObject *Sender)
 {
+	//Lokalizowanie formy
+	LangForm(this);
 	//Wlaczona zaawansowana stylizacja okien
 	if(ChkSkinEnabled())
 	{
@@ -137,26 +140,26 @@ void __fastcall TSettingsForm::FormShow(TObject *Sender)
 		AutoModeCheckListBoxPreview->Items->Add("iTunes");
 	if(AutoModeCheckListBoxPreview->Items->IndexOf("ALSong")==-1)
 		AutoModeCheckListBoxPreview->Items->Add("ALSong");
-	if(AutoModeCheckListBoxPreview->Items->IndexOf("Wtyczki (np. AQQ Radio)")==-1)
-		AutoModeCheckListBoxPreview->Items->Add("Wtyczki (np. AQQ Radio)");
+	if(AutoModeCheckListBoxPreview->Items->IndexOf(GetLangStr("Plugins"))==-1)
+		AutoModeCheckListBoxPreview->Items->Add(GetLangStr("Plugins"));
 	if(AutoModeCheckListBoxPreview->Items->IndexOf("Screamer Radio")==-1)
 		AutoModeCheckListBoxPreview->Items->Add("Screamer Radio");
 	if(AutoModeCheckListBoxPreview->Items->IndexOf("aTunes")==-1)
 		AutoModeCheckListBoxPreview->Items->Add("aTunes");
 	//Dodanie tekstu do TagsBox i ustawienie go jako element pokazywany
-	TagsBox->Items->Add("Wybierz tag do wstawienia");
-	TagsBox->ItemIndex = 6;
+	TagsBox->Items->Add(GetLangStr("TagInfo"));
+	TagsBox->ItemIndex = 5;
 	//Wylaczenie przycisku zastosuj
 	SaveButton->Enabled = false;
 	//Ustawienie domyslnej karty okna ustawien
-	PageControl->ActivePage = HandlingTabSheet;
+	PageControl->ActivePage = PlayersTabSheet;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TSettingsForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
 	//Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
-	TagsBox->Items->Delete(6);
+	TagsBox->Items->Delete(5);
 }
 //---------------------------------------------------------------------------
 
@@ -251,21 +254,21 @@ void __fastcall TSettingsForm::AutoModeCheckListBoxPreviewMouseMove(
 		//Foobar2000
 		if(AutoModeCheckListBoxPreview->Items->Strings[AutoModeCheckListBoxPreview->ItemAtPos(Point,true)]=="Foobar2000")
 		{
-			AutoModeCheckListBoxPreview->Hint = "Dla lepszego dzia³ania zaleca siê zainstalowaæ wtyczkê do Foobar2000";
+			AutoModeCheckListBoxPreview->Hint = GetLangStr("FoobarInfo");
 			AutoModeCheckListBoxPreview->PopupMenu = FoobarPopupMenu;
 			AutoModeCheckListBoxPreview->Cursor = crHelp;
 		}
 		//WMP
 		else if(AutoModeCheckListBoxPreview->Items->Strings[AutoModeCheckListBoxPreview->ItemAtPos(Point,true)]=="Windows Media Player")
 		{
-			AutoModeCheckListBoxPreview->Hint = "Dla wersji WMP powy¿ej 7 do ob³sugi potrzebny jest plugin w WMP";
+			AutoModeCheckListBoxPreview->Hint = GetLangStr("WMPInfo");
 			AutoModeCheckListBoxPreview->PopupMenu = WMPPopupMenu;
 			AutoModeCheckListBoxPreview->Cursor = crHelp;
 		}
 		//iTunes
 		else if(AutoModeCheckListBoxPreview->Items->Strings[AutoModeCheckListBoxPreview->ItemAtPos(Point,true)]=="iTunes")
 		{
-			AutoModeCheckListBoxPreview->Hint = "Do obs³ugi potrzebny jest plugin w iTunes";
+			AutoModeCheckListBoxPreview->Hint = GetLangStr("iTunesInfo");
 			AutoModeCheckListBoxPreview->PopupMenu = iTunesPopupMenu;
 			AutoModeCheckListBoxPreview->Cursor = crHelp;
 		}
@@ -303,9 +306,8 @@ void __fastcall TSettingsForm::TagsBoxCloseUp(TObject *Sender)
 	//Dodanie tekstu do TagsBox i ustawienie go jako element pokazywany
 	if(TagsBox->Text.IsEmpty())
 	{
-		TagsBox->Items->Delete(6);
-		TagsBox->Items->Add("Wybierz tag do wstawienia");
-		TagsBox->ItemIndex = 6;
+		TagsBox->Items->Add(GetLangStr("TagInfo"));
+		TagsBox->ItemIndex = 5;
 	}
 }
 //---------------------------------------------------------------------------
@@ -313,7 +315,7 @@ void __fastcall TSettingsForm::TagsBoxCloseUp(TObject *Sender)
 void __fastcall TSettingsForm::TagsBoxDropDown(TObject *Sender)
 {
 	//Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
-	TagsBox->Items->Delete(6);
+	TagsBox->Items->Delete(5);
 }
 //---------------------------------------------------------------------------
 
@@ -321,25 +323,24 @@ void __fastcall TSettingsForm::TagsBoxSelect(TObject *Sender)
 {
 	//Pobranie tekstu wybranego elementu
 	UnicodeString Tag = TagsBox->Text;
-	//Wybrany element rozny od elementu sztucznego
-	if(TagsBox->Text!="--------Tylko dla wybranych odtwarzaczy--------")
+	//Parsowanie wybranego tagu
+	Tag = Tag.Delete(Tag.Pos("("),Tag.Length());
+	Tag = Tag.Trim();
+	//Wybrany tag nie zostal juz wybrany
+	if(!PreviewStatusMemo->Text.Pos(Tag))
 	{
-		//Parsowanie wybranego tagu
-		Tag = Tag.Delete(Tag.Pos("("),Tag.Length());
-		Tag = Tag.Trim();
-		//Wybrany tag nie zostal juz wybrany
-		if(!PreviewStatusMemo->Text.Pos(Tag))
-		{
-			UnicodeString Before,After;
-			//Pobranie tekstu przed kusorem
-			Before = PreviewStatusMemo->Text.SubString(0,PreviewStatusMemo->SelStart);
-			//Pobranie tekstu po kursorze
-			After = PreviewStatusMemo->Text.SubString(PreviewStatusMemo->SelStart+1,(PreviewStatusMemo->Text).Length());
-			//Dodanie tagu miedzy tekst
-			PreviewStatusMemo->Clear();
-			PreviewStatusMemo->Text = Before + " " + Tag + " " + After;
-		}
+		UnicodeString Before,After;
+		//Pobranie tekstu przed kusorem
+		Before = PreviewStatusMemo->Text.SubString(0,PreviewStatusMemo->SelStart);
+		//Pobranie tekstu po kursorze
+		After = PreviewStatusMemo->Text.SubString(PreviewStatusMemo->SelStart+1,(PreviewStatusMemo->Text).Length());
+		//Dodanie tagu miedzy tekst
+		PreviewStatusMemo->Clear();
+		PreviewStatusMemo->Text = Before + Tag + After;
 	}
+	//Dodanie tekstu do TagsBox i ustawienie go jako element pokazywany
+	TagsBox->Items->Add(GetLangStr("TagInfo"));
+	TagsBox->ItemIndex = 5;
 }
 //---------------------------------------------------------------------------
 
@@ -405,7 +406,7 @@ void __fastcall TSettingsForm::aLoadSettingsExecute(TObject *Sender)
 			else if(StrToInt(PlayerID)==6) PlayerID = "Media Player Classic";
 			else if(StrToInt(PlayerID)==7) PlayerID = "iTunes";
 			else if(StrToInt(PlayerID)==8) PlayerID = "ALSong";
-			else if(StrToInt(PlayerID)==9) PlayerID = "Wtyczki (np. AQQ Radio)";
+			else if(StrToInt(PlayerID)==9) PlayerID = GetLangStr("Plugins");
 			else if(StrToInt(PlayerID)==10) PlayerID = "Screamer Radio";
 			else if(StrToInt(PlayerID)==11) PlayerID = "aTunes";
 			else if(StrToInt(PlayerID)==12) PlayerID = "FREE_ID";
@@ -423,7 +424,7 @@ void __fastcall TSettingsForm::aLoadSettingsExecute(TObject *Sender)
 	//Zapisywanie nowego stanu obslugiwanych odtwarzaczy
 	AutoModeListText = AutoModeCheckListBoxPreview->Items->Text;
 	//Wyglad opisu
-	PreviewStatusMemo->Text = DecodeBase64(Ini->ReadString("Settings", "Status64", "T2JlY25pZSBzxYJ1Y2hhbTogQ0NfVFVORVNUQVRVUw=="));
+	PreviewStatusMemo->Text = DecodeBase64(Ini->ReadString("Settings", "Status64", EncodeBase64(GetLangStr("DefaultStatus"))));
 	//Opoznienie w funkcji zmiany opisu
 	SetStatusSpin->Value = Ini->ReadInteger("Settings", "SetStatusDelay", 5);
 	//Automatyczne wylaczenie funkcji zmiany opisu przy bezczynnosci
@@ -470,7 +471,7 @@ void __fastcall TSettingsForm::aSaveSettingsExecute(TObject *Sender)
 		else if(Player=="Media Player Classic") Player = 6;
 		else if(Player=="iTunes") Player = 7;
 		else if(Player=="ALSong") Player = 8;
-		else if(Player=="Wtyczki (np. AQQ Radio)") Player = 9;
+		else if(Player==GetLangStr("Plugins")) Player = 9;
 		else if(Player=="Screamer Radio") Player = 10;
 		else if(Player=="aTunes") Player = 11;
 		//else if(Player=="FREE_ID") Player = 12;
@@ -522,7 +523,7 @@ void __fastcall TSettingsForm::aResetSettingsExecute(TObject *Sender)
 	AutoModeCheckListBoxPreview->Items->Add("Media Player Classic");
 	AutoModeCheckListBoxPreview->Items->Add("iTunes");
 	AutoModeCheckListBoxPreview->Items->Add("ALSong");
-	AutoModeCheckListBoxPreview->Items->Add("Wtyczki (np. AQQ Radio)");
+	AutoModeCheckListBoxPreview->Items->Add(GetLangStr("Plugins"));
 	AutoModeCheckListBoxPreview->Items->Add("Screamer Radio");
 	AutoModeCheckListBoxPreview->Items->Add("aTunes");
 	//Zaznaczanie/odznaczanie odpowiednich checkbox'ow
@@ -577,13 +578,30 @@ void __fastcall TSettingsForm::aSaveSettingsWExecute(TObject *Sender)
 	//Wymuszenie natychmiastowego ustawienienia w opisie dokonanych zmian
 	ForceChangeStatus();
 	//Usuwanie tekstu "Wybierz tag do wstawienia" z TagsBox
-	TagsBox->Items->Delete(6);
+	TagsBox->Items->Delete(5);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TSettingsForm::iTunesPluginPathClick(TObject *Sender)
 {
+  //Kopiowanie do schowka sciezki dla iTunes
 	Clipboard()->SetTextBuf((GetPluginUserDirW() + "\\TuneStatus\\iTunes.txt").w_str());
-	PluginShowMessage("Œcie¿ka niezbêdna do ustawienia pluginu w iTunes zosta³a skopiowana do schowka.");
+	PluginShowMessage(GetLangStr("iTunesPath"));
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TSettingsForm::TagsBoxDrawItem(TWinControl *Control, int Index, TRect &Rect,
+          TOwnerDrawState State)
+{
+  //Rozmieszczenie tagow w kontrolce
+	TagsBox->Canvas->Brush->Style = bsClear;
+	UnicodeString Tag = TagsBox->Items->Strings[Index];
+	if(Tag.Pos("(")) Tag = Tag.Delete(Tag.Pos("(")-1,Tag.Length());
+	UnicodeString Description = TagsBox->Items->Strings[Index];
+	if(Description.Pos("(")) Description = Description.Delete(1, Description.Pos("(")-1);
+	else Description = "";
+	TagsBox->Canvas->TextOutW(Rect.Left+2,Rect.Top, Tag);
+	TagsBox->Canvas->TextOutW(Rect.Right-Canvas->TextWidth(Description)-1,Rect.Top, Description);
+}
+//---------------------------------------------------------------------------
+
