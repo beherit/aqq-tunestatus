@@ -1,3 +1,11 @@
+2.7.0.0
+-----
+* Obsługa lokalizacji (polskiej i angielskiej).
+* Poprawienie wsparcia kolorystyki stylizacji okien.
+* Poprawa obsługi VLC media player.
+* Inne mniej ważne poprawki w kodzie.
+* Aktualizacja komponentów AlphaControls do nowszej wersji (9.20).
+
 2.6.0.0
 -----
 * Pełne wsparcie kolorystyki stylizacji okien.
