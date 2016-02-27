@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-// Copyright (C) 2009-2015 Krzysztof Grochocki
+// Copyright (C) 2009-2016 Krzysztof Grochocki
 //
 // This file is part of TuneStatus
 //
@@ -283,19 +283,19 @@ void __fastcall TSettingsForm::AutoModeCheckListBoxPreviewMouseMove(
 
 void __fastcall TSettingsForm::FoobarDownloadClick(TObject *Sender)
 {
-	ShellExecute(NULL, L"open", L"http://beherit.pl/download/tunestatus-addon-foobar2000/", NULL, NULL, SW_SHOWNORMAL);
+	ShellExecute(NULL, L"open", L"https://beherit.pl/download/tunestatus-addon-foobar2000/", NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TSettingsForm::WMPDownloadClick(TObject *Sender)
 {
-	ShellExecute(NULL, L"open", L"http://beherit.pl/download/tunestatus-addon-wmp/", NULL, NULL, SW_SHOWNORMAL);
+	ShellExecute(NULL, L"open", L"https://beherit.pl/download/tunestatus-addon-wmp/", NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TSettingsForm::iTunesDownloadClick(TObject *Sender)
 {
-	ShellExecute(NULL, L"open", L"http://beherit.pl/download/tunestatus-addon-itunes/", NULL, NULL, SW_SHOWNORMAL);
+	ShellExecute(NULL, L"open", L"https://beherit.pl/download/tunestatus-addon-itunes/", NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
 
@@ -591,7 +591,7 @@ void __fastcall TSettingsForm::iTunesPluginPathClick(TObject *Sender)
 void __fastcall TSettingsForm::TagsBoxDrawItem(TWinControl *Control, int Index, TRect &Rect,
           TOwnerDrawState State)
 {
-  //Rozmieszczenie tagow w kontrolce
+	//Rozmieszczenie tagow w kontrolce
 	TagsBox->Canvas->Brush->Style = bsClear;
 	UnicodeString Tag = TagsBox->Items->Strings[Index];
 	if(Tag.Pos("(")) Tag = Tag.Delete(Tag.Pos("(")-1,Tag.Length());

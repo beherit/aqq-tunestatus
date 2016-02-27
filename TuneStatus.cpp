@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-// Copyright (C) 2009-2015 Krzysztof Grochocki
+// Copyright (C) 2009-2016 Krzysztof Grochocki
 //
 // This file is part of TuneStatus
 //
@@ -1671,7 +1671,7 @@ INT_PTR __stdcall OnLangCodeChanged(WPARAM wParam, LPARAM lParam)
 	//Zmiana stalych w komponentach na formie ustawien
 	if(hSettingsForm)
 	{
-    //Aktualizacja pozycji na liscie odtwarzaczy
+		//Aktualizacja pozycji na liscie odtwarzaczy
 		if(hSettingsForm->AutoModeCheckListBoxPreview->Items->IndexOf(PluginsStr))
 			hSettingsForm->AutoModeCheckListBoxPreview->Items->Strings[hSettingsForm->AutoModeCheckListBoxPreview->Items->IndexOf(PluginsStr)] = GetLangStr("Plugins");
 		//Aktualizacja tekstu "Wybierz tag do wstawienia" w TagsBox
@@ -2322,9 +2322,9 @@ extern "C" __declspec(dllexport) PPluginInfo __stdcall AQQPluginInfo(DWORD AQQVe
 	PluginInfo.Version = PLUGIN_MAKE_VERSION(2,7,0,0);
 	PluginInfo.Description = L"Informuje naszych znajomych o tym, co aktualnie s³uchamy w odtwarzaczu plików audio. Informowanie odbywa siê poprzez zmianê naszego opisu oraz opcjonalnie poprzez wysy³anie notyfikacji User Tune (XEP-0118) w sieci XMPP.";
 	PluginInfo.Author = L"Krzysztof Grochocki";
-	PluginInfo.AuthorMail = L"kontakt@beherit.pl";
+	PluginInfo.AuthorMail = L"contact@beherit.pl";
 	PluginInfo.Copyright = L"Krzysztof Grochocki";
-	PluginInfo.Homepage = L"http://beherit.pl";
+	PluginInfo.Homepage = L"beherit.pl";
 	PluginInfo.Flag = 0;
 	PluginInfo.ReplaceDefaultModule = 0;
 
