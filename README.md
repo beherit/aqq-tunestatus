@@ -20,7 +20,7 @@ Wtyczka TuneStatus objęta jest licencją [GNU General Public License 3](http://
 
 ~~~~
 TuneStatus
-Copyright (C) 2009-2015  Krzysztof Grochocki
+Copyright (C) 2009-2016  Krzysztof Grochocki
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
